@@ -1,3 +1,10 @@
+
+#ifdef  __MINGW32__
+#ifndef __USE_MINGW_ANSI_STDIO
+#define __USE_MINGW_ANSI_STDIO 1
+#endif
+#endif
+
 #define PERL_NO_GET_CONTEXT 1
 
 #include "EXTERN.h"
@@ -377,13 +384,13 @@ SV * Rmpc_get_re_prec(pTHX_ mpc_t * x) {
      return newSVuv(mpfr_get_prec(MPC_RE(*x)));
 }
 
-void RMPC_RE(pTHX_ mpfr_t * fr, mpc_t * x) {
+void RMPC_RE(mpfr_t * fr, mpc_t * x) {
      mp_prec_t precision = mpfr_get_prec(MPC_RE(*x));
      mpfr_set_prec(*fr, precision);
      mpfr_set(*fr, MPC_RE(*x), GMP_RNDN); /* No rounding will be done, anyway */
 }
 
-void RMPC_IM(pTHX_ mpfr_t * fr, mpc_t * x) {
+void RMPC_IM(mpfr_t * fr, mpc_t * x) {
      mp_prec_t precision = mpfr_get_prec(MPC_IM(*x));
      mpfr_set_prec(*fr, precision);
      mpfr_set(*fr, MPC_IM(*x), GMP_RNDN); /* No rounding will be done, anyway */
@@ -407,7 +414,7 @@ void Rmpc_clear(pTHX_ mpc_t * p) {
      Safefree(p);
 }
 
-void Rmpc_clear_mpc(pTHX_ mpc_t * p) {
+void Rmpc_clear_mpc(mpc_t * p) {
      mpc_clear(*p);
 }
 
@@ -532,15 +539,15 @@ SV * Rmpc_set_fr(pTHX_ mpc_t * p, mpfr_t * q, SV * round) {
 }
 
 SV * Rmpc_set_ui_ui(pTHX_ mpc_t * p, SV * q_r, SV * q_i, SV * round) {
-     return newSViv(mpc_set_ui_ui(*p, SvUV(q_r), SvUV(q_i), (mpc_rnd_t)SvUV(round)));
+     return newSViv(mpc_set_ui_ui(*p, (unsigned long)SvUV(q_r), (unsigned long)SvUV(q_i), (mpc_rnd_t)SvUV(round)));
 }
 
 SV * Rmpc_set_si_si(pTHX_ mpc_t * p, SV * q_r, SV * q_i, SV * round) {
-     return newSViv(mpc_set_si_si(*p, SvIV(q_r), SvIV(q_i), (mpc_rnd_t)SvUV(round)));
+     return newSViv(mpc_set_si_si(*p, (long)SvIV(q_r), (long)SvIV(q_i), (mpc_rnd_t)SvUV(round)));
 }
 
 SV * Rmpc_set_d_d(pTHX_ mpc_t * p, SV * q_r, SV * q_i, SV * round) {
-     return newSViv(mpc_set_d_d(*p, SvNV(q_r), SvNV(q_i), (mpc_rnd_t)SvUV(round)));
+     return newSViv(mpc_set_d_d(*p, (double)SvNV(q_r), (double)SvNV(q_i), (mpc_rnd_t)SvUV(round)));
 }
 
 SV * Rmpc_set_ld_ld(pTHX_ mpc_t * mpc, SV * ld1, SV * ld2, SV * round) {
@@ -1297,13 +1304,13 @@ SV * Rmpc_inp_str(pTHX_ mpc_t * p, FILE * stream, SV * base, SV * round) {
 }
 
 /* Removed in mpc-0.7
-void Rmpc_random(pTHX_ mpc_t * p) {
+void Rmpc_random(mpc_t * p) {
      mpc_random(*p);
 }
 */
 
 /* Removed in mpc-0.7
-void Rmpc_random2(pTHX_ mpc_t * p, SV * s, SV * exp) {
+void Rmpc_random2(mpc_t * p, SV * s, SV * exp) {
      mpc_random2(*p, SvIV(s), SvUV(exp));
 }
 */
@@ -2561,7 +2568,7 @@ void _get_r_string(pTHX_ mpc_t * p, SV * base, SV * n_digits, SV * round) {
 
      out = mpfr_get_str(0, &ptr, b, SvUV(n_digits), MPC_RE(*p), (mpc_rnd_t)SvUV(round) & 3);
 
-     if(out == NULL) croak("An error occurred in _get_r_string()");
+     if(out == NULL) croak("An error occurred in _get_r_string(aTHX)");
 
      /* sp = mark; *//* not needed */
      ST(0) = sv_2mortal(newSVpv(out, 0));
@@ -2581,7 +2588,7 @@ void _get_i_string(pTHX_ mpc_t * p, SV * base, SV * n_digits, SV * round) {
 
      out = mpfr_get_str(0, &ptr, b, SvUV(n_digits), MPC_IM(*p), (mpc_rnd_t)SvUV(round) & 3);
 
-     if(out == NULL) croak("An error occurred in _get_i_string()");
+     if(out == NULL) croak("An error occurred in _get_i_string(aTHX)");
 
      /* sp = mark; *//* not needed */
      ST(0) = sv_2mortal(newSVpv(out, 0));
@@ -2853,7 +2860,12 @@ return 0;
 }
 
 SV * gmp_v(pTHX) {
+#if __GNU_MP_VERSION >= 4
      return newSVpv(gmp_version, 0);
+#else
+     warn("From Math::MPC::gmp_v(aTHX): 'gmp_version' is not implemented - returning '0'");
+     return newSVpv("0", 0);
+#endif
 }
 
 SV * mpfr_v(pTHX) {
@@ -2861,7 +2873,7 @@ SV * mpfr_v(pTHX) {
 }
 
 /* Not yet available
-SV * RMPC_MAX_PREC(pTHX_ mpc_t * a) {
+SV * RMPC_MAX_PREC(mpc_t * a) {
      return newSVuv(MPC_MAX_PREC(*a));
 }
 */
@@ -2927,11 +2939,11 @@ SV * Rmpc_strtoc(pTHX_ mpc_t * rop, SV * str, SV * base, SV * round) {
      return newSViv(mpc_strtoc(*rop, SvPV_nolen(str), NULL, (int)SvIV(base), (mpc_rnd_t)SvUV(round)));
 }
 
-void Rmpc_set_nan(pTHX_ mpc_t * a) {
+void Rmpc_set_nan(mpc_t * a) {
      mpc_set_nan(*a);
 }
 
-void Rmpc_swap(pTHX_ mpc_t * a, mpc_t * b) {
+void Rmpc_swap(mpc_t * a, mpc_t * b) {
      mpc_swap(*a, *b);
 }
 
@@ -2973,7 +2985,7 @@ void Rmpc_get_dc(pTHX_ SV * crop, mpc_t * op, SV * round) {
      else croak("1st arg to Rmpc_get_dc needs to be a Math::Complex_C object");
      *(INT2PTR(double _Complex *, SvIV(SvRV(crop)))) = mpc_get_dc(*op, (mpc_rnd_t)SvUV(round));
 #else
-     croak("Rmpc_get_dc() not implemented");
+     croak("Rmpc_get_dc(aTHX) not implemented");
 #endif
 }
 
@@ -2987,7 +2999,7 @@ void Rmpc_get_ldc(pTHX_ SV * crop, mpc_t * op, SV * round) {
      else croak("1st arg to Rmpc_get_ldc needs to be a Math::Complex_C::Long object");
      *(INT2PTR(long double _Complex *, SvIV(SvRV(crop)))) = mpc_get_ldc(*op, (mpc_rnd_t)SvUV(round));
 #else
-     croak("Rmpc_get_ldc() not implemented");
+     croak("Rmpc_get_ldc(aTHX) not implemented");
 #endif
 }
 
@@ -3001,7 +3013,7 @@ SV * Rmpc_set_dc(pTHX_ mpc_t * op, SV * crop, SV * round) {
      else croak("2nd arg to Rmpc_set_dc needs to be a Math::Complex_C object");
      return newSViv(mpc_set_dc(*op, *(INT2PTR(double _Complex *, SvIV(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
 #else
-     croak("Rmpc_set_dc() not implemented");
+     croak("Rmpc_set_dc(aTHX) not implemented");
 #endif
 }
 
@@ -3015,15 +3027,15 @@ SV * Rmpc_set_ldc(pTHX_ mpc_t * op, SV * crop, SV * round) {
      else croak("2nd arg to Rmpc_set_ldc needs to be a Math::Complex_C::Long object");
      return newSViv(mpc_set_ldc(*op, *(INT2PTR(long double _Complex *, SvIV(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
 #else
-     croak("Rmpc_set_ldc() not implemented");
+     croak("Rmpc_set_ldc(aTHX) not implemented");
 #endif
 }
 
-SV * _have_Complex_h(pTHX) {
+int _have_Complex_h(void) {
 #ifdef _DO_COMPLEX_H
-     return newSVuv(1);
+     return 1;
 #else
-     return newSVuv(0);
+     return 0;
 #endif
 }
 
@@ -3069,7 +3081,7 @@ SV * Rmpc_log10(pTHX_ mpc_t * rop, mpc_t *op, SV * round) {
 #endif
 }
 
-/* I think the CLONE() function needs to come at the very end ... not sure */
+/* I think the CLONE function needs to come at the very end ... not sure */
 
 void CLONE(pTHX_ SV * x, ...) {
    MY_CXT_CLONE;
@@ -3077,7 +3089,7 @@ void CLONE(pTHX_ SV * x, ...) {
 
 
 
-MODULE = Math::MPC	PACKAGE = Math::MPC
+MODULE = Math::MPC  PACKAGE = Math::MPC
 
 PROTOTYPES: DISABLE
 
@@ -3148,18 +3160,18 @@ _mpc_d_div (rop, i, op, rnd)
 void
 Rmpc_set_default_rounding_mode (round)
 	SV *	round
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_set_default_rounding_mode(aTHX_ round);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_set_default_rounding_mode(aTHX_ round);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 SV *
 Rmpc_get_default_rounding_mode ()
@@ -3171,35 +3183,35 @@ OUTPUT:  RETVAL
 void
 Rmpc_set_default_prec (prec)
 	SV *	prec
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_set_default_prec(aTHX_ prec);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_set_default_prec(aTHX_ prec);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 void
 Rmpc_set_default_prec2 (prec_re, prec_im)
 	SV *	prec_re
 	SV *	prec_im
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_set_default_prec2(aTHX_ prec_re, prec_im);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_set_default_prec2(aTHX_ prec_re, prec_im);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 SV *
 Rmpc_get_default_prec ()
@@ -3211,69 +3223,69 @@ OUTPUT:  RETVAL
 void
 Rmpc_get_default_prec2 ()
 
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_get_default_prec2();
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_get_default_prec2();
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 void
 Rmpc_set_prec (p, prec)
 	mpc_t *	p
 	SV *	prec
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_set_prec(aTHX_ p, prec);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_set_prec(aTHX_ p, prec);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 void
 Rmpc_set_re_prec (p, prec)
 	mpc_t *	p
 	SV *	prec
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_set_re_prec(aTHX_ p, prec);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_set_re_prec(aTHX_ p, prec);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 void
 Rmpc_set_im_prec (p, prec)
 	mpc_t *	p
 	SV *	prec
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_set_im_prec(aTHX_ p, prec);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_set_im_prec(aTHX_ p, prec);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 SV *
 Rmpc_get_prec (x)
@@ -3285,18 +3297,18 @@ OUTPUT:  RETVAL
 void
 Rmpc_get_prec2 (x)
 	mpc_t *	x
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_get_prec2(aTHX_ x);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_get_prec2(aTHX_ x);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 SV *
 Rmpc_get_im_prec (x)
@@ -3316,35 +3328,35 @@ void
 RMPC_RE (fr, x)
 	mpfr_t *	fr
 	mpc_t *	x
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	RMPC_RE(aTHX_ fr, x);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        RMPC_RE(fr, x);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 void
 RMPC_IM (fr, x)
 	mpfr_t *	fr
 	mpc_t *	x
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	RMPC_IM(aTHX_ fr, x);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        RMPC_IM(fr, x);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 SV *
 RMPC_INEX_RE (x)
@@ -3363,66 +3375,66 @@ OUTPUT:  RETVAL
 void
 DESTROY (p)
 	mpc_t *	p
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	DESTROY(aTHX_ p);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        DESTROY(aTHX_ p);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 void
 Rmpc_clear (p)
 	mpc_t *	p
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_clear(aTHX_ p);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_clear(aTHX_ p);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 void
 Rmpc_clear_mpc (p)
 	mpc_t *	p
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_clear_mpc(aTHX_ p);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_clear_mpc(p);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 void
 Rmpc_clear_ptr (p)
 	mpc_t *	p
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_clear_ptr(aTHX_ p);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_clear_ptr(aTHX_ p);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 SV *
 Rmpc_init2 (prec)
@@ -5107,18 +5119,18 @@ overload_copy (p, second, third)
 	mpc_t *	p
 	SV *	second
 	SV *	third
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	overload_copy(aTHX_ p, second, third);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        overload_copy(aTHX_ p, second, third);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 SV *
 overload_abs (p, second, third)
@@ -5171,18 +5183,18 @@ _get_r_string (p, base, n_digits, round)
 	SV *	base
 	SV *	n_digits
 	SV *	round
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	_get_r_string(aTHX_ p, base, n_digits, round);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        _get_r_string(aTHX_ p, base, n_digits, round);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 void
 _get_i_string (p, base, n_digits, round)
@@ -5190,18 +5202,18 @@ _get_i_string (p, base, n_digits, round)
 	SV *	base
 	SV *	n_digits
 	SV *	round
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	_get_i_string(aTHX_ p, base, n_digits, round);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        _get_i_string(aTHX_ p, base, n_digits, round);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 SV *
 _itsa (a)
@@ -5369,35 +5381,35 @@ OUTPUT:  RETVAL
 void
 Rmpc_set_nan (a)
 	mpc_t *	a
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_set_nan(aTHX_ a);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_set_nan(a);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 void
 Rmpc_swap (a, b)
 	mpc_t *	a
 	mpc_t *	b
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_swap(aTHX_ a, b);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_swap(a, b);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 SV *
 overload_atan2 (p, q, third)
@@ -5424,36 +5436,36 @@ Rmpc_get_dc (crop, op, round)
 	SV *	crop
 	mpc_t *	op
 	SV *	round
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_get_dc(aTHX_ crop, op, round);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_get_dc(aTHX_ crop, op, round);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 void
 Rmpc_get_ldc (crop, op, round)
 	SV *	crop
 	mpc_t *	op
 	SV *	round
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	Rmpc_get_ldc(aTHX_ crop, op, round);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_get_ldc(aTHX_ crop, op, round);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 SV *
 Rmpc_set_dc (op, crop, round)
@@ -5473,11 +5485,8 @@ CODE:
   RETVAL = Rmpc_set_ldc (aTHX_ op, crop, round);
 OUTPUT:  RETVAL
 
-SV *
+int
 _have_Complex_h ()
-CODE:
-  RETVAL = _have_Complex_h (aTHX);
-OUTPUT:  RETVAL
 
 
 SV *
@@ -5533,18 +5542,18 @@ OUTPUT:  RETVAL
 void
 CLONE (x, ...)
 	SV *	x
-	PREINIT:
-	I32* temp;
-	PPCODE:
-	temp = PL_markstack_ptr++;
-	CLONE(aTHX_ x);
-	if (PL_markstack_ptr != temp) {
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        CLONE(aTHX_ x);
+        if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
-	  PL_markstack_ptr = temp;
-	  XSRETURN_EMPTY; /* return empty stack */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
         }
         /* must have used dXSARGS; list context implied */
-	return; /* assume stack size is correct */
+        return; /* assume stack size is correct */
 
 BOOT:
 

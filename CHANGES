@@ -1,3 +1,5 @@
+1.03
+
 1.02
  - _has_inttypes() no longer checks for whether USE_LONG_DOUBLE is defined.
    (Was harmless ... but didn't make much sense.)

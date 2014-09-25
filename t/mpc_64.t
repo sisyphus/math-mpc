@@ -2,6 +2,7 @@ use warnings;
 use strict;
 use Math::MPFR qw(:mpfr);
 use Math::MPC qw(:mpc);
+use Config;
 
 Rmpc_set_default_prec2(100, 100);
 Rmpfr_set_default_prec(100);
@@ -56,10 +57,35 @@ $ok .= 'd' if $mpfr1 == $simax;
 if($_64d) {Rmpc_set_ld_ld($mpc1, $uimax + 2, $uimax + 2, MPC_RNDNN)}
 else {Rmpc_set_d_d($mpc1, $uimax + 2, $uimax + 2, MPC_RNDNN)}
 
-RMPC_RE($mpfr1, $mpc1);
-$ok .= 'e' if $mpfr1 == $uimax + 2;
-RMPC_IM($mpfr1, $mpc1);
-$ok .= 'f' if $mpfr1 == $uimax + 2;
+# $uimax + 2 == $uimax + 1 (overflow) unless the precision of the NV exceeds that of the UV,
+# in which case $uimax + 2 == $uimax + 2
+
+if($Config{nvtype} ne '__float128' || MPFR_LDBL_DIG == 33) {
+  RMPC_RE($mpfr1, $mpc1);
+  if($mpfr1 == $uimax + 2) {$ok .= 'e'}
+  else {
+    warn "\n2e: \$uimax: $uimax \$mpfr1: $mpfr1\n";
+  }
+
+  RMPC_IM($mpfr1, $mpc1);
+  if($mpfr1 == $uimax + 2) {$ok .= 'f'}
+  else {
+    warn "\n2f: \$uimax: $uimax \$mpfr1: $mpfr1\n";
+  }
+}
+else { # MPFR_LDBL_DIG == 18 && nvtype eq '__float128'
+  RMPC_RE($mpfr1, $mpc1);
+  if($mpfr1 == $uimax + 1) {$ok .= 'e'}
+  else {
+    warn "\n2e: \$uimax: $uimax \$mpfr1: $mpfr1\n";
+  }
+
+  RMPC_IM($mpfr1, $mpc1);
+  if($mpfr1 == $uimax + 1) {$ok .= 'f'}
+  else {
+    warn "\n2f: \$uimax: $uimax \$mpfr1: $mpfr1\n";
+  }
+}
 
 Rmpc_set_fr_fr($mpc1, $uimpfr, $uimpfr, MPC_RNDNN);
 

@@ -95,12 +95,12 @@ mp_prec_t _perl_default_prec_im = 53;
 
 
 /* This function is used by overload_mul and overload_mul_eq whenn           */
-/* USE_64_BIT_INT is defined.                                                */
+/* MATH_MPC_NEED_LONG_LONG_INT is defined.                                                */
 /* It is based on some code posted by Philippe Theveny.                      */
 
 int _mpc_mul_sj (mpc_ptr rop, mpc_ptr op, intmax_t i, mpc_rnd_t rnd) {
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
 
    mpfr_t x;
    int inex;
@@ -168,12 +168,12 @@ int _mpc_mul_d (mpc_ptr rop, mpc_ptr op, double i, mpc_rnd_t rnd) {
 
 
 /* This function is used by overload_div and overload_div_eq whenn           */
-/* USE_64_BIT_INT is defined.                                                */
+/* MATH_MPC_NEED_LONG_LONG_INT is defined.                                                */
 /* It is based on some code posted by Philippe Theveny.                      */
 
 int _mpc_div_sj (mpc_ptr rop, mpc_ptr op, intmax_t i, mpc_rnd_t rnd) {
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
 
    mpfr_t x;
    int inex;
@@ -196,12 +196,12 @@ int _mpc_div_sj (mpc_ptr rop, mpc_ptr op, intmax_t i, mpc_rnd_t rnd) {
 
 
 /* This function is used by overload_div and overload_div_eq whenn           */
-/* USE_64_BIT_INT is defined.                                                */
+/* MATH_MPC_NEED_LONG_LONG_INT is defined.                                                */
 /* It is based on some code posted by Philippe Theveny.                      */
 
 int _mpc_sj_div (mpc_ptr rop, intmax_t i, mpc_ptr op, mpc_rnd_t rnd) {
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
 
    mpfr_t x;
    int inex;
@@ -503,7 +503,7 @@ SV * Rmpc_set_ld(pTHX_ mpc_t * p, SV * q, SV * round) {
 }
 
 SV * Rmpc_set_uj(pTHX_ mpc_t * p, SV * q, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      return newSViv(mpc_set_uj(*p, SvUV(q), (mpc_rnd_t)SvUV(round)));
 #else
      croak("Rmpc_set_uj not implemented for this build of perl");
@@ -511,7 +511,7 @@ SV * Rmpc_set_uj(pTHX_ mpc_t * p, SV * q, SV * round) {
 }
 
 SV * Rmpc_set_sj(pTHX_ mpc_t * p, SV * q, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      return newSViv(mpc_set_sj(*p, SvIV(q), (mpc_rnd_t)SvUV(round)));
 #else
      croak("Rmpc_set_sj not implemented for this build of perl");
@@ -671,7 +671,7 @@ SV * Rmpc_set_fr_ld(pTHX_ mpc_t * mpc, mpfr_t * mpfr, SV * d, SV * round) {
 }
 
 SV * Rmpc_set_d_uj(pTHX_ mpc_t * mpc, SV * d, SV * ui, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(d, uj, *mpc, (double)SvNV(d), SvUV(ui), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_d_uj not implemented for this build of perl");
@@ -679,7 +679,7 @@ SV * Rmpc_set_d_uj(pTHX_ mpc_t * mpc, SV * d, SV * ui, SV * round) {
 }
 
 SV * Rmpc_set_d_sj(pTHX_ mpc_t * mpc, SV * d, SV * si, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(d, sj, *mpc, (double)SvNV(d), SvIV(si), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_d_sj not implemented for this build of perl");
@@ -687,7 +687,7 @@ SV * Rmpc_set_d_sj(pTHX_ mpc_t * mpc, SV * d, SV * si, SV * round) {
 }
 
 SV * Rmpc_set_sj_d(pTHX_ mpc_t * mpc, SV * si, SV * d, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(sj, d, *mpc, SvIV(si), (double)SvNV(d), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_sj_d not implemented for this build of perl");
@@ -695,7 +695,7 @@ SV * Rmpc_set_sj_d(pTHX_ mpc_t * mpc, SV * si, SV * d, SV * round) {
 }
 
 SV * Rmpc_set_uj_d(pTHX_ mpc_t * mpc, SV * ui, SV * d, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(uj, d, *mpc, SvUV(ui), (double)SvNV(d), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_uj_d not implemented for this build of perl");
@@ -703,7 +703,7 @@ SV * Rmpc_set_uj_d(pTHX_ mpc_t * mpc, SV * ui, SV * d, SV * round) {
 }
 
 SV * Rmpc_set_uj_fr(pTHX_ mpc_t * mpc, SV * ui, mpfr_t * mpfr, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(uj, fr, *mpc, SvUV(ui), *mpfr, (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_uj_fr not implemented for this build of perl");
@@ -711,7 +711,7 @@ SV * Rmpc_set_uj_fr(pTHX_ mpc_t * mpc, SV * ui, mpfr_t * mpfr, SV * round) {
 }
 
 SV * Rmpc_set_sj_fr(pTHX_ mpc_t * mpc, SV * si, mpfr_t * mpfr, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(sj, fr, *mpc, SvIV(si), *mpfr, (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_sj_fr not implemented for this build of perl");
@@ -719,7 +719,7 @@ SV * Rmpc_set_sj_fr(pTHX_ mpc_t * mpc, SV * si, mpfr_t * mpfr, SV * round) {
 }
 
 SV * Rmpc_set_fr_uj(pTHX_ mpc_t * mpc, mpfr_t * mpfr, SV * ui, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(fr, uj, *mpc, *mpfr, SvUV(ui), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_fr_uj not implemented for this build of perl");
@@ -727,7 +727,7 @@ SV * Rmpc_set_fr_uj(pTHX_ mpc_t * mpc, mpfr_t * mpfr, SV * ui, SV * round) {
 }
 
 SV * Rmpc_set_fr_sj(pTHX_ mpc_t * mpc, mpfr_t * mpfr, SV * si, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(fr, sj, *mpc, *mpfr , SvIV(si), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_fr_sj not implemented for this build of perl");
@@ -735,7 +735,7 @@ SV * Rmpc_set_fr_sj(pTHX_ mpc_t * mpc, mpfr_t * mpfr, SV * si, SV * round) {
 }
 
 SV * Rmpc_set_uj_sj(pTHX_ mpc_t * mpc, SV * ui, SV * si, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(uj, sj, *mpc, SvUV(ui), SvIV(si), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_uj_si, Rmpc_set_ui_sj and Rmpc_set_uj_sj not implemented for this build of perl");
@@ -743,7 +743,7 @@ SV * Rmpc_set_uj_sj(pTHX_ mpc_t * mpc, SV * ui, SV * si, SV * round) {
 }
 
 SV * Rmpc_set_sj_uj(pTHX_ mpc_t * mpc, SV * si, SV * ui, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(sj, uj, *mpc, SvIV(si), SvUV(ui), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_sj_ui, Rmpc_set_si_uj and Rmpc_set_sj_uj not implemented for this build of perl");
@@ -752,7 +752,7 @@ SV * Rmpc_set_sj_uj(pTHX_ mpc_t * mpc, SV * si, SV * ui, SV * round) {
 
 
 SV * Rmpc_set_ld_uj(pTHX_ mpc_t * mpc, SV * d, SV * ui, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
 #ifdef USE_LONG_DOUBLE
      SV_MPC_SET_X_Y(ld, uj, *mpc, SvNV(d), SvUV(ui), (mpc_rnd_t) SvUV(round));
 #else
@@ -764,7 +764,7 @@ SV * Rmpc_set_ld_uj(pTHX_ mpc_t * mpc, SV * d, SV * ui, SV * round) {
 }
 
 SV * Rmpc_set_ld_sj(pTHX_ mpc_t * mpc, SV * d, SV * si, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
 #ifdef USE_LONG_DOUBLE
      SV_MPC_SET_X_Y(ld, sj, *mpc, SvNV(d), SvIV(si), (mpc_rnd_t) SvUV(round));
 #else
@@ -776,7 +776,7 @@ SV * Rmpc_set_ld_sj(pTHX_ mpc_t * mpc, SV * d, SV * si, SV * round) {
 }
 
 SV * Rmpc_set_uj_ld(pTHX_ mpc_t * mpc, SV * ui, SV * d, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
 #ifdef USE_LONG_DOUBLE
      SV_MPC_SET_X_Y(uj, ld, *mpc, SvUV(ui), SvNV(d), (mpc_rnd_t) SvUV(round));
 #else
@@ -788,7 +788,7 @@ SV * Rmpc_set_uj_ld(pTHX_ mpc_t * mpc, SV * ui, SV * d, SV * round) {
 }
 
 SV * Rmpc_set_sj_ld(pTHX_ mpc_t * mpc, SV * si, SV * d, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
 #ifdef USE_LONG_DOUBLE
      SV_MPC_SET_X_Y(sj, ld, *mpc, SvIV(si), SvNV(d), (mpc_rnd_t) SvUV(round));
 #else
@@ -836,7 +836,7 @@ SV * Rmpc_set_z_d(pTHX_ mpc_t * mpc, mpz_t * mpz, SV * d, SV * round) {
 }
 
 SV * Rmpc_set_f_uj(pTHX_ mpc_t * mpc, mpf_t * mpf, SV * uj, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(f, uj, *mpc, *mpf, (unsigned long long)SvUV(uj), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_f_uj not implemented for this build of perl");
@@ -844,7 +844,7 @@ SV * Rmpc_set_f_uj(pTHX_ mpc_t * mpc, mpf_t * mpf, SV * uj, SV * round) {
 }
 
 SV * Rmpc_set_q_uj(pTHX_ mpc_t * mpc, mpq_t * mpq, SV * uj, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(q, uj, *mpc, *mpq, (unsigned long long)SvUV(uj), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_q_uj not implemented for this build of perl");
@@ -852,7 +852,7 @@ SV * Rmpc_set_q_uj(pTHX_ mpc_t * mpc, mpq_t * mpq, SV * uj, SV * round) {
 }
 
 SV * Rmpc_set_z_uj(pTHX_ mpc_t * mpc, mpz_t * mpz, SV * uj, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(z, uj, *mpc, *mpz, (unsigned long long)SvUV(uj), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_z_uj not implemented for this build of perl");
@@ -860,7 +860,7 @@ SV * Rmpc_set_z_uj(pTHX_ mpc_t * mpc, mpz_t * mpz, SV * uj, SV * round) {
 }
 
 SV * Rmpc_set_f_sj(pTHX_ mpc_t * mpc, mpf_t * mpf, SV * sj, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(f, sj, *mpc, *mpf, (signed long long)SvIV(sj), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_f_sj not implemented for this build of perl");
@@ -868,7 +868,7 @@ SV * Rmpc_set_f_sj(pTHX_ mpc_t * mpc, mpf_t * mpf, SV * sj, SV * round) {
 }
 
 SV * Rmpc_set_q_sj(pTHX_ mpc_t * mpc, mpq_t * mpq, SV * sj, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(q, sj, *mpc, *mpq, (signed long long)SvIV(sj), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_q_sj not implemented for this build of perl");
@@ -876,7 +876,7 @@ SV * Rmpc_set_q_sj(pTHX_ mpc_t * mpc, mpq_t * mpq, SV * sj, SV * round) {
 }
 
 SV * Rmpc_set_z_sj(pTHX_ mpc_t * mpc, mpz_t * mpz, SV * sj, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(z, sj, *mpc, *mpz, (signed long long)SvIV(sj), (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_z_sj not implemented for this build of perl");
@@ -949,7 +949,7 @@ SV * Rmpc_set_d_z(pTHX_ mpc_t * mpc, SV * d, mpz_t * mpz, SV * round) {
 }
 
 SV * Rmpc_set_uj_f(pTHX_ mpc_t * mpc, SV * uj, mpf_t * mpf, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(uj, f, *mpc, (unsigned long long)SvUV(uj), *mpf, (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_uj_f not implemented for this build of perl");
@@ -957,7 +957,7 @@ SV * Rmpc_set_uj_f(pTHX_ mpc_t * mpc, SV * uj, mpf_t * mpf, SV * round) {
 }
 
 SV * Rmpc_set_uj_q(pTHX_ mpc_t * mpc, SV * uj, mpq_t * mpq, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(uj, q, *mpc, (unsigned long long)SvUV(uj), *mpq, (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_uj_q not implemented for this build of perl");
@@ -965,7 +965,7 @@ SV * Rmpc_set_uj_q(pTHX_ mpc_t * mpc, SV * uj, mpq_t * mpq, SV * round) {
 }
 
 SV * Rmpc_set_uj_z(pTHX_ mpc_t * mpc, SV * uj, mpz_t * mpz, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(uj, z, *mpc, (unsigned long long)SvUV(uj), *mpz, (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_uj_z not implemented for this build of perl");
@@ -973,7 +973,7 @@ SV * Rmpc_set_uj_z(pTHX_ mpc_t * mpc, SV * uj, mpz_t * mpz, SV * round) {
 }
 
 SV * Rmpc_set_sj_f(pTHX_ mpc_t * mpc, SV * sj, mpf_t * mpf, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(sj, f, *mpc, (signed long long)SvIV(sj), *mpf, (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_sj_f not implemented for this build of perl");
@@ -981,7 +981,7 @@ SV * Rmpc_set_sj_f(pTHX_ mpc_t * mpc, SV * sj, mpf_t * mpf, SV * round) {
 }
 
 SV * Rmpc_set_sj_q(pTHX_ mpc_t * mpc, SV * sj, mpq_t * mpq, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(sj, q, *mpc, (signed long long)SvIV(sj), *mpq, (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_sj_q not implemented for this build of perl");
@@ -989,7 +989,7 @@ SV * Rmpc_set_sj_q(pTHX_ mpc_t * mpc, SV * sj, mpq_t * mpq, SV * round) {
 }
 
 SV * Rmpc_set_sj_z(pTHX_ mpc_t * mpc, SV * sj, mpz_t * mpz, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(sj, z, *mpc, (signed long long)SvIV(sj), *mpz, (mpc_rnd_t) SvUV(round));
 #else
      croak("Rmpc_set_sj_z not implemented for this build of perl");
@@ -1080,7 +1080,7 @@ SV * Rmpc_set_fr_z(pTHX_ mpc_t * mpc, mpfr_t * mpfr, mpz_t * mpz, SV * round) {
 */
 
 SV * Rmpc_set_uj_uj(pTHX_ mpc_t * mpc, SV * uj1, SV * uj2, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      return newSViv(mpc_set_uj_uj(*mpc, (unsigned long long)SvUV(uj1),
                     (unsigned long long)SvUV(uj2), (mpc_rnd_t)SvUV(round)));
 #else
@@ -1089,7 +1089,7 @@ SV * Rmpc_set_uj_uj(pTHX_ mpc_t * mpc, SV * uj1, SV * uj2, SV * round) {
 }
 
 SV * Rmpc_set_sj_sj(pTHX_ mpc_t * mpc, SV * sj1, SV * sj2, SV * round) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      return newSViv(mpc_set_sj_sj(*mpc, (signed long long)SvIV(sj1),
                     (signed long long)SvIV(sj2), (mpc_rnd_t)SvUV(round)));
 #else
@@ -1393,7 +1393,7 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
      sv_setiv(obj, INT2PTR(IV,mpc_t_obj));
      SvREADONLY_on(obj);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
 
      if(SvUOK(b)) {
 #ifdef _MSC_VER
@@ -1470,7 +1470,7 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
      sv_setiv(obj, INT2PTR(IV,mpc_t_obj));
      SvREADONLY_on(obj);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
 
      if(SvUOK(b)) {
 #ifdef _MSC_VER
@@ -1553,7 +1553,7 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
      sv_setiv(obj, INT2PTR(IV,mpc_t_obj));
      SvREADONLY_on(obj);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
 #ifdef _MSC_VER
        mpc_set_str(*mpc_t_obj, SvPV_nolen(b), 10, DEFAULT_ROUNDING_MODE);
@@ -1637,7 +1637,7 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
      sv_setiv(obj, INT2PTR(IV,mpc_t_obj));
      SvREADONLY_on(obj);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
 #ifdef _MSC_VER
        mpc_set_str(*mpc_t_obj, SvPV_nolen(b), 10, DEFAULT_ROUNDING_MODE);
@@ -1725,7 +1725,7 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
 
      SvREFCNT_inc(a);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
        mpc_init3(temp, DEFAULT_PREC);
 #ifdef _MSC_VER
@@ -1814,7 +1814,7 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
 
      SvREFCNT_inc(a);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
        mpc_init3(temp, DEFAULT_PREC);
 #ifdef _MSC_VER
@@ -1896,7 +1896,7 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
      mpc_t temp;
      SvREFCNT_inc(a);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
        mpc_init3(temp, DEFAULT_PREC);
 #ifdef _MSC_VER
@@ -1977,7 +1977,7 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
 
      SvREFCNT_inc(a);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
        mpc_init3(temp, DEFAULT_PREC);
 #ifdef _MSC_VER
@@ -2068,7 +2068,7 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
      sv_setiv(obj, INT2PTR(IV,mpc_t_obj));
      SvREADONLY_on(obj);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
 
      if(SvUOK(b)) {
 #ifdef _MSC_VER
@@ -2136,7 +2136,7 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
 
      SvREFCNT_inc(a);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
        mpc_init3(temp, DEFAULT_PREC);
 #ifdef _MSC_VER
@@ -2213,7 +2213,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
 
      if(mpfr_nan_p(MPC_RE(*a)) || mpfr_nan_p(MPC_IM(*a))) return newSViv(0);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
        mpfr_init2(temp, DEFAULT_PREC_RE);
 #ifdef _MSC_VER
@@ -2325,7 +2325,7 @@ SV * overload_not_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
 
      if(mpfr_nan_p(MPC_RE(*a)) || mpfr_nan_p(MPC_IM(*a))) return newSViv(1);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
        mpfr_init2(temp, DEFAULT_PREC_RE);
 #ifdef _MSC_VER
@@ -2564,11 +2564,11 @@ void _get_r_string(pTHX_ mpc_t * p, SV * base, SV * n_digits, SV * round) {
      mp_exp_t ptr;
      unsigned long b = SvUV(base);
 
-     if(b < 2 || b > 36) croak("Second argument supplied to r_string() is not in acceptable range");
+     if(b < 2 || b > 36) croak("Second argument supplied to r_string is not in acceptable range");
 
      out = mpfr_get_str(0, &ptr, b, SvUV(n_digits), MPC_RE(*p), (mpc_rnd_t)SvUV(round) & 3);
 
-     if(out == NULL) croak("An error occurred in _get_r_string(aTHX)");
+     if(out == NULL) croak("An error occurred in _get_r_string");
 
      /* sp = mark; *//* not needed */
      ST(0) = sv_2mortal(newSVpv(out, 0));
@@ -2584,11 +2584,11 @@ void _get_i_string(pTHX_ mpc_t * p, SV * base, SV * n_digits, SV * round) {
      mp_exp_t ptr;
      unsigned long b = SvUV(base);
 
-     if(b < 2 || b > 36) croak("Second argument supplied to i_string() is not in acceptable range");
+     if(b < 2 || b > 36) croak("Second argument supplied to i_string is not in acceptable range");
 
      out = mpfr_get_str(0, &ptr, b, SvUV(n_digits), MPC_IM(*p), (mpc_rnd_t)SvUV(round) & 3);
 
-     if(out == NULL) croak("An error occurred in _get_i_string(aTHX)");
+     if(out == NULL) croak("An error occurred in _get_i_string");
 
      /* sp = mark; *//* not needed */
      ST(0) = sv_2mortal(newSVpv(out, 0));
@@ -2640,7 +2640,7 @@ SV * _new_real(pTHX_ SV * b) {
      sv_setiv(obj, INT2PTR(IV,mpc_t_obj));
      SvREADONLY_on(obj);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
 
      if(SvUOK(b)) {
        mpfr_init2(temp, DEFAULT_PREC_RE);
@@ -2737,7 +2737,7 @@ SV * _new_im(pTHX_ SV * b) {
      sv_setiv(obj, INT2PTR(IV,mpc_t_obj));
      SvREADONLY_on(obj);
 
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
 
      if(SvUOK(b)) {
        mpfr_init2(temp, DEFAULT_PREC_IM);
@@ -2828,7 +2828,7 @@ SV * _new_im(pTHX_ SV * b) {
 }
 
 int _has_longlong(void) {
-#ifdef USE_64_BIT_INT
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
     return 1;
 #else
     return 0;
@@ -2845,13 +2845,13 @@ int _has_longdouble(void) {
 
 /* Has inttypes.h been included ?
               &&
- Do we have USE_64_BIT_INT ? */
+ Do we have MATH_MPC_NEED_LONG_LONG_INT ? */
 
 int _has_inttypes() {
 #ifdef _MSC_VER
 return 0;
 #else
-#if defined USE_64_BIT_INT
+#if defined MATH_MPC_NEED_LONG_LONG_INT
 return 1;
 #else
 return 0;
@@ -2863,7 +2863,7 @@ SV * gmp_v(pTHX) {
 #if __GNU_MP_VERSION >= 4
      return newSVpv(gmp_version, 0);
 #else
-     warn("From Math::MPC::gmp_v(aTHX): 'gmp_version' is not implemented - returning '0'");
+     warn("From Math::MPC::gmp_v: 'gmp_version' is not implemented - returning '0'");
      return newSVpv("0", 0);
 #endif
 }
@@ -2971,7 +2971,7 @@ SV * Rmpc_sin_cos(pTHX_ mpc_t * rop_sin, mpc_t * rop_cos, mpc_t * op, SV * rnd_s
 #ifdef SIN_COS_AVAILABLE
      return newSViv(mpc_sin_cos(*rop_sin, *rop_cos, *op, (mpc_rnd_t)SvUV(rnd_sin), (mpc_rnd_t)SvUV(rnd_cos)));
 #else
-     croak("Rmpc_­sin_cos() not supported by your version (%s) of the mpc library", MPC_VERSION_STRING);
+     croak("Rmpc_­sin_cos not supported by your version (%s) of the mpc library", MPC_VERSION_STRING);
 #endif
 }
 
@@ -2985,7 +2985,7 @@ void Rmpc_get_dc(pTHX_ SV * crop, mpc_t * op, SV * round) {
      else croak("1st arg to Rmpc_get_dc needs to be a Math::Complex_C object");
      *(INT2PTR(double _Complex *, SvIV(SvRV(crop)))) = mpc_get_dc(*op, (mpc_rnd_t)SvUV(round));
 #else
-     croak("Rmpc_get_dc(aTHX) not implemented");
+     croak("Rmpc_get_dc not implemented");
 #endif
 }
 
@@ -2999,7 +2999,7 @@ void Rmpc_get_ldc(pTHX_ SV * crop, mpc_t * op, SV * round) {
      else croak("1st arg to Rmpc_get_ldc needs to be a Math::Complex_C::Long object");
      *(INT2PTR(long double _Complex *, SvIV(SvRV(crop)))) = mpc_get_ldc(*op, (mpc_rnd_t)SvUV(round));
 #else
-     croak("Rmpc_get_ldc(aTHX) not implemented");
+     croak("Rmpc_get_ldc not implemented");
 #endif
 }
 
@@ -3013,7 +3013,7 @@ SV * Rmpc_set_dc(pTHX_ mpc_t * op, SV * crop, SV * round) {
      else croak("2nd arg to Rmpc_set_dc needs to be a Math::Complex_C object");
      return newSViv(mpc_set_dc(*op, *(INT2PTR(double _Complex *, SvIV(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
 #else
-     croak("Rmpc_set_dc(aTHX) not implemented");
+     croak("Rmpc_set_dc not implemented");
 #endif
 }
 
@@ -3027,7 +3027,7 @@ SV * Rmpc_set_ldc(pTHX_ mpc_t * op, SV * crop, SV * round) {
      else croak("2nd arg to Rmpc_set_ldc needs to be a Math::Complex_C::Long object");
      return newSViv(mpc_set_ldc(*op, *(INT2PTR(long double _Complex *, SvIV(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
 #else
-     croak("Rmpc_set_ldc(aTHX) not implemented");
+     croak("Rmpc_set_ldc not implemented");
 #endif
 }
 

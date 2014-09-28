@@ -27,10 +27,10 @@ print " gmp-4.3.2 (or later)\n mpfr-2.4.2 (or later)\n mpc-0.8 (or later)\n\n";
 my $defines = $] < 5.008 ? "-DOLDPERL" : "-DNEWPERL";
 
 if($use_64_bit_int == -1) {}
-elsif($use_64_bit_int == 1) {$defines .= " -DUSE_64_BIT_INT"}
+elsif($use_64_bit_int == 1) {$defines .= " -DMATH_MPC_NEED_LONG_LONG_INT"}
 else {
-  unless($Config::Config{ivsize} < 8) {
-    $defines .= " -DUSE_64_BIT_INT";
+  unless($Config{ivsize} < 8 || $Config{ivtype} eq 'long') {
+    $defines .= " -DMATH_MPC_NEED_LONG_LONG_INT";
   }
 }
 
@@ -44,7 +44,7 @@ else {
 
 if($do_complex_h == 1) { $defines .= " -D_DO_COMPLEX_H"}
 
-$defines =~ /-DUSE_64_BIT_INT/ ? print "Building with 64-bit'long long' support\n" :
+$defines =~ /-DMATH_MPC_NEED_LONG_LONG_INT/ ? print "Building with 64-bit'long long' support\n" :
                                  print "Building without 64-bit 'long long' support\n";
 
 print "If this is wrong, see the \"64-bit support\" section in the README\n\n";

@@ -63,7 +63,7 @@ my %options = (
   NAME => 'Math::MPC',
   AUTHOR => 'Sisyphus (sisyphus at (@) cpan dot (.) org)',
   ABSTRACT => 'Perl interface to the MPC (multi precision complex) library',
-  PREREQ_PM => {'Math::MPFR' => '2.01'},
+  PREREQ_PM => {'Math::MPFR' => '3.23'},
   DEFINE   => $defines,
   LIBS => [
     '-lmpc -lmpfr -lgmp'

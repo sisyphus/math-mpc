@@ -47,25 +47,23 @@ you'll need to run:
 perl Makefile.pl INC="-I/path/to/gmp_includes -I/path/to/mpfr_includes -I/path/to/mpc/include"
  LIBS="-L/path/to/mpc_lib -lmpc -L/path/to/mpfr_lib -lmpfr -L/path/to/gmp_lib -lgmp"
 
-==============
-64-bit support
-==============
+==================================
+64-bit-int and long double support
+==================================
 
-If your perl's Config reports that 'ivsize' is greater than
-or equal to 8,then Math::MPC will, by default, be built with access
-to the mpfr_*_uj and mpfr_*_sj functions. Else, access to those
-functions is, by default, denied. You can override the default by
-opening up the Makefile.PL and uncommenting the appropriate line (just
-a few lines down from the top of the file ... the comments in that
-file should make it clear).
+If your perl's Config reports that 'ivsize' is greater than or
+equal to 8 && 'ivtype' is not 'long', then Math::MPC will, by default,
+be built with access to the mpfr_*_uj and mpfr_*_sj functions. Else,
+access to those functions is, by default, denied. You can override the
+default by opening up the Makefile.PL and uncommenting the appropriate
+line (just a few lines down from the top of the file ... the comments in
+that file should make it clear).
 
 Similarly, if your perl's Config reports that 'nvsize' is greater than
-8 then Math::MPC will, by default, be built with access
-to the mpfr_*_ld functions. Else, access to those functions is,
-by default, denied. You can override the default by opening up the
-Makefile.PL and uncommenting the appropriate line (just a few lines down
-from the top of the file ... the comments in that file should make it
-clear).
+8 then Math::MPC will be built with access to the mpfr_*_ld functions.
+Else, access to those functions is, by default, denied. Again, you can
+override the default by opening up the Makefile.PL and uncommenting the
+appropriate line.
 
 I believe it to be both unnecessary and inadvisable to override the
 default - but if you do find that you need to override the default,

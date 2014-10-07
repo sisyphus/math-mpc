@@ -123,7 +123,7 @@ Rmpc_set_nan Rmpc_swap
 Rmpc_mul_sj Rmpc_mul_ld Rmpc_mul_d Rmpc_div_sj Rmpc_sj_div Rmpc_div_ld Rmpc_ld_div Rmpc_div_d Rmpc_d_div
 );
 
-    our $VERSION = '1.03';
+    our $VERSION = '1.04';
     #$VERSION = eval $VERSION;
 
     DynaLoader::bootstrap Math::MPC $VERSION;
@@ -1204,7 +1204,7 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
 
     This program is free software; you may redistribute it and/or
     modify it under the same terms as Perl itself.
-    Copyright 2006-2009, 2010, 2011 Sisyphus
+    Copyright 2006-2009, 2010, 2011, 2014, Sisyphus
 
 =head1 AUTHOR
 

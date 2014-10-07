@@ -132,7 +132,7 @@ else {
 }
 }
 else {
-  warn "Skipping test 4 - no 64 bit int support\n";
+  warn "Skipping test 4 - not built with intmax_t\n";
   print "ok 4\n";
 }
 

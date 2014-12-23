@@ -1,5 +1,5 @@
 1.04
-
+ - Fix for replacement of Math::Complex_C::Long by Math::Complex_C::L
 1.03
  - No longer define USE_64_BIT_INT if ivtype is 'long'.
  - Rename USE_64_BIT_INT #define to MATH_MPC_NEED_LONG_LONG_INT

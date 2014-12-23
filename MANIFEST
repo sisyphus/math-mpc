@@ -8,6 +8,7 @@ t/aaa_compat.t
 t/aab_basic.t
 t/bool.t
 t/complex_c.t
+t/complex_c-l.t
 t/get_str.t
 t/mpc_64.t
 t/mpc_add.t

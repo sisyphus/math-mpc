@@ -2993,10 +2993,10 @@ void Rmpc_get_ldc(pTHX_ SV * crop, mpc_t * op, SV * round) {
 #ifdef _DO_COMPLEX_H
      if(sv_isobject(crop)) {
        const char *h = HvNAME(SvSTASH(SvRV(crop)));
-       if(strNE(h, "Math::Complex_C::Long"))
-         croak("1st arg to Rmpc_get_ldc is a %s object - needs to be a Math::Complex_C::Long object", h);
+       if(strNE(h, "Math::Complex_C::L"))
+         croak("1st arg to Rmpc_get_ldc is a %s object - needs to be a Math::Complex_C::L object", h);
      }
-     else croak("1st arg to Rmpc_get_ldc needs to be a Math::Complex_C::Long object");
+     else croak("1st arg to Rmpc_get_ldc needs to be a Math::Complex_C::L object");
      *(INT2PTR(long double _Complex *, SvIV(SvRV(crop)))) = mpc_get_ldc(*op, (mpc_rnd_t)SvUV(round));
 #else
      croak("Rmpc_get_ldc not implemented");
@@ -3021,10 +3021,10 @@ SV * Rmpc_set_ldc(pTHX_ mpc_t * op, SV * crop, SV * round) {
 #ifdef _DO_COMPLEX_H
      if(sv_isobject(crop)) {
        const char *h = HvNAME(SvSTASH(SvRV(crop)));
-       if(strNE(h, "Math::Complex_C::Long"))
-       croak("2nd arg to Rmpc_set_ldc is a %s object - needs ti be a Math::Complex_C::Long object", h);
+       if(strNE(h, "Math::Complex_C::L"))
+       croak("2nd arg to Rmpc_set_ldc is a %s object - needs to be a Math::Complex_C::L object", h);
      }
-     else croak("2nd arg to Rmpc_set_ldc needs to be a Math::Complex_C::Long object");
+     else croak("2nd arg to Rmpc_set_ldc needs to be a Math::Complex_C::L object");
      return newSViv(mpc_set_ldc(*op, *(INT2PTR(long double _Complex *, SvIV(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
 #else
      croak("Rmpc_set_ldc not implemented");

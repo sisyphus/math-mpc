@@ -12,6 +12,11 @@ unless ($do_complex_h) {
   $do_complex_h = $@ ? -1 : 1;
 }
 
+unless ($do_complex_h) {
+  eval {require Math::Complex_C::L;};
+  $do_complex_h = $@ ? -1 : 1;
+}
+
 $use_64_bit_int = 0; # Let perl decide whether to include 64-bit 'long long' support
 $use_long_double = 0;# Let perl decide whether to include 'long double' support
 

@@ -77,13 +77,13 @@ _Complex C types support
 The mpc library (beginning with version 0.9) provides support for assigning
 and returning the 'double _Complex' and 'long double _Complex' C data types.
 Therefore Math::MPC (beginning with version 0.90) provides optional support for
-assigning/returning Math::Complex_C (double _Complex) objects and Math::Complex_C::Long
+assigning/returning Math::Complex_C (double _Complex) objects and Math::Complex_C::L
 (long double _Complex) objects, using the Rmpc_set_dc, Rmpc_set_ldc, Rmpc_get_dc and
 Rmpc_get_ldc functions.
 
-If Math::Complex_C can be loaded then complex.h will be included in the compilation
-and, iff _MPC_H_HAVE_COMPLEX is thereby defined (in mpc.h), then Math::MPC will be built
-with support for the above mentioned set/get functions.
+If Math::Complex_C or Math::Complex_C::L can be loaded then complex.h will be included
+in the compilation and, iff _MPC_H_HAVE_COMPLEX is thereby defined (in mpc.h), then
+Math::MPC will be built with support for the above mentioned set/get functions.
 
 If there's a need to override this default behaviour, just open the Makefile.PL and
 comment in the line of code that forces '$do_complex_h' to be assigned the value you

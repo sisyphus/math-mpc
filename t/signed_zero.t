@@ -7,7 +7,7 @@ use strict;
 use Math::MPC qw(:mpc);
 use Math::MPFR qw(:mpfr);
 
-print "1..5\n";
+print "1..15\n";
 
 my $ok;
 my $z = Math::MPC->new(0, 0);
@@ -167,3 +167,115 @@ else {
   warn "Skipping test 5 - no long double support\n";
   print "ok 5\n";
 }
+
+my($p1, $p2) = (Math::MPC->new(1.1, 0.0), Math::MPC->new(1.1, '-0.0'));
+my($n1, $n2) = ($p1 * -1.0, $p2 * -1.0);
+
+################################
+
+Rmpc_acos($rop, $p1, MPC_RNDNN);
+
+RMPC_RE($check, $rop);
+
+if($check == 0) {print "ok 6\n"}
+else {
+  warn "\ntest 6: expected 0, got $check\n";
+  print "not ok 6\n";
+}
+
+RMPC_IM($check, $rop);
+
+if($check < -0.443568254 && $check > -0.4435682544) {print "ok 7\n"}
+else {
+  warn "\ntest 7: expected approx -0.443568254385, got $check\n";
+  print "not ok 7\n";
+}
+
+#################################
+
+Rmpc_acos($rop, $p2, MPC_RNDNN);
+
+RMPC_RE($check, $rop);
+
+if($check == 0) {print "ok 8\n"}
+else {
+  warn "\ntest 8: expected 0, got $check\n";
+  print "not ok 8\n";
+}
+
+RMPC_IM($check, $rop);
+
+if($check > 0.443568254 && $check < 0.4435682544) {print "ok 9\n"}
+else {
+  warn "\ntest 9: expected approx 0.443568254385, got $check\n";
+  print "not ok 9\n";
+}
+
+################################
+
+Rmpc_acos($rop, $n1, MPC_RNDNN);
+
+RMPC_RE($check, $rop);
+
+if($check > 3.141592653 && $check < 3.1415926536) {print "ok 10\n"}
+else {
+  warn "\ntest 10: expected approx 3.1415926535897931, got $check\n";
+  print "not ok 10\n";
+}
+
+RMPC_IM($check, $rop);
+
+if($check > 0.443568254 && $check < 0.4435682544) {print "ok 11\n"}
+else {
+  warn "\ntest 11: expected approx 0.443568254385, got $check\n";
+  print "not ok 11\n";
+}
+
+#################################
+
+Rmpc_acos($rop, $n2, MPC_RNDNN);
+
+RMPC_RE($check, $rop);
+
+if($check > 3.141592653 && $check < 3.1415926536) {print "ok 12\n"}
+else {
+  warn "\ntest 12: expected approx 3.1415926535897931, got $check\n";
+  print "not ok 12\n";
+}
+
+RMPC_IM($check, $rop);
+
+if($check > 0.443568254 && $check < 0.4435682544) {print "ok 13\n"}
+else {
+  warn "\ntest 13: expected approx 0.443568254385, got $check\n";
+  print "not ok 13\n";
+}
+
+#################################
+
+my $neg_one = Math::MPC->new(-1.0, 0.0);
+
+my $n3 = $p1 * $neg_one;
+
+################################
+
+Rmpc_acos($rop, $n3, MPC_RNDNN);
+
+RMPC_RE($check, $rop);
+
+if($check > 3.141592653 && $check < 3.1415926536) {print "ok 14\n"}
+else {
+  warn "\ntest 14: expected approx 3.1415926535897931, got $check\n";
+  print "not ok 14\n";
+}
+
+RMPC_IM($check, $rop);
+
+if($check < -0.443568254 && $check > -0.4435682544) {print "ok 15\n"}
+else {
+  warn "\ntest 15: expected approx -0.443568254385, got $check\n";
+  print "not ok 15\n";
+}
+
+#################################
+

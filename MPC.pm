@@ -103,7 +103,7 @@ Rmpc_set_f_ld Rmpc_set_q_ld Rmpc_set_z_ld Rmpc_set_ld_f Rmpc_set_ld_q Rmpc_set_l
 Rmpc_set_f_q Rmpc_set_q_f Rmpc_set_f_z Rmpc_set_z_f Rmpc_set_z_q Rmpc_set_q_z
 Rmpc_set_f_fr Rmpc_set_q_fr Rmpc_set_z_fr Rmpc_set_fr_f Rmpc_set_fr_q Rmpc_set_fr_z
 
-Rmpc_set_dc Rmpc_set_ldc
+Rmpc_set_dc Rmpc_set_ldc Rmpc_set_NV Rmpc_set_NV_NV
 
 Rmpc_add Rmpc_add_ui Rmpc_add_fr
 Rmpc_sub Rmpc_sub_ui Rmpc_ui_sub Rmpc_ui_ui_sub
@@ -165,7 +165,7 @@ Rmpc_set_f_ld Rmpc_set_q_ld Rmpc_set_z_ld Rmpc_set_ld_f Rmpc_set_ld_q Rmpc_set_l
 Rmpc_set_f_q Rmpc_set_q_f Rmpc_set_f_z Rmpc_set_z_f Rmpc_set_z_q Rmpc_set_q_z
 Rmpc_set_f_fr Rmpc_set_q_fr Rmpc_set_z_fr Rmpc_set_fr_f Rmpc_set_fr_q Rmpc_set_fr_z
 
-Rmpc_set_dc Rmpc_set_ldc
+Rmpc_set_dc Rmpc_set_ldc Rmpc_set_NV Rmpc_set_NV_NV
 
 Rmpc_add Rmpc_add_ui Rmpc_add_fr
 Rmpc_sub Rmpc_sub_ui Rmpc_ui_sub Rmpc_ui_ui_sub
@@ -304,7 +304,7 @@ sub Rmpc_deref4 {
 }
 
 
-sub new {
+sub old_new {
 
     # This function caters for 2 possibilities:
     # 1) that 'new' has been called OOP style - in which
@@ -369,6 +369,64 @@ sub new {
     # the result
     Rmpc_add($mpc1, $mpc1, $mpc2, MPC_RNDNN);
     return $mpc1;
+}
+
+sub new {
+
+    # This function caters for 2 possibilities:
+    # 1) that 'new' has been called OOP style - in which
+    #    case there will be a maximum of 3 args
+    # 2) that 'new' has been called as a function - in
+    #    which case there will be a maximum of 2 args.
+    # If there are no args, then we just want to return an
+    # initialized Math::MPC object
+    my @prec = Rmpc_get_default_prec2();
+    if(!@_) {return Rmpc_init3(@prec)}
+
+    if(@_ > 3) {die "Too many arguments supplied to new()"}
+
+    # If 'new' has been called OOP style, the first arg is the string "Math::MPC"
+    # which we don't need - so let's remove it. However, if the first
+    # arg is a Math::MPFR or Math::MPC object (which is a possibility),
+    # then we'll get a fatal error when we check it for equivalence to
+    # the string "Math::MPC". So we first need to check that it's not
+    # an object - which we'll do by using the ref() function:
+    if(!ref($_[0]) && $_[0] eq "Math::MPC") {
+      shift;
+      if(!@_) {return Rmpc_init3(@prec)}
+      }
+
+    if(_itsa($_[0]) == _MATH_MPC_T) {
+      if(@_ > 1) {die "Too many arguments supplied to new() - expected no more than one"}
+      my $mpc = Rmpc_init3(@prec);
+      Rmpc_set($mpc, $_[0], Rmpc_get_default_rounding_mode());
+      return $mpc;
+    }
+
+    # @_ can now contain a maximum of 2 args - the real and (optionally)
+    # the imaginary components.
+    if(@_ > 2) {die "Too many arguments supplied to new() - expected no more than two"}
+
+    my ($arg1, $arg2, $type1, $type2);
+
+    # $_[0] is the real component, $_[1] (if supplied)
+    # is the imaginary component.
+    $arg1 = shift;
+    $type1 = _itsa($arg1);
+
+    $arg2 = 0;
+    if(@_) {$arg2 = shift}
+    $type2 = _itsa($arg2);
+
+    # Die if either of the args are unacceptable.
+    if($type1 == 0)
+      {die "First argument to new() is inappropriate"}
+    if($type2 == 0)
+      {die "Second argument to new() is inappropriate"}
+
+    # Return a Math::MPC object that has $arg1 as its
+    # real component, and $arg2 as its imaginary component.
+    return _new_real_im($arg1, $arg2);
 }
 
 sub Rmpc_out_str {

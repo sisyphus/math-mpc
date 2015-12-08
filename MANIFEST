@@ -22,6 +22,7 @@ t/mpc_pow.t
 t/mpc_prec.t
 t/mpc_round.t
 t/mpc_set.t
+t/Rmpc_set_NV.t
 t/mpc_swap.t
 t/mpc_trig.t
 t/out_str1.t

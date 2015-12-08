@@ -21,6 +21,17 @@
 #endif
 #endif
 
+#ifdef MPC_CAN_PASS_FLOAT128
+#include <quadmath.h>
+#if defined(__MINGW32__) && !defined(__MINGW64__)
+typedef __float128 float128 __attribute__ ((aligned(32)));
+#elif defined(__MINGW64__)
+typedef __float128 float128 __attribute__ ((aligned(8)));
+#else
+typedef __float128 float128;
+#endif
+#endif
+
 #include <gmp.h>
 #include <mpfr.h>
 #include <mpc.h>
@@ -499,6 +510,41 @@ SV * Rmpc_set_ld(pTHX_ mpc_t * p, SV * q, SV * round) {
      return newSViv(mpc_set_ld(*p, SvNV(q), (mpc_rnd_t)SvUV(round)));
 #else
      croak("Rmpc_set_ld not implemented for this build of perl");
+#endif
+}
+
+SV * Rmpc_set_NV(pTHX_ mpc_t * p, SV * q, SV * round) {
+#if defined(MPC_CAN_PASS_FLOAT128)
+     int ret;
+     mpfr_t f128;
+     mpfr_init2(f128, 113);
+     mpfr_set_float128(f128, SvNV(q), ((mpc_rnd_t)SvUV(round)) & 3);
+     ret = mpc_set_fr(*p, SvNV(q), (mpc_rnd_t)SvUV(round));
+     mpfr_clear(f128);
+     return newSViv(ret);
+#elif defined(USE_LONG_DOUBLE)
+     return newSViv(mpc_set_ld(*p, SvNV(q), (mpc_rnd_t)SvUV(round)));
+#else
+     return newSViv(mpc_set_d(*p, SvNV(q), (mpc_rnd_t)SvUV(round)));
+#endif
+}
+
+SV * Rmpc_set_NV_NV(pTHX_ mpc_t * p, SV * re_q, SV * im_q, SV * round) {
+#if defined(MPC_CAN_PASS_FLOAT128)
+     int ret;
+     mpfr_t re_f128, im_f128;
+     mpfr_init2(re_f128, 113);
+     mpfr_init2(im_f128, 113);
+     mpfr_set_float128(re_f128, SvNV(re_q), ((mpc_rnd_t)SvUV(round)) & 3);
+     mpfr_set_float128(im_f128, SvNV(im_q), ((mpc_rnd_t)SvUV(round)) / 16);
+     ret = mpc_set_fr_fr(*p, SvNV(re_q), SvNV(im_q), (mpc_rnd_t)SvUV(round));
+     mpfr_clear(re_f128);
+     mpfr_clear(im_f128);
+     return newSViv(ret);
+#elif defined(USE_LONG_DOUBLE)
+     return newSViv(mpc_set_ld_ld(*p, SvNV(re_q), SvNV(im_q), (mpc_rnd_t)SvUV(round)));
+#else
+     return newSViv(mpc_set_d_d(*p, SvNV(re_q), SvNV(im_q), (mpc_rnd_t)SvUV(round)));
 #endif
 }
 
@@ -2625,14 +2671,15 @@ SV * _itsa(pTHX_ SV * a) {
      return newSVuv(0);
 }
 
-SV * _new_real(pTHX_ SV * b) {
+SV * _new_real_im(pTHX_ SV * b, SV * d) {
      dMY_CXT;
      mpc_t * mpc_t_obj;
-     mpfr_t temp;
+     mpfr_t temp_re, temp_im;
+     int done_re = 0, done_im = 0;
      SV * obj_ref, * obj;
 
      New(1, mpc_t_obj, 1, mpc_t);
-     if(mpc_t_obj == NULL) croak("Failed to allocate memory in _new_real function");
+     if(mpc_t_obj == NULL) croak("Failed to allocate memory in _new_real_im function");
      obj_ref = newSV(0);
      obj = newSVrv(obj_ref, "Math::MPC");
      mpc_init3(*mpc_t_obj, DEFAULT_PREC);
@@ -2640,191 +2687,165 @@ SV * _new_real(pTHX_ SV * b) {
      sv_setiv(obj, INT2PTR(IV,mpc_t_obj));
      SvREADONLY_on(obj);
 
-#ifdef MATH_MPC_NEED_LONG_LONG_INT
-
-     if(SvUOK(b)) {
-       mpfr_init2(temp, DEFAULT_PREC_RE);
-#ifdef _MSC_VER
-       mpfr_set_str(temp, SvPV_nolen(b), 10, DEFAULT_ROUNDING_MODE & 3);
-#else
-       mpfr_set_uj(temp, SvUV(b), DEFAULT_ROUNDING_MODE & 3);
-#endif
-       mpc_set_fr(*mpc_t_obj, temp, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(temp);
-       return obj_ref;
-     }
-
-     if(SvIOK(b)) {
-       mpfr_init2(temp, DEFAULT_PREC_RE);
-#ifdef _MSC_VER
-       mpfr_set_str(temp, SvPV_nolen(b), 10, DEFAULT_ROUNDING_MODE & 3);
-#else
-       mpfr_set_sj(temp, SvIV(b), DEFAULT_ROUNDING_MODE & 3);
-#endif
-       mpc_set_fr(*mpc_t_obj, temp, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(temp);
-       return obj_ref;
-     }
-
-#else
-     if(SvUOK(b)) {
-       mpc_set_ui(*mpc_t_obj, SvUV(b), DEFAULT_ROUNDING_MODE);
-       return obj_ref;
-       }
-
-     if(SvIOK(b)) {
-       mpc_set_si(*mpc_t_obj, SvIV(b), DEFAULT_ROUNDING_MODE);
-       return obj_ref;
-     }
-#endif
-
-     if(SvNOK(b)) {
-#ifdef USE_LONG_DOUBLE
-       mpc_set_ld(*mpc_t_obj, SvNV(b), DEFAULT_ROUNDING_MODE);
-#else
-       mpc_set_d(*mpc_t_obj, SvNV(b), DEFAULT_ROUNDING_MODE);
-#endif
-
-     return obj_ref;
-     }
-
-     if(SvPOK(b)) {
-       mpfr_init2(temp, DEFAULT_PREC_RE);
-       if(mpfr_set_str(temp, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE & 3))
-         croak("Invalid string supplied to Math::MPC::new");
-       mpc_set_fr(*mpc_t_obj, temp, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(temp);
-       return obj_ref;
-     }
-
-     if(sv_isobject(b)) {
-       const char *h = HvNAME(SvSTASH(SvRV(b)));
-       if(strEQ(h, "Math::MPFR")) {
-         mpc_set_fr(*mpc_t_obj, *(INT2PTR(mpfr_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
-         return obj_ref;
-       }
-       if(strEQ(h, "Math::GMPf")) {
-         mpc_set_f(*mpc_t_obj, *(INT2PTR(mpf_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
-         return obj_ref;
-       }
-       if(strEQ(h, "Math::GMPq")) {
-         mpc_set_q(*mpc_t_obj, *(INT2PTR(mpq_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
-         return obj_ref;
-       }
-       if(strEQ(h, "Math::GMP") ||
-          strEQ(h, "Math::GMPz"))  {
-         mpc_set_z(*mpc_t_obj, *(INT2PTR(mpz_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
-         return obj_ref;
-       }
-     }
-
-     croak("Invalid argument supplied to Math::MPC::_new_real");
-}
-
-SV * _new_im(pTHX_ SV * b) {
-     dMY_CXT;
-     mpc_t * mpc_t_obj;
-     mpfr_t temp;
-     SV * obj_ref, * obj;
-     int ret;
-
-     New(1, mpc_t_obj, 1, mpc_t);
-     if(mpc_t_obj == NULL) croak("Failed to allocate memory in Rmpc_init function");
-     obj_ref = newSV(0);
-     obj = newSVrv(obj_ref, "Math::MPC");
-     mpc_init3(*mpc_t_obj, DEFAULT_PREC);
-
-     sv_setiv(obj, INT2PTR(IV,mpc_t_obj));
-     SvREADONLY_on(obj);
+     mpfr_init2(temp_re, DEFAULT_PREC_RE);
+     mpfr_init2(temp_im, DEFAULT_PREC_IM);
 
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
 
-     if(SvUOK(b)) {
-       mpfr_init2(temp, DEFAULT_PREC_IM);
+     if(SvUOK(b) && !done_re) {
 #ifdef _MSC_VER
-       mpfr_set_str(temp, SvPV_nolen(b), 10, DEFAULT_ROUNDING_MODE / 16);
+       mpfr_set_str(temp_re, SvPV_nolen(b), 10, DEFAULT_ROUNDING_MODE & 3);
 #else
-       mpfr_set_uj(temp, SvUV(b), DEFAULT_ROUNDING_MODE / 16);
+       mpfr_set_uj(temp_re, SvUV(b), DEFAULT_ROUNDING_MODE & 3);
 #endif
-       VOID_MPC_SET_X_Y(ui, fr, *mpc_t_obj, 0, temp, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(temp);
-       return obj_ref;
+       done_re = 1;
      }
 
-     if(SvIOK(b)) {
-       mpfr_init2(temp, DEFAULT_PREC_IM);
+     if(SvIOK(b) && !done_re) {
 #ifdef _MSC_VER
-       mpfr_set_str(temp, SvPV_nolen(b), 10, DEFAULT_ROUNDING_MODE / 16);
+       mpfr_set_str(temp_re, SvPV_nolen(b), 10, DEFAULT_ROUNDING_MODE & 3);
 #else
-       mpfr_set_sj(temp, SvIV(b), DEFAULT_ROUNDING_MODE / 16);
+       mpfr_set_sj(temp_re, SvIV(b), DEFAULT_ROUNDING_MODE & 3);
 #endif
-       VOID_MPC_SET_X_Y(ui, fr, *mpc_t_obj, 0, temp, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(temp);
-       return obj_ref;
+       done_re = 1;
      }
 
 #else
-     if(SvUOK(b)) {
-       mpc_set_ui_ui(*mpc_t_obj, 0, SvUV(b), DEFAULT_ROUNDING_MODE);
-       return obj_ref;
+     if(SvUOK(b) && !done_re) {
+       mpfr_set_ui(temp_re, SvUV(b), DEFAULT_ROUNDING_MODE & 3);
+       done_re = 1;
        }
 
-     if(SvIOK(b)) {
-       mpc_set_si_si(*mpc_t_obj, 0, SvIV(b), DEFAULT_ROUNDING_MODE);
-       return obj_ref;
+     if(SvIOK(b) && !done_re) {
+       mpfr_set_si(temp_re, SvIV(b), DEFAULT_ROUNDING_MODE & 3);
+       done_re = 1;
      }
 #endif
 
-     if(SvNOK(b)) {
-#ifdef USE_LONG_DOUBLE
-       mpc_set_ld_ld(*mpc_t_obj, 0, SvNV(b), DEFAULT_ROUNDING_MODE);
+     if(SvNOK(b) && !done_re) {
+#if defined(MPC_CAN_PASS_FLOAT128)
+       mpfr_set_float128(temp_re, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
+#elif defined(USE_LONG_DOUBLE)
+       mpfr_set_ld(temp_re, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
 #else
-       mpc_set_d_d(*mpc_t_obj, 0, SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpfr_set_d(temp_re, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
 #endif
-
-     return obj_ref;
+       done_re = 1;
      }
 
-     if(SvPOK(b)) {
-       mpfr_init2(temp, DEFAULT_PREC_IM);
-       if(mpfr_set_str(temp, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE / 16))
-         croak("Invalid string supplied to Math::MPC::new");
-       VOID_MPC_SET_X_Y(ui, fr, *mpc_t_obj, 0, temp, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(temp);
-       return obj_ref;
+     if(SvPOK(b) && !done_re) {
+       if(mpfr_set_str(temp_re, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE & 3))
+         croak("Invalid real string supplied to Math::MPC::new");
+
+       done_re = 1;
      }
 
-     if(sv_isobject(b)) {
+     if(sv_isobject(b) && !done_re) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPFR")) {
-         VOID_MPC_SET_X_Y(ui, fr, *mpc_t_obj, 0, *(INT2PTR(mpfr_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
-         return obj_ref;
+         mpfr_set(temp_re, *(INT2PTR(mpfr_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE & 3);
+         done_re = 1;
        }
        if(strEQ(h, "Math::GMPf")) {
-         mpfr_init2(temp, DEFAULT_PREC_IM);
-         mpfr_set_f(temp, *(INT2PTR(mpf_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE / 16);
-         VOID_MPC_SET_X_Y(ui, fr, *mpc_t_obj, 0, temp, DEFAULT_ROUNDING_MODE);
-         mpfr_clear(temp);
-         return obj_ref;
+         mpfr_set_f(temp_re, *(INT2PTR(mpf_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE & 3);
+         done_re = 1;
        }
        if(strEQ(h, "Math::GMPq")) {
-         mpfr_init2(temp, DEFAULT_PREC_IM);
-         mpfr_set_q(temp, *(INT2PTR(mpq_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE / 16);
-         VOID_MPC_SET_X_Y(ui, fr, *mpc_t_obj, 0, temp, DEFAULT_ROUNDING_MODE);
-         mpfr_clear(temp);
-         return obj_ref;
+         mpfr_set_q(temp_re, *(INT2PTR(mpq_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE & 3);
+         done_re = 1;
        }
        if(strEQ(h, "Math::GMP") ||
           strEQ(h, "Math::GMPz"))  {
-         mpfr_init2(temp, DEFAULT_PREC_IM);
-         mpfr_set_z(temp, *(INT2PTR(mpz_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE / 16);
-         VOID_MPC_SET_X_Y(ui, fr, *mpc_t_obj, 0, temp, DEFAULT_ROUNDING_MODE);
-         mpfr_clear(temp);
-         return obj_ref;
+         mpfr_set_z(temp_re, *(INT2PTR(mpz_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE & 3);
+         done_re = 1;
        }
      }
 
-     croak("Invalid argument supplied to Math::MPC::_new_im");
+     if(!done_re)
+       croak("Invalid real argument supplied to Math::MPC::new");
+
+/****************************************************************/
+
+#ifdef MATH_MPC_NEED_LONG_LONG_INT
+
+     if(SvUOK(d) && !done_im) {
+#ifdef _MSC_VER
+       mpfr_set_str(temp_im, SvPV_nolen(d), 10, DEFAULT_ROUNDING_MODE / 16);
+#else
+       mpfr_set_uj(temp_im, SvUV(d), DEFAULT_ROUNDING_MODE / 16);
+#endif
+       done_im = 1;
+     }
+
+     if(SvIOK(d) && !done_im) {
+#ifdef _MSC_VER
+       mpfr_set_str(temp_im, SvPV_nolen(d), 10, DEFAULT_ROUNDING_MODE / 16);
+#else
+       mpfr_set_sj(temp_im, SvIV(d), DEFAULT_ROUNDING_MODE / 16);
+#endif
+       done_im = 1;
+     }
+
+#else
+     if(SvUOK(d) && !done_im) {
+       mpfr_set_ui(temp_im, SvUV(d), DEFAULT_ROUNDING_MODE / 16);
+       done_im = 1;
+       }
+
+     if(SvIOK(d) && !done_im) {
+       mpfr_set_si(temp_im, SvIV(d), DEFAULT_ROUNDING_MODE / 16);
+       done_im = 1;
+     }
+#endif
+
+     if(SvNOK(d) && !done_im) {
+#if defined(MPC_CAN_PASS_FLOAT128)
+       mpfr_set_float128(temp_im, SvNV(d), DEFAULT_ROUNDING_MODE / 16);
+#elif defined(USE_LONG_DOUBLE)
+       mpfr_set_ld(temp_im, SvNV(d), DEFAULT_ROUNDING_MODE / 16);
+#else
+       mpfr_set_d(temp_im, SvNV(d), DEFAULT_ROUNDING_MODE / 16);
+#endif
+       done_im = 1;
+     }
+
+     if(SvPOK(d) && !done_im) {
+       if(mpfr_set_str(temp_im, SvPV_nolen(d), 0, DEFAULT_ROUNDING_MODE / 16))
+         croak("Invalid imaginary string supplied to Math::MPC::new");
+
+       done_im = 1;
+     }
+
+     if(sv_isobject(d) && !done_im) {
+       const char *h = HvNAME(SvSTASH(SvRV(d)));
+       if(strEQ(h, "Math::MPFR")) {
+         mpfr_set(temp_im, *(INT2PTR(mpfr_t *, SvIV(SvRV(d)))), DEFAULT_ROUNDING_MODE / 16);
+         done_im = 1;
+       }
+       if(strEQ(h, "Math::GMPf")) {
+         mpfr_set_f(temp_im, *(INT2PTR(mpf_t *, SvIV(SvRV(d)))), DEFAULT_ROUNDING_MODE / 16);
+         done_im = 1;
+       }
+       if(strEQ(h, "Math::GMPq")) {
+         mpfr_set_q(temp_im, *(INT2PTR(mpq_t *, SvIV(SvRV(d)))), DEFAULT_ROUNDING_MODE / 16);
+         done_im = 1;
+       }
+       if(strEQ(h, "Math::GMP") ||
+          strEQ(h, "Math::GMPz"))  {
+         mpfr_set_z(temp_im, *(INT2PTR(mpz_t *, SvIV(SvRV(d)))), DEFAULT_ROUNDING_MODE / 16);
+         done_im = 1;
+       }
+     }
+
+     if(!done_im)
+       croak("Invalid imaginary argument supplied to Math::MPC::new");
+
+/****************************************************************/
+
+     mpc_set_fr_fr(*mpc_t_obj, temp_re, temp_im, DEFAULT_ROUNDING_MODE);
+     mpfr_clear(temp_re);
+     mpfr_clear(temp_im);
+     return obj_ref;
 }
 
 int _has_longlong(void) {
@@ -3079,6 +3100,16 @@ SV * Rmpc_log10(pTHX_ mpc_t * rop, mpc_t *op, SV * round) {
 # else
      croak("mpc_log10 not implemented until mpc-1.0. We have version %d", MPC_VERSION);
 #endif
+}
+
+int _can_pass_float128(void) {
+
+#ifdef MPC_CAN_PASS_FLOAT128
+   return 1;
+#else
+   return 0;
+#endif
+
 }
 
 /* I think the CLONE function needs to come at the very end ... not sure */
@@ -3500,6 +3531,25 @@ Rmpc_set_ld (p, q, round)
 	SV *	round
 CODE:
   RETVAL = Rmpc_set_ld (aTHX_ p, q, round);
+OUTPUT:  RETVAL
+
+SV *
+Rmpc_set_NV (p, q, round)
+	mpc_t *	p
+	SV *	q
+	SV *	round
+CODE:
+  RETVAL = Rmpc_set_NV (aTHX_ p, q, round);
+OUTPUT:  RETVAL
+
+SV *
+Rmpc_set_NV_NV (p, re_q, im_q, round)
+	mpc_t *	p
+	SV *	re_q
+	SV *	im_q
+	SV *	round
+CODE:
+  RETVAL = Rmpc_set_NV_NV (aTHX_ p, re_q, im_q, round);
 OUTPUT:  RETVAL
 
 SV *
@@ -5223,17 +5273,11 @@ CODE:
 OUTPUT:  RETVAL
 
 SV *
-_new_real (b)
+_new_real_im (b, d)
 	SV *	b
+	SV *	d
 CODE:
-  RETVAL = _new_real (aTHX_ b);
-OUTPUT:  RETVAL
-
-SV *
-_new_im (b)
-	SV *	b
-CODE:
-  RETVAL = _new_im (aTHX_ b);
+  RETVAL = _new_real_im (aTHX_ b, d);
 OUTPUT:  RETVAL
 
 int
@@ -5538,6 +5582,10 @@ Rmpc_log10 (rop, op, round)
 CODE:
   RETVAL = Rmpc_log10 (aTHX_ rop, op, round);
 OUTPUT:  RETVAL
+
+int
+_can_pass_float128 ()
+
 
 void
 CLONE (x, ...)

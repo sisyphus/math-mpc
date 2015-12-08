@@ -6,7 +6,7 @@ use Math::MPFR qw(:mpfr);
 print "1..8\n";
 
 print "# Using mpfr version ", MPFR_VERSION_STRING, "\n";
-print "# Usinf mpc library version ", MPC_VERSION_STRING, "\n";
+print "# Using mpc library version ", MPC_VERSION_STRING, "\n";
 
 my ($ok, $ret);
 my $round = MPC_RNDNN;

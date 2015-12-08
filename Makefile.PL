@@ -47,6 +47,16 @@ else {
   }
 }
 
+$have_float128 = 0;
+for(@ARGV) {
+  $have_float128 = 1 if $_ eq 'F128=1';
+}
+
+if($Config::Config{nvtype} eq '__float128' && $have_float128) {
+  # USE_LONG_DOUBLE is also defined unless $use_long_double was set to -1.
+  $defines .= " -DMPC_CAN_PASS_FLOAT128" ;
+}
+
 if($do_complex_h == 1) { $defines .= " -D_DO_COMPLEX_H"}
 
 $defines =~ /-DMATH_MPC_NEED_LONG_LONG_INT/ ? print "Building with 64-bit'long long' support\n" :

@@ -55,24 +55,24 @@ eval {$mpc = Math::MPC::new(0, $mbi);};
 if($@ =~ /Second /) {$ok .= 'r'}
 
 eval{$mpc = Math::MPC->new(0, '0b115');};
-if($@ =~ /Invalid string/) {$ok .= 's'}
+if($@ =~ /Invalid imaginary string/) {$ok .= 's'}
 eval{$mpc = Math::MPC::new(0, '0B115');};
-if($@ =~ /Invalid string/) {$ok .= 't'}
+if($@ =~ /Invalid imaginary string/) {$ok .= 't'}
 
 eval{$mpc = Math::MPC->new(0, '0xz115');};
-if($@ =~ /Invalid string/) {$ok .= 'u'}
+if($@ =~ /Invalid imaginary string/) {$ok .= 'u'}
 eval{$mpc = Math::MPC::new(0, '0Xz115');};
-if($@ =~ /Invalid string/) {$ok .= 'v'}
+if($@ =~ /Invalid imaginary string/) {$ok .= 'v'}
 
 eval{$mpc = Math::MPC->new('0b115');};
-if($@ =~ /Invalid string/) {$ok .= 'w'}
+if($@ =~ /Invalid real string/) {$ok .= 'w'}
 eval{$mpc = Math::MPC::new('0B115');};
-if($@ =~ /Invalid string/) {$ok .= 'x'}
+if($@ =~ /Invalid real string/) {$ok .= 'x'}
 
 eval{$mpc = Math::MPC->new('0xz115');};
-if($@ =~ /Invalid string/) {$ok .= 'y'}
+if($@ =~ /Invalid real string/) {$ok .= 'y'}
 eval{$mpc = Math::MPC::new('0Xz115');};
-if($@ =~ /Invalid string/) {$ok .= 'z'}
+if($@ =~ /Invalid real string/) {$ok .= 'z'}
 
 if($ok eq 'abcdefghijklmnopqrstuvwxyz') {print "ok 1\n"}
 else {print "not ok 1 $ok\n"}

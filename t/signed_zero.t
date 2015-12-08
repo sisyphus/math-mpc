@@ -245,9 +245,9 @@ else {
 
 RMPC_IM($check, $rop);
 
-if($check > 0.443568254 && $check < 0.4435682544) {print "ok 13\n"}
+if($check < -0.443568254 && $check > -0.4435682544) {print "ok 13\n"}
 else {
-  warn "\ntest 13: expected approx 0.443568254385, got $check\n";
+  warn "\ntest 13: expected approx -0.443568254385, got $check\n";
   print "not ok 13\n";
 }
 

@@ -220,6 +220,11 @@ Rmpc_mul_sj Rmpc_mul_ld Rmpc_mul_d Rmpc_div_sj Rmpc_sj_div Rmpc_div_ld Rmpc_ld_d
 
 sub dl_load_flags {0} # Prevent DynaLoader from complaining and croaking
 
+sub overload_not_equiv {
+    return 0 if overload_equiv($_[0], $_[1], $_[2]);
+    return 1;
+}
+
 sub overload_string {
      return "(" . _get_str($_[0], 10, 0, Rmpc_get_default_rounding_mode()) . ")";
 

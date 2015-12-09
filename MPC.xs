@@ -521,7 +521,7 @@ SV * Rmpc_set_NV(pTHX_ mpc_t * p, SV * q, SV * round) {
      mpfr_t f128;
      mpfr_init2(f128, FLT128_MANT_DIG);
      mpfr_set_float128(f128, SvNV(q), ((mpc_rnd_t)SvUV(round)) & 3);
-     ret = mpc_set_fr(*p, SvNV(q), (mpc_rnd_t)SvUV(round));
+     ret = mpc_set_fr(*p, f128, (mpc_rnd_t)SvUV(round));
      mpfr_clear(f128);
      return newSViv(ret);
 #elif defined(USE_LONG_DOUBLE)
@@ -539,7 +539,7 @@ SV * Rmpc_set_NV_NV(pTHX_ mpc_t * p, SV * re_q, SV * im_q, SV * round) {
      mpfr_init2(im_f128, FLT128_MANT_DIG);
      mpfr_set_float128(re_f128, SvNV(re_q), ((mpc_rnd_t)SvUV(round)) & 3);
      mpfr_set_float128(im_f128, SvNV(im_q), ((mpc_rnd_t)SvUV(round)) / 16);
-     ret = mpc_set_fr_fr(*p, SvNV(re_q), SvNV(im_q), (mpc_rnd_t)SvUV(round));
+     ret = mpc_set_fr_fr(*p, re_f128, im_f128, (mpc_rnd_t)SvUV(round));
      mpfr_clear(re_f128);
      mpfr_clear(im_f128);
      return newSViv(ret);
@@ -1482,7 +1482,7 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
        mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
-       mpc_mul_fr(*mpc_t_obj, nv, DEFAULT_ROUNDING_MODE);
+       mpc_mul_fr(*mpc_t_obj, *a, nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
        _mpc_mul_ld(*mpc_t_obj, *a, (long double)SvNV(b), DEFAULT_ROUNDING_MODE);
@@ -1569,7 +1569,7 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
        mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
-       mpc_add_fr(*mpc_t_obj, nv, DEFAULT_ROUNDING_MODE);
+       mpc_add_fr(*mpc_t_obj, *a, nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
        mpc_set_ld(*mpc_t_obj, SvNV(b), DEFAULT_ROUNDING_MODE);
@@ -1754,7 +1754,7 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
        mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
-       if(third == &PL_sv_yes) mpc_fr_div(*mpc_t_obj, temp, *a, DEFAULT_ROUNDING_MODE);
+       if(third == &PL_sv_yes) mpc_fr_div(*mpc_t_obj, nv, *a, DEFAULT_ROUNDING_MODE);
        else mpc_div_fr(*mpc_t_obj, *a, nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
@@ -2189,7 +2189,7 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
        mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
-       mpc_pow_fr(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), nv, DEFAULT_ROUNDING_MODE);
+       mpc_pow_fr(*mpc_t_obj, *a, nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
        mpc_pow_ld(*mpc_t_obj, *a, SvNV(b), DEFAULT_ROUNDING_MODE);

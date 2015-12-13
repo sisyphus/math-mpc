@@ -485,6 +485,7 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
    The following documentation heavily plagiarises the mpc documentation.
 
    use warnings;
+   use Math::MPFR qw(:mpfr); # needed by some Math::MPC functions
    use Math::MPC qw(:mpc);
    Rmpc_set_default_prec(500); # Set default precision to 500 bits
    my $mpc1 = Math::MPC->new(12.5, 1125); # 12.5 + 1125*i

@@ -3,6 +3,20 @@ use strict;
 use Math::MPFR qw(:mpfr);
 use Math::MPC qw(:mpc);
 
+if(3 > MPFR_VERSION_MAJOR) {
+  print "1..1\n";
+  warn "\nSkipping all tests - mpfr too old for tls support\n";
+  print "ok 1\n";
+  exit 0;
+}
+
+unless(Rmpfr_buildopt_tls_p()) {
+  print "1..1\n";
+  warn "\nSkipping all tests - mpfr was built without tls support\n";
+  print "ok 1\n";
+  exit 0;
+}
+
 my $cut = eval 'use threads; 1';
 my $cut_mess = '';
 

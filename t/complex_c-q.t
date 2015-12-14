@@ -45,7 +45,7 @@ else {
   print "not ok 2\n";
 }
 
-Math::Complex_C::Q::assign_cl($ccl, 3.19, -12.621);
+Math::Complex_C::Q::assign_cq($ccl, 3.19, -12.621);
 
 my $mpccl = Math::MPC->new();
 

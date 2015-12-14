@@ -1,6 +1,7 @@
     package Math::MPC;
     use strict;
     use warnings;
+    use Math::MPFR;
 
     use constant  MPC_RNDNN => 0;
     use constant  MPC_RNDZN => 1;
@@ -77,6 +78,7 @@ Rmpc_set_default_prec2 Rmpc_get_default_prec2
 Rmpc_set_re_prec Rmpc_set_im_prec
 Rmpc_get_prec Rmpc_get_prec2 Rmpc_get_re_prec Rmpc_get_im_prec
 Rmpc_get_dc Rmpc_get_ldc
+Rmpc_get_DC Rmpc_get_LDC Rmpc_get_F128C
 RMPC_RE RMPC_IM RMPC_INEX_RE RMPC_INEX_IM
 Rmpc_clear Rmpc_clear_ptr Rmpc_clear_mpc
 Rmpc_deref4 Rmpc_get_str
@@ -104,6 +106,7 @@ Rmpc_set_f_q Rmpc_set_q_f Rmpc_set_f_z Rmpc_set_z_f Rmpc_set_z_q Rmpc_set_q_z
 Rmpc_set_f_fr Rmpc_set_q_fr Rmpc_set_z_fr Rmpc_set_fr_f Rmpc_set_fr_q Rmpc_set_fr_z
 
 Rmpc_set_dc Rmpc_set_ldc Rmpc_set_NV Rmpc_set_NV_NV
+Rmpc_set_DC Rmpc_set_LDC Rmpc_set_F128C
 
 Rmpc_add Rmpc_add_ui Rmpc_add_fr
 Rmpc_sub Rmpc_sub_ui Rmpc_ui_sub Rmpc_ui_ui_sub
@@ -139,6 +142,7 @@ Rmpc_set_default_prec2 Rmpc_get_default_prec2
 Rmpc_set_re_prec Rmpc_set_im_prec
 Rmpc_get_prec Rmpc_get_prec2 Rmpc_get_re_prec Rmpc_get_im_prec
 Rmpc_get_dc Rmpc_get_ldc
+Rmpc_get_DC Rmpc_get_LDC Rmpc_get_F128C
 RMPC_RE RMPC_IM RMPC_INEX_RE RMPC_INEX_IM
 Rmpc_clear Rmpc_clear_ptr Rmpc_clear_mpc
 Rmpc_deref4 Rmpc_get_str
@@ -166,6 +170,7 @@ Rmpc_set_f_q Rmpc_set_q_f Rmpc_set_f_z Rmpc_set_z_f Rmpc_set_z_q Rmpc_set_q_z
 Rmpc_set_f_fr Rmpc_set_q_fr Rmpc_set_z_fr Rmpc_set_fr_f Rmpc_set_fr_q Rmpc_set_fr_z
 
 Rmpc_set_dc Rmpc_set_ldc Rmpc_set_NV Rmpc_set_NV_NV
+Rmpc_set_DC Rmpc_set_LDC Rmpc_set_F128C
 
 Rmpc_add Rmpc_add_ui Rmpc_add_fr
 Rmpc_sub Rmpc_sub_ui Rmpc_ui_sub Rmpc_ui_ui_sub
@@ -184,6 +189,11 @@ Rmpc_pow Rmpc_pow_d Rmpc_pow_ld Rmpc_pow_si Rmpc_pow_ui Rmpc_pow_z Rmpc_pow_fr
 Rmpc_set_nan Rmpc_swap
 Rmpc_mul_sj Rmpc_mul_ld Rmpc_mul_d Rmpc_div_sj Rmpc_sj_div Rmpc_div_ld Rmpc_ld_div Rmpc_div_d Rmpc_d_div
 )]);
+
+eval {require Math::Complex_C::Q;};
+
+if($@) {$Math::MPC::no_complex_c_q = $@}
+else   {$Math::MPC::no_complex_c_q = 0 }
 
 *TRmpc_out_str = \&Rmpc_out_str;
 *TRmpc_inp_str = \&Rmpc_inp_str;
@@ -308,73 +318,24 @@ sub Rmpc_deref4 {
     return ($r_m, $r_e, $i_m, $i_e);
 }
 
-
-sub old_new {
-
-    # This function caters for 2 possibilities:
-    # 1) that 'new' has been called OOP style - in which
-    #    case there will be a maximum of 3 args
-    # 2) that 'new' has been called as a function - in
-    #    which case there will be a maximum of 2 args.
-    # If there are no args, then we just want to return an
-    # initialized Math::MPC object
-    my @prec = Rmpc_get_default_prec2();
-    if(!@_) {return Rmpc_init3(@prec)}
-
-    if(@_ > 3) {die "Too many arguments supplied to new()"}
-
-    # If 'new' has been called OOP style, the first arg is the string "Math::MPC"
-    # which we don't need - so let's remove it. However, if the first
-    # arg is a Math::MPFR or Math::MPC object (which is a possibility),
-    # then we'll get a fatal error when we check it for equivalence to
-    # the string "Math::MPC". So we first need to check that it's not
-    # an object - which we'll do by using the ref() function:
-    if(!ref($_[0]) && $_[0] eq "Math::MPC") {
-      shift;
-      if(!@_) {return Rmpc_init3(@prec)}
-      }
-
-    if(_itsa($_[0]) == _MATH_MPC_T) {
-      if(@_ > 1) {die "Too many arguments supplied to new() - expected no more than one"}
-      my $mpc = Rmpc_init3(@prec);
-      Rmpc_set($mpc, $_[0], Rmpc_get_default_rounding_mode());
-      return $mpc;
-    }
-
-    # @_ can now contain a maximum of 2 args - the real and (optionally)
-    # the imaginary components.
-    if(@_ > 2) {die "Too many arguments supplied to new() - expected no more than two"}
-
-    my ($arg1, $arg2, $type1, $type2);
-
-    # $_[0] is the real component, $_[1] (if supplied)
-    # is the imaginary component.
-    $arg1 = shift;
-    $type1 = _itsa($arg1);
-
-    $arg2 = 0;
-    if(@_) {$arg2 = shift}
-    $type2 = _itsa($arg2);
-
-    # Die if either of the args are unacceptable.
-    if($type1 == 0)
-      {die "First argument to new() is inappropriate"}
-    if($type2 == 0)
-      {die "Second argument to new() is inappropriate"}
-
-    # Create a Math::MPC object that has $arg1 as its
-    # real component, and zero as its imaginary component.
-    my $mpc1 = _new_real($arg1);
-
-    # Create a Math::MPC object that has $arg2 as its
-    # imaginary component, and zero as its real component.
-    my $mpc2 = _new_im($arg2);
-
-    # Add the 2 created Math::MPC objects together and return
-    # the result
-    Rmpc_add($mpc1, $mpc1, $mpc2, MPC_RNDNN);
-    return $mpc1;
+sub Rmpc_set_F128C {
+  if($Math::MPC::no_complex_c_q) {die "In Rmpc_set_F128C(): $Math::MPC::no_complex_c_q"}
+  my $t_re = Math::MPFR::Rmpfr_init2(113);
+  my $t_im = Math::MPFR::Rmpfr_init2(113);
+  Math::MPFR::Rmpfr_set_flt128($t_re, real_cq($_[1], 0)); # Round to nearest
+  Math::MPFR::Rmpfr_set_flt128($t_im, im_cq($_[1], 0));   # Round to nearest
+  return Rmpc_set_fr_fr($_[0], $t_re, $t_im, $_[2]); # Now use specified rounding mode
 }
+
+sub Rmpc_get_F128C {
+  if($Math::MPC::no_complex_c_q) {die "In Rmpc_set_F128C(): $Math::MPC::no_complex_c_q"}
+  my $t = Math::MPFR::Rmpfr_init2(113);
+  RMPC_RE($t, $_[1]);
+  Math::Complex_C::Q::set_real_cq($_[0], Math::MPFR::Rmpfr_get_flt128($t, $_[2] & 3));
+  RMPC_IM($t, $_[1]);
+  Math::Complex_C::Q::set_im_cq($_[0], Math::MPFR::Rmpfr_get_flt128($t, $_[2] / 16));
+}
+
 
 sub new {
 
@@ -734,16 +695,21 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
    $si = Rmpc_set_q($rop, $mpq, $rnd);
    $si = Rmpc_set_z($rop, $mpz, $rnd);
    $si = Rmpc_set_fr($rop, $mpfr, $rnd);
-   $si = Rmpc_set_dc($rop, $cc, $rnd);
-   $si = Rmpc_set_ldc($rop, $lcc, $rnd);
+   $si = Rmpc_set_dc($rop, $cc, $rnd); # deprecated - use Rmpc_set_DC instead
+   $si = Rmpc_set_ldc($rop, $lcc, $rnd); # deprecated - use Rmpc_set_LDC instead
+   $si = Rmpc_set_DC($rop, $cc, $rnd);  # $cc is a Math:Complex_C object
+   $si = Rmpc_set_LDC($rop, $lcc, $rnd); # $lcc is a Math::Complex_C::L object
+   Rmpc_set_F128C($rop, $f128c, $rnd); # $f128c is a Math::Complex_C::Q object
     Set the value of $rop from 2nd arg, rounded to the precision of
     $rop towards the given direction $rnd.
     Don't use Rmpc_set_ld unless perl has been built with long
     double support. Don't use Rmpc_set_uj or Rmpc_set_sj unless
     perl has been built with long long int support.
-    For Rmpc_set_dc and Rmpc_set_ldc, an mpc library (version 0.9
-    or later) that has been built with support for these data types
-    is needed.
+    For Rmpc_set_DC and Rmpc_set_LDC, requires an mpc library (version 0.9
+    or later) that has been built with support for 'double _Complex' and 'long
+    double _Complex' data types (resp.). For Rmpc_set_F128C, the underlying
+    mpfr library needs to have been built with --enable-float128 option.
+
 
    $si = Rmpc_set_str($rop, $string, $base, $rnd);
    $si = Rmpc_strtoc($rop, $string, $base, $rnd);
@@ -1105,11 +1071,17 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
     assuming both output and input use rounding to nearest, will recover
     the original value of $op. See the mpc documentation for details.
 
-   Rmpc_get_dc($cc, $op, $rnd);
-   Rmpc_get_ldc($lcc, $op, $rnd);
-    Set the 'double _Complex'/'long double _Complex' object to the value
-    of $op, rounded according to $rnd. Needs an mpc library (version 0.9
-    or later) that has been built with support for these data types.
+   $si = Rmpc_get_dc($cc, $op, $rnd); # deprecated, use Rmpc_get_DC instead
+   $si = Rmpc_get_ldc($lcc, $op $rnd);# deprecated, use Rmpc_get_LDC instead
+   $si = Rmpc_get_DC($cc, $op, $rnd);  # $cc is a Math:Complex_C object
+   $si = Rmpc_get_LDC($lcc, $op, $rnd); # $lcc is a Math::Complex_C::L object
+   Rmpc_get_F128C($f128c, $op, $rnd);# $f128c is Math::Complex_C::Q object
+    Set the 'double _Complex'/'long double _Complex'/'__float128 _Complex'
+    object to the value of $op, rounded according to $rnd. For Rmpc_get_DC
+    and Rmpc_get_LDC, requires an mpc library (version 0.9 or later) that
+    has been built with support for 'double _Complex' and 'long double
+    _Complex' data types (resp.). For Rmpc_get_F128C, the underlying mpfr
+    library needs to have been built with --enable-float128 option.
 
    ####################
 

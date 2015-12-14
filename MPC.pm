@@ -322,8 +322,8 @@ sub Rmpc_set_F128C {
   if($Math::MPC::no_complex_c_q) {die "In Rmpc_set_F128C(): $Math::MPC::no_complex_c_q"}
   my $t_re = Math::MPFR::Rmpfr_init2(113);
   my $t_im = Math::MPFR::Rmpfr_init2(113);
-  Math::MPFR::Rmpfr_set_flt128($t_re, real_cq($_[1], 0)); # Round to nearest
-  Math::MPFR::Rmpfr_set_flt128($t_im, im_cq($_[1], 0));   # Round to nearest
+  Math::MPFR::Rmpfr_set_float128($t_re, Math::Complex_C::Q::real_cq($_[1]), 0); # Round to nearest
+  Math::MPFR::Rmpfr_set_float128($t_im, Math::Complex_C::Q::imag_cq($_[1]), 0);   # Round to nearest
   return Rmpc_set_fr_fr($_[0], $t_re, $t_im, $_[2]); # Now use specified rounding mode
 }
 
@@ -331,9 +331,9 @@ sub Rmpc_get_F128C {
   if($Math::MPC::no_complex_c_q) {die "In Rmpc_set_F128C(): $Math::MPC::no_complex_c_q"}
   my $t = Math::MPFR::Rmpfr_init2(113);
   RMPC_RE($t, $_[1]);
-  Math::Complex_C::Q::set_real_cq($_[0], Math::MPFR::Rmpfr_get_flt128($t, $_[2] & 3));
+  Math::Complex_C::Q::set_real_cq($_[0], Math::MPFR::Rmpfr_get_float128($t, $_[2] & 3));
   RMPC_IM($t, $_[1]);
-  Math::Complex_C::Q::set_im_cq($_[0], Math::MPFR::Rmpfr_get_flt128($t, $_[2] / 16));
+  Math::Complex_C::Q::set_imag_cq($_[0], Math::MPFR::Rmpfr_get_float128($t, $_[2] / 16));
 }
 
 

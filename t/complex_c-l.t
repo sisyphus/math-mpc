@@ -29,7 +29,7 @@ my $ccl = Math::Complex_C::L->new(4.5, -231.125);
 my $mpcc = Math::MPC->new();
 my $mpfr = Math::MPFR->new();
 
-Rmpc_set_ldc($mpcc, $ccl, MPC_RNDNN);
+Rmpc_set_LDC($mpcc, $ccl, MPC_RNDNN);
 
 RMPC_RE($mpfr, $mpcc);
 if($mpfr == 4.5) {print "ok 1\n"}
@@ -49,11 +49,11 @@ Math::Complex_C::L::assign_cl($ccl, 3.19, -12.621);
 
 my $mpccl = Math::MPC->new();
 
-Rmpc_set_ldc($mpccl, $ccl, MPC_RNDNN);
+Rmpc_set_LDC($mpccl, $ccl, MPC_RNDNN);
 
 my $ccl_check = Math::Complex_C::L->new();
 
-Rmpc_get_ldc($ccl_check, $mpccl, MPC_RNDNN);
+Rmpc_get_LDC($ccl_check, $mpccl, MPC_RNDNN);
 
 if($ccl_check == $ccl) {print "ok 3\n"}
 else {

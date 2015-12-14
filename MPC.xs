@@ -2952,6 +2952,7 @@ SV * Rmpc_sin_cos(pTHX_ mpc_t * rop_sin, mpc_t * rop_cos, mpc_t * op, SV * rnd_s
 
 void Rmpc_get_dc(pTHX_ SV * crop, mpc_t * op, SV * round) {
 #ifdef _DO_COMPLEX_H
+     warn("Rmpc_get_dc is deprecated - use Rmpc_get_DC instead\n");
      if(sv_isobject(crop)) {
        const char *h = HvNAME(SvSTASH(SvRV(crop)));
        if(strNE(h, "Math::Complex_C"))
@@ -2966,6 +2967,7 @@ void Rmpc_get_dc(pTHX_ SV * crop, mpc_t * op, SV * round) {
 
 void Rmpc_get_ldc(pTHX_ SV * crop, mpc_t * op, SV * round) {
 #ifdef _DO_COMPLEX_H
+     warn("Rmpc_get_ldc is deprecated - use Rmpc_get_LDC instead\n");
      if(sv_isobject(crop)) {
        const char *h = HvNAME(SvSTASH(SvRV(crop)));
        if(strNE(h, "Math::Complex_C::L"))
@@ -2980,6 +2982,7 @@ void Rmpc_get_ldc(pTHX_ SV * crop, mpc_t * op, SV * round) {
 
 SV * Rmpc_set_dc(pTHX_ mpc_t * op, SV * crop, SV * round) {
 #ifdef _DO_COMPLEX_H
+     warn("Rmpc_set_dc is deprecated - use Rmpc_set_DC instead\n");
      if(sv_isobject(crop)) {
        const char *h = HvNAME(SvSTASH(SvRV(crop)));
        if(strNE(h, "Math::Complex_C"))
@@ -2994,6 +2997,7 @@ SV * Rmpc_set_dc(pTHX_ mpc_t * op, SV * crop, SV * round) {
 
 SV * Rmpc_set_ldc(pTHX_ mpc_t * op, SV * crop, SV * round) {
 #ifdef _DO_COMPLEX_H
+     warn("Rmpc_set_ldc is deprecated - use Rmpc_set_LDC instead\n");
      if(sv_isobject(crop)) {
        const char *h = HvNAME(SvSTASH(SvRV(crop)));
        if(strNE(h, "Math::Complex_C::L"))
@@ -3005,6 +3009,72 @@ SV * Rmpc_set_ldc(pTHX_ mpc_t * op, SV * crop, SV * round) {
      croak("Rmpc_set_ldc not implemented");
 #endif
 }
+
+/**********************************
+ **********************************/
+
+void Rmpc_get_DC(pTHX_ SV * crop, mpc_t * op, SV * round) {
+#ifdef _DO_COMPLEX_H
+     if(sv_isobject(crop)) {
+       const char *h = HvNAME(SvSTASH(SvRV(crop)));
+       if(strNE(h, "Math::Complex_C"))
+         croak("1st arg to Rmpc_get_DC is a %s object - needs to be a Math::Complex_C object", h);
+     }
+     else croak("1st arg to Rmpc_get_DC needs to be a Math::Complex_C object");
+     *(INT2PTR(double _Complex *, SvIV(SvRV(crop)))) = mpc_get_dc(*op, (mpc_rnd_t)SvUV(round));
+#else
+     croak("Rmpc_get_DC not implemented");
+#endif
+}
+
+void Rmpc_get_LDC(pTHX_ SV * crop, mpc_t * op, SV * round) {
+#ifdef _DO_COMPLEX_H
+     if(sv_isobject(crop)) {
+       const char *h = HvNAME(SvSTASH(SvRV(crop)));
+       if(strNE(h, "Math::Complex_C::L"))
+         croak("1st arg to Rmpc_get_LDC is a %s object - needs to be a Math::Complex_C::L object", h);
+     }
+     else croak("1st arg to Rmpc_get_LDC needs to be a Math::Complex_C::L object");
+     *(INT2PTR(long double _Complex *, SvIV(SvRV(crop)))) = mpc_get_ldc(*op, (mpc_rnd_t)SvUV(round));
+#else
+     croak("Rmpc_get_LDC not implemented");
+#endif
+}
+
+SV * Rmpc_set_DC(pTHX_ mpc_t * op, SV * crop, SV * round) {
+#ifdef _DO_COMPLEX_H
+     if(sv_isobject(crop)) {
+       const char *h = HvNAME(SvSTASH(SvRV(crop)));
+       if(strNE(h, "Math::Complex_C"))
+         croak("2nd arg to Rmpc_set_DC is a %s object - needs to be a Math::Complex_C object", h);
+     }
+     else croak("2nd arg to Rmpc_set_DC needs to be a Math::Complex_C object");
+     return newSViv(mpc_set_dc(*op, *(INT2PTR(double _Complex *, SvIV(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
+#else
+     croak("Rmpc_set_DC not implemented");
+#endif
+}
+
+SV * Rmpc_set_LDC(pTHX_ mpc_t * op, SV * crop, SV * round) {
+#ifdef _DO_COMPLEX_H
+     if(sv_isobject(crop)) {
+       const char *h = HvNAME(SvSTASH(SvRV(crop)));
+       if(strNE(h, "Math::Complex_C::L"))
+       croak("2nd arg to Rmpc_set_LDC is a %s object - needs to be a Math::Complex_C::L object", h);
+     }
+     else croak("2nd arg to Rmpc_set_LDC needs to be a Math::Complex_C::L object");
+     return newSViv(mpc_set_ldc(*op, *(INT2PTR(long double _Complex *, SvIV(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
+#else
+     croak("Rmpc_set_LDC not implemented");
+#endif
+}
+
+/**********************************
+ **********************************/
+
+
+/**********************************
+ **********************************/
 
 int _have_Complex_h(void) {
 #ifdef _DO_COMPLEX_H
@@ -5472,6 +5542,60 @@ Rmpc_set_ldc (op, crop, round)
 	SV *	round
 CODE:
   RETVAL = Rmpc_set_ldc (aTHX_ op, crop, round);
+OUTPUT:  RETVAL
+
+void
+Rmpc_get_DC (crop, op, round)
+	SV *	crop
+	mpc_t *	op
+	SV *	round
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_get_DC(aTHX_ crop, op, round);
+        if (PL_markstack_ptr != temp) {
+          /* truly void, because dXSARGS not invoked */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
+        }
+        /* must have used dXSARGS; list context implied */
+        return; /* assume stack size is correct */
+
+void
+Rmpc_get_LDC (crop, op, round)
+	SV *	crop
+	mpc_t *	op
+	SV *	round
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_get_LDC(aTHX_ crop, op, round);
+        if (PL_markstack_ptr != temp) {
+          /* truly void, because dXSARGS not invoked */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
+        }
+        /* must have used dXSARGS; list context implied */
+        return; /* assume stack size is correct */
+
+SV *
+Rmpc_set_DC (op, crop, round)
+	mpc_t *	op
+	SV *	crop
+	SV *	round
+CODE:
+  RETVAL = Rmpc_set_DC (aTHX_ op, crop, round);
+OUTPUT:  RETVAL
+
+SV *
+Rmpc_set_LDC (op, crop, round)
+	mpc_t *	op
+	SV *	crop
+	SV *	round
+CODE:
+  RETVAL = Rmpc_set_LDC (aTHX_ op, crop, round);
 OUTPUT:  RETVAL
 
 int

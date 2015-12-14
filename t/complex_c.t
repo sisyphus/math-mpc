@@ -29,7 +29,7 @@ my $cc = Math::Complex_C->new(4.5, -231.125);
 my $mpcc = Math::MPC->new();
 my $mpfr = Math::MPFR->new();
 
-Rmpc_set_dc($mpcc, $cc, MPC_RNDNN);
+Rmpc_set_DC($mpcc, $cc, MPC_RNDNN);
 
 RMPC_RE($mpfr, $mpcc);
 if($mpfr == 4.5) {print "ok 1\n"}
@@ -47,11 +47,11 @@ else {
 
 Math::Complex_C::assign_c($cc, 3.19, -12.621);
 
-Rmpc_set_dc($mpcc, $cc, MPC_RNDNN);
+Rmpc_set_DC($mpcc, $cc, MPC_RNDNN);
 
 my $cc_check = Math::Complex_C->new();
 
-Rmpc_get_dc($cc_check, $mpcc, MPC_RNDNN);
+Rmpc_get_DC($cc_check, $mpcc, MPC_RNDNN);
 
 if($cc_check == $cc) {print "ok 3\n"}
 else {

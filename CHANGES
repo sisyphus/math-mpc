@@ -3,6 +3,8 @@
  - Rewrite new()
  - Add __float128 handling iff nvtype is __float128 && mpfr library supports __float128
  - Add Rmpc_set_NV and Rmpc_set_NV_NV functions.
+ - Rename Rmpc_get_dc and Rmpc_get_ldc to Rmpc_get_DC and Rmpc_get_LDC (resp).
+ - Add Rmpc_get_F128C.
 
 1.04
  - Fix for replacement of Math::Complex_C::Long by Math::Complex_C::L

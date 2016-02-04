@@ -1240,7 +1240,7 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
 
     This program is free software; you may redistribute it and/or
     modify it under the same terms as Perl itself.
-    Copyright 2006-2009, 2010, 2011, 2014, Sisyphus
+    Copyright 2006-2011, 2014, 2016 Sisyphus
 
 =head1 AUTHOR
 

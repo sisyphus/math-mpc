@@ -5,6 +5,8 @@
  - Add Rmpc_set_NV and Rmpc_set_NV_NV functions.
  - Rename Rmpc_get_dc and Rmpc_get_ldc to Rmpc_get_DC and Rmpc_get_LDC (resp).
  - Add Rmpc_get_F128C.
+ - Specify EU-MM-6.58 as prerequisite in Makefile.PL. (Current CPAN::Reporter has problems
+   with earlier versions of EU::MM on cygwin, perl-5.14.x. Thanks Peter Acklam.)
 
 1.04
  - Fix for replacement of Math::Complex_C::Long by Math::Complex_C::L

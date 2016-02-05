@@ -10,7 +10,11 @@ print "# Using mpc library version ", MPC_VERSION_STRING, "\n";
 my $prec;
 
 if(Math::MPC::_can_pass_float128()) {$prec = 113}
-elsif(Math::MPC::_has_longdouble()) {$prec = 64 }
+elsif(Math::MPC::_has_longdouble()) {
+  if($Config{nvsize} == 8) {$prec = 53}
+  elsif((1.0 + (2 ** -1000)) > 1.0) {$prec = 106} # double-double NV
+  else {$prec = 64}
+}
 else                                {$prec = 53 }
 
 my $approximate = 0;
@@ -21,6 +25,7 @@ if($Config{nvtype} eq '__float128' && $prec != 113) {
 }
 
 print "1..4\n";
+warn "\nusing precision: $prec\n";
 Rmpc_set_default_prec2($prec, $prec);
 Rmpfr_set_default_prec($prec);
 

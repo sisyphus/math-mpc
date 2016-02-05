@@ -1,3 +1,5 @@
+1.06
+
 1.05
  - Corrections to README and Makefile.PL regarding _Complex types handling
  - Rewrite new()

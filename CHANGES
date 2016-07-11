@@ -1,4 +1,5 @@
 1.06
+ - Replace SvUV/SvIV/SvNV with svUVX/SvIVX/SvNVX where appropriate
 
 1.05
  - Corrections to README and Makefile.PL regarding _Complex types handling
@@ -9,6 +10,7 @@
  - Add Rmpc_get_F128C.
  - Specify EU-MM-6.58 as prerequisite in Makefile.PL. (Current CPAN::Reporter has problems
    with earlier versions of EU::MM on cygwin, perl-5.14.x. Thanks Peter Acklam.)
+ - Replace SvUV/SvIV/SvNV with SvUVX/SvIVX/SvNVX where appropriate
 
 1.04
  - Fix for replacement of Math::Complex_C::Long by Math::Complex_C::L

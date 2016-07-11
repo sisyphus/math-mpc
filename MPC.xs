@@ -1468,12 +1468,12 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
 
 #else
      if(SvUOK(b)) {
-       mpc_mul_ui(*mpc_t_obj, *a, SvUV(b), DEFAULT_ROUNDING_MODE);
+       mpc_mul_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
        return obj_ref;
        }
 
      if(SvIOK(b)) {
-       mpc_mul_si(*mpc_t_obj, *a, SvIV(b), DEFAULT_ROUNDING_MODE);
+       mpc_mul_si(*mpc_t_obj, *a, SvIVX(b), DEFAULT_ROUNDING_MODE);
        return obj_ref;
      }
 #endif
@@ -1481,13 +1481,13 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
      if(SvNOK(b)) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
-       mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_float128(nv, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
        mpc_mul_fr(*mpc_t_obj, *a, nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
-       _mpc_mul_ld(*mpc_t_obj, *a, (long double)SvNV(b), DEFAULT_ROUNDING_MODE);
+       _mpc_mul_ld(*mpc_t_obj, *a, (long double)SvNVX(b), DEFAULT_ROUNDING_MODE);
 #else
-       _mpc_mul_d(*mpc_t_obj,*a, (double)SvNV(b), DEFAULT_ROUNDING_MODE);
+       _mpc_mul_d(*mpc_t_obj,*a, (double)SvNVX(b), DEFAULT_ROUNDING_MODE);
 #endif
 
       return obj_ref;
@@ -1503,7 +1503,7 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
-         mpc_mul(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         mpc_mul(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return obj_ref;
          }
        }
@@ -1550,16 +1550,16 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
 #else
 
      if(SvUOK(b)) {
-       mpc_add_ui(*mpc_t_obj, *a, SvUV(b), DEFAULT_ROUNDING_MODE);
+       mpc_add_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
        return obj_ref;
        }
 
      if(SvIOK(b)) {
        if(SvIV(b) >= 0) {
-         mpc_add_ui(*mpc_t_obj, *a, SvUV(b), DEFAULT_ROUNDING_MODE);
+         mpc_add_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
          return obj_ref;
          }
-       mpc_sub_ui(*mpc_t_obj, *a, SvIV(b) * -1, DEFAULT_ROUNDING_MODE);
+       mpc_sub_ui(*mpc_t_obj, *a, SvIVX(b) * -1, DEFAULT_ROUNDING_MODE);
        return obj_ref;
        }
 
@@ -1568,14 +1568,14 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
      if(SvNOK(b)) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
-       mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_float128(nv, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
        mpc_add_fr(*mpc_t_obj, *a, nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
-       mpc_set_ld(*mpc_t_obj, SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpc_set_ld(*mpc_t_obj, SvNVX(b), DEFAULT_ROUNDING_MODE);
        mpc_add(*mpc_t_obj, *a, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
 #else
-       mpc_set_d(*mpc_t_obj, SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpc_set_d(*mpc_t_obj, SvNVX(b), DEFAULT_ROUNDING_MODE);
        mpc_add(*mpc_t_obj, *mpc_t_obj, *a, DEFAULT_ROUNDING_MODE);
 #endif
 
@@ -1592,7 +1592,7 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
-         mpc_add(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         mpc_add(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return obj_ref;
          }
        }
@@ -1638,18 +1638,18 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
        }
 #else
      if(SvUOK(b)) {
-       if(third == &PL_sv_yes) mpc_ui_sub(*mpc_t_obj, SvUV(b), *a, DEFAULT_ROUNDING_MODE);
-       else mpc_sub_ui(*mpc_t_obj, *a, SvUV(b), DEFAULT_ROUNDING_MODE);
+       if(third == &PL_sv_yes) mpc_ui_sub(*mpc_t_obj, SvUVX(b), *a, DEFAULT_ROUNDING_MODE);
+       else mpc_sub_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
        return obj_ref;
        }
 
      if(SvIOK(b)) {
        if(SvIV(b) >= 0) {
-         if(third == &PL_sv_yes) mpc_ui_sub(*mpc_t_obj, SvUV(b), *a, DEFAULT_ROUNDING_MODE);
-         else mpc_sub_ui(*mpc_t_obj, *a, SvUV(b), DEFAULT_ROUNDING_MODE);
+         if(third == &PL_sv_yes) mpc_ui_sub(*mpc_t_obj, SvUVX(b), *a, DEFAULT_ROUNDING_MODE);
+         else mpc_sub_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
          return obj_ref;
          }
-       mpc_add_ui(*mpc_t_obj, *a, SvIV(b) * -1, DEFAULT_ROUNDING_MODE);
+       mpc_add_ui(*mpc_t_obj, *a, SvIVX(b) * -1, DEFAULT_ROUNDING_MODE);
        if(third == &PL_sv_yes) mpc_neg(*mpc_t_obj, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
        return obj_ref;
        }
@@ -1658,13 +1658,13 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
      if(SvNOK(b)) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
-       mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_float128(nv, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
        mpc_set_fr(*mpc_t_obj, nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
-       mpc_set_ld(*mpc_t_obj, SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpc_set_ld(*mpc_t_obj, SvNVX(b), DEFAULT_ROUNDING_MODE);
 #else
-       mpc_set_d(*mpc_t_obj, SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpc_set_d(*mpc_t_obj, SvNVX(b), DEFAULT_ROUNDING_MODE);
 #endif
        if(third == &PL_sv_yes) mpc_sub(*mpc_t_obj, *mpc_t_obj, *a, DEFAULT_ROUNDING_MODE);
        else mpc_sub(*mpc_t_obj, *a, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
@@ -1682,7 +1682,7 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
-         mpc_sub(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         mpc_sub(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return obj_ref;
          }
        }
@@ -1732,19 +1732,19 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
        }
 #else
      if(SvUOK(b)) {
-       if(third == &PL_sv_yes) mpc_ui_div(*mpc_t_obj, SvUV(b), *a, DEFAULT_ROUNDING_MODE);
-       else mpc_div_ui(*mpc_t_obj, *a, SvUV(b), DEFAULT_ROUNDING_MODE);
+       if(third == &PL_sv_yes) mpc_ui_div(*mpc_t_obj, SvUVX(b), *a, DEFAULT_ROUNDING_MODE);
+       else mpc_div_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
        return obj_ref;
        }
 
      if(SvIOK(b)) {
        if(SvIV(b) >= 0) {
-         if(third == &PL_sv_yes) mpc_ui_div(*mpc_t_obj, SvUV(b), *a, DEFAULT_ROUNDING_MODE);
-         else mpc_div_ui(*mpc_t_obj, *a, SvUV(b), DEFAULT_ROUNDING_MODE);
+         if(third == &PL_sv_yes) mpc_ui_div(*mpc_t_obj, SvUVX(b), *a, DEFAULT_ROUNDING_MODE);
+         else mpc_div_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
          return obj_ref;
          }
-       if(third == &PL_sv_yes) mpc_ui_div(*mpc_t_obj, SvIV(b) * -1, *a, DEFAULT_ROUNDING_MODE);
-       else mpc_div_ui(*mpc_t_obj, *a, SvIV(b) * -1, DEFAULT_ROUNDING_MODE);
+       if(third == &PL_sv_yes) mpc_ui_div(*mpc_t_obj, SvIVX(b) * -1, *a, DEFAULT_ROUNDING_MODE);
+       else mpc_div_ui(*mpc_t_obj, *a, SvIVX(b) * -1, DEFAULT_ROUNDING_MODE);
        mpc_neg(*mpc_t_obj, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
        return obj_ref;
        }
@@ -1753,16 +1753,16 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
      if(SvNOK(b)) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
-       mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_float128(nv, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
        if(third == &PL_sv_yes) mpc_fr_div(*mpc_t_obj, nv, *a, DEFAULT_ROUNDING_MODE);
        else mpc_div_fr(*mpc_t_obj, *a, nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
-       if(third == &PL_sv_yes) _mpc_ld_div(*mpc_t_obj, (long double)SvNV(b), *a, DEFAULT_ROUNDING_MODE);
-       else _mpc_div_ld(*mpc_t_obj, *a, (long double)SvNV(b), DEFAULT_ROUNDING_MODE);
+       if(third == &PL_sv_yes) _mpc_ld_div(*mpc_t_obj, (long double)SvNVX(b), *a, DEFAULT_ROUNDING_MODE);
+       else _mpc_div_ld(*mpc_t_obj, *a, (long double)SvNVX(b), DEFAULT_ROUNDING_MODE);
 #else
-       if(third == &PL_sv_yes) _mpc_d_div(*mpc_t_obj, (double)SvNV(b), *a, DEFAULT_ROUNDING_MODE);
-       else _mpc_div_d(*mpc_t_obj, *a, (double)SvNV(b), DEFAULT_ROUNDING_MODE);
+       if(third == &PL_sv_yes) _mpc_d_div(*mpc_t_obj, (double)SvNVX(b), *a, DEFAULT_ROUNDING_MODE);
+       else _mpc_div_d(*mpc_t_obj, *a, (double)SvNVX(b), DEFAULT_ROUNDING_MODE);
 #endif
        return obj_ref;
        }
@@ -1778,7 +1778,7 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
-         mpc_div(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         mpc_div(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return obj_ref;
          }
        }
@@ -1803,7 +1803,7 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
 #else
        mpc_set_uj(temp, SvUV(b), DEFAULT_ROUNDING_MODE);
 #endif
-       mpc_div(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_div(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
        }
@@ -1813,29 +1813,29 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
 #ifdef _MSC_VER
        mpc_init3(temp, DEFAULT_PREC);
        mpc_set_str(temp, SvPV_nolen(b), 10, DEFAULT_ROUNDING_MODE);
-       mpc_div(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_div(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
 #else
        /* mpc_set_sj(temp, SvIV(b), DEFAULT_ROUNDING_MODE); */
-       _mpc_div_sj(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvIV(b), DEFAULT_ROUNDING_MODE);
+       _mpc_div_sj(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvIV(b), DEFAULT_ROUNDING_MODE);
 #endif
-       /* mpc_div(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       /* mpc_div(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp); */
        return a;
        }
 #else
      if(SvUOK(b)) {
-       mpc_div_ui(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvUV(b), DEFAULT_ROUNDING_MODE);
+       mpc_div_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
        return a;
        }
 
      if(SvIOK(b)) {
        if(SvIV(b) >= 0) {
-         mpc_div_ui(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvUV(b), DEFAULT_ROUNDING_MODE);
+         mpc_div_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
          return a;
          }
-       mpc_div_ui(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvIV(b) * -1, DEFAULT_ROUNDING_MODE);
-       mpc_neg(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), DEFAULT_ROUNDING_MODE);
+       mpc_div_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvIVX(b) * -1, DEFAULT_ROUNDING_MODE);
+       mpc_neg(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), DEFAULT_ROUNDING_MODE);
        return a;
        }
 #endif
@@ -1843,13 +1843,13 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
      if(SvNOK(b)) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
-       mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
-       mpc_div_fr(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), nv, DEFAULT_ROUNDING_MODE);
+       mpfr_set_float128(nv, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
+       mpc_div_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
-       _mpc_div_ld(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), (long double)SvNV(b), DEFAULT_ROUNDING_MODE);
+       _mpc_div_ld(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), (long double)SvNVX(b), DEFAULT_ROUNDING_MODE);
 #else
-       _mpc_div_d(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), (double)SvNV(b), DEFAULT_ROUNDING_MODE);
+       _mpc_div_d(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), (double)SvNVX(b), DEFAULT_ROUNDING_MODE);
 #endif
        return a;
        }
@@ -1860,7 +1860,7 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
          SvREFCNT_dec(a);
          croak("Invalid string supplied to Math::MPC::overload_div_eq");
          }
-       mpc_div(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_div(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
        }
@@ -1868,7 +1868,7 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
-         mpc_div(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         mpc_div(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
          }
        }
@@ -1893,7 +1893,7 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
 #else
        mpc_set_uj(temp, SvUV(b), DEFAULT_ROUNDING_MODE);
 #endif
-       mpc_sub(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_sub(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
        }
@@ -1905,22 +1905,22 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
 #else
        mpc_set_sj(temp, SvIV(b), DEFAULT_ROUNDING_MODE);
 #endif
-       mpc_sub(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_sub(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
        }
 #else
      if(SvUOK(b)) {
-       mpc_sub_ui(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvUV(b), DEFAULT_ROUNDING_MODE);
+       mpc_sub_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
        return a;
        }
 
      if(SvIOK(b)) {
        if(SvIV(b) >= 0) {
-         mpc_sub_ui(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvUV(b), DEFAULT_ROUNDING_MODE);
+         mpc_sub_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
          return a;
          }
-       mpc_add_ui(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvIV(b) * -1, DEFAULT_ROUNDING_MODE);
+       mpc_add_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvIVX(b) * -1, DEFAULT_ROUNDING_MODE);
        return a;
        }
 #endif
@@ -1929,15 +1929,15 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
        mpc_init3(temp, DEFAULT_PREC);
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
-       mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_float128(nv, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
        mpc_set_fr(temp, nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
-       mpc_set_ld(temp, SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpc_set_ld(temp, SvNVX(b), DEFAULT_ROUNDING_MODE);
 #else
-       mpc_set_d(temp, SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpc_set_d(temp, SvNVX(b), DEFAULT_ROUNDING_MODE);
 #endif
-       mpc_sub(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_sub(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
        }
@@ -1948,7 +1948,7 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
          SvREFCNT_dec(a);
          croak("Invalid string supplied to Math::MPC::overload_sub_eq");
          }
-       mpc_sub(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_sub(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
        }
@@ -1956,7 +1956,7 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
-         mpc_sub(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         mpc_sub(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
          }
        }
@@ -1980,7 +1980,7 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
 #else
        mpc_set_uj(temp, SvUV(b), DEFAULT_ROUNDING_MODE);
 #endif
-       mpc_add(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_add(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
        }
@@ -1992,22 +1992,22 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
 #else
        mpc_set_sj(temp, SvIV(b), DEFAULT_ROUNDING_MODE);
 #endif
-       mpc_add(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_add(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
        }
 #else
      if(SvUOK(b)) {
-       mpc_add_ui(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvUV(b), DEFAULT_ROUNDING_MODE);
+       mpc_add_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
        return a;
        }
 
      if(SvIOK(b)) {
        if(SvIV(b) >= 0) {
-         mpc_add_ui(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvUV(b), DEFAULT_ROUNDING_MODE);
+         mpc_add_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
          return a;
          }
-       mpc_sub_ui(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvIV(b) * -1, DEFAULT_ROUNDING_MODE);
+       mpc_sub_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvIVX(b) * -1, DEFAULT_ROUNDING_MODE);
        return a;
        }
 #endif
@@ -2016,15 +2016,15 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
        mpc_init3(temp, DEFAULT_PREC);
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
-       mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_float128(nv, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
        mpc_set_fr(temp, nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
-       mpc_set_ld(temp, SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpc_set_ld(temp, SvNVX(b), DEFAULT_ROUNDING_MODE);
 #else
-       mpc_set_d(temp, SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpc_set_d(temp, SvNVX(b), DEFAULT_ROUNDING_MODE);
 #endif
-       mpc_add(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_add(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
        }
@@ -2035,7 +2035,7 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
          SvREFCNT_dec(a);
          croak("Invalid string supplied to Math::MPC::overload_add_eq");
          }
-       mpc_add(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_add(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
        }
@@ -2043,7 +2043,7 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
-         mpc_add(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         mpc_add(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
          }
        }
@@ -2067,7 +2067,7 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
 #else
        mpc_set_uj(temp, SvUV(b), DEFAULT_ROUNDING_MODE);
 #endif
-       mpc_mul(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_mul(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
        }
@@ -2077,24 +2077,24 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
 #ifdef _MSC_VER
        mpc_init3(temp, DEFAULT_PREC);
        mpc_set_str(temp, SvPV_nolen(b), 10, DEFAULT_ROUNDING_MODE);
-       mpc_mul(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_mul(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
 #else
        /* mpc_set_sj(temp, SvIV(b), DEFAULT_ROUNDING_MODE); */
-       _mpc_mul_sj(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvUV(b), DEFAULT_ROUNDING_MODE);
+       _mpc_mul_sj(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUV(b), DEFAULT_ROUNDING_MODE);
 #endif
-       /* mpc_mul(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       /* mpc_mul(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp); */
        return a;
        }
 #else
      if(SvUOK(b)) {
-       mpc_mul_ui(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvUV(b), DEFAULT_ROUNDING_MODE);
+       mpc_mul_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
        return a;
        }
 
      if(SvIOK(b)) {
-       mpc_mul_si(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvUV(b), DEFAULT_ROUNDING_MODE);
+       mpc_mul_si(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvIVX(b), DEFAULT_ROUNDING_MODE);
        return a;
        }
 
@@ -2103,13 +2103,13 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
      if(SvNOK(b)) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
-       mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
-       mpc_mul_fr(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), nv, DEFAULT_ROUNDING_MODE);
+       mpfr_set_float128(nv, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
+       mpc_mul_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
-       _mpc_mul_ld(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), (long double)SvNV(b), DEFAULT_ROUNDING_MODE);
+       _mpc_mul_ld(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), (long double)SvNVX(b), DEFAULT_ROUNDING_MODE);
 #else
-       _mpc_mul_d(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), (double)SvNV(b), DEFAULT_ROUNDING_MODE);
+       _mpc_mul_d(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), (double)SvNVX(b), DEFAULT_ROUNDING_MODE);
 #endif
        return a;
        }
@@ -2120,7 +2120,7 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
          SvREFCNT_dec(a);
          croak("Invalid string supplied to Math::MPC::overload_mul_eq");
          }
-       mpc_mul(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_mul(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
        }
@@ -2128,7 +2128,7 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
-         mpc_mul(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         mpc_mul(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
          }
        }
@@ -2175,12 +2175,12 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
 
 #else
      if(SvUOK(b)) {
-       mpc_pow_ui(*mpc_t_obj, *a, SvUV(b), DEFAULT_ROUNDING_MODE);
+       mpc_pow_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
        return obj_ref;
        }
 
      if(SvIOK(b)) {
-       mpc_pow_si(*mpc_t_obj, *a, SvIV(b), DEFAULT_ROUNDING_MODE);
+       mpc_pow_si(*mpc_t_obj, *a, SvIVX(b), DEFAULT_ROUNDING_MODE);
        return obj_ref;
      }
 #endif
@@ -2188,13 +2188,13 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
      if(SvNOK(b)) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
-       mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_float128(nv, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
        mpc_pow_fr(*mpc_t_obj, *a, nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
-       mpc_pow_ld(*mpc_t_obj, *a, SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpc_pow_ld(*mpc_t_obj, *a, SvNVX(b), DEFAULT_ROUNDING_MODE);
 #else
-       mpc_pow_d(*mpc_t_obj, *a, SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpc_pow_d(*mpc_t_obj, *a, SvNVX(b), DEFAULT_ROUNDING_MODE);
 #endif
 
      return obj_ref;
@@ -2210,7 +2210,7 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
-         mpc_pow(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         mpc_pow(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return obj_ref;
        }
      }
@@ -2233,7 +2233,7 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
 #else
        mpc_set_uj(temp, SvUV(b), DEFAULT_ROUNDING_MODE);
 #endif
-       mpc_pow(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_pow(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
      }
@@ -2245,18 +2245,18 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
 #else
        mpc_set_sj(temp, SvIV(b), DEFAULT_ROUNDING_MODE);
 #endif
-       mpc_pow(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_pow(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
      }
 #else
      if(SvUOK(b)) {
-       mpc_pow_ui(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvUV(b), DEFAULT_ROUNDING_MODE);
+       mpc_pow_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
        return a;
      }
 
      if(SvIOK(b)) {
-       mpc_pow_si(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvIV(b), DEFAULT_ROUNDING_MODE);
+       mpc_pow_si(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvIVX(b), DEFAULT_ROUNDING_MODE);
        return a;
      }
 
@@ -2265,13 +2265,13 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
      if(SvNOK(b)) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(nv, FLT128_MANT_DIG);
-       mpfr_set_float128(nv, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
-       mpc_pow_fr(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), nv, DEFAULT_ROUNDING_MODE);
+       mpfr_set_float128(nv, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
+       mpc_pow_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), nv, DEFAULT_ROUNDING_MODE);
        mpfr_clear(nv);
 #elif defined(USE_LONG_DOUBLE)
-       mpc_pow_ld(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpc_pow_ld(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvNVX(b), DEFAULT_ROUNDING_MODE);
 #else
-       mpc_pow_d(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpc_pow_d(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvNVX(b), DEFAULT_ROUNDING_MODE);
 #endif
        return a;
      }
@@ -2282,7 +2282,7 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
          SvREFCNT_dec(a);
          croak("Invalid string supplied to Math::MPC::overload_pow_eq");
        }
-       mpc_pow(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_pow(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
      }
@@ -2290,7 +2290,7 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
-         mpc_pow(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         mpc_pow(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
        }
      }
@@ -2344,7 +2344,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
 #else
      if(SvUOK(b)) {
        mpc_init3(t, DEFAULT_PREC);
-       mpc_set_ui(t, SvUV(b), DEFAULT_ROUNDING_MODE);
+       mpc_set_ui(t, SvUVX(b), DEFAULT_ROUNDING_MODE);
        ret = mpc_cmp(*a, t);
        mpc_clear(t);
        if(ret == 0) return newSViv(1);
@@ -2352,7 +2352,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
        }
 
      if(SvIOK(b)) {
-       ret = mpc_cmp_si(*a, SvIV(b));
+       ret = mpc_cmp_si(*a, SvIVX(b));
        if(ret == 0) return newSViv(1);
        return newSViv(0);
        }
@@ -2361,7 +2361,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
      if(SvNOK(b)) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_init2(temp, FLT128_MANT_DIG);
-       mpfr_set_float128(temp, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_float128(temp, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
        if(mpfr_nan_p(temp)) {
          mpfr_clear(temp);
          return newSViv(0);
@@ -2378,7 +2378,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
 #else
        mpfr_init2(temp, LDBL_MANT_DIG);
 #endif
-       mpfr_set_ld(temp, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_ld(temp, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
        if(mpfr_nan_p(temp)) {
          mpfr_clear(temp);
          return newSViv(0);
@@ -2391,7 +2391,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
        mpc_clear(t);
 #else
        mpc_init3(t, DEFAULT_PREC);
-       mpc_set_d(t, SvNV(b), DEFAULT_ROUNDING_MODE);
+       mpc_set_d(t, SvNVX(b), DEFAULT_ROUNDING_MODE);
        if(mpfr_nan_p(MPC_RE(t))) ret = 1;
        else ret = mpc_cmp(*a, t);
        mpc_clear(t);
@@ -2417,9 +2417,9 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
-         if(mpfr_nan_p(MPC_RE(*(INT2PTR(mpc_t *, SvIV(SvRV(b)))))) ||
-            mpfr_nan_p(MPC_IM(*(INT2PTR(mpc_t *, SvIV(SvRV(b))))))) return newSViv(0);
-         ret = mpc_cmp(*a, *(INT2PTR(mpc_t *, SvIV(SvRV(b)))));
+         if(mpfr_nan_p(MPC_RE(*(INT2PTR(mpc_t *, SvIVX(SvRV(b)))))) ||
+            mpfr_nan_p(MPC_IM(*(INT2PTR(mpc_t *, SvIVX(SvRV(b))))))) return newSViv(0);
+         ret = mpc_cmp(*a, *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))));
          if(ret == 0) return newSViv(1);
          return newSViv(0);
          }
@@ -2650,7 +2650,7 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
 #ifdef _MSC_VER
        mpfr_set_str(temp_re, SvPV_nolen(b), 10, DEFAULT_ROUNDING_MODE & 3);
 #else
-       mpfr_set_uj(temp_re, SvUV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_uj(temp_re, SvUVX(b), DEFAULT_ROUNDING_MODE & 3);
 #endif
        done_re = 1;
      }
@@ -2659,30 +2659,30 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
 #ifdef _MSC_VER
        mpfr_set_str(temp_re, SvPV_nolen(b), 10, DEFAULT_ROUNDING_MODE & 3);
 #else
-       mpfr_set_sj(temp_re, SvIV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_sj(temp_re, SvIVX(b), DEFAULT_ROUNDING_MODE & 3);
 #endif
        done_re = 1;
      }
 
 #else
      if(SvUOK(b) && !done_re) {
-       mpfr_set_ui(temp_re, SvUV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_ui(temp_re, SvUVX(b), DEFAULT_ROUNDING_MODE & 3);
        done_re = 1;
        }
 
      if(SvIOK(b) && !done_re) {
-       mpfr_set_si(temp_re, SvIV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_si(temp_re, SvIVX(b), DEFAULT_ROUNDING_MODE & 3);
        done_re = 1;
      }
 #endif
 
      if(SvNOK(b) && !done_re) {
 #if defined(MPC_CAN_PASS_FLOAT128)
-       mpfr_set_float128(temp_re, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_float128(temp_re, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
 #elif defined(USE_LONG_DOUBLE)
-       mpfr_set_ld(temp_re, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_ld(temp_re, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
 #else
-       mpfr_set_d(temp_re, SvNV(b), DEFAULT_ROUNDING_MODE & 3);
+       mpfr_set_d(temp_re, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
 #endif
        done_re = 1;
      }
@@ -2697,20 +2697,20 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
      if(sv_isobject(b) && !done_re) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPFR")) {
-         mpfr_set(temp_re, *(INT2PTR(mpfr_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE & 3);
+         mpfr_set(temp_re, *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE & 3);
          done_re = 1;
        }
        if(strEQ(h, "Math::GMPf")) {
-         mpfr_set_f(temp_re, *(INT2PTR(mpf_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE & 3);
+         mpfr_set_f(temp_re, *(INT2PTR(mpf_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE & 3);
          done_re = 1;
        }
        if(strEQ(h, "Math::GMPq")) {
-         mpfr_set_q(temp_re, *(INT2PTR(mpq_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE & 3);
+         mpfr_set_q(temp_re, *(INT2PTR(mpq_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE & 3);
          done_re = 1;
        }
        if(strEQ(h, "Math::GMP") ||
           strEQ(h, "Math::GMPz"))  {
-         mpfr_set_z(temp_re, *(INT2PTR(mpz_t *, SvIV(SvRV(b)))), DEFAULT_ROUNDING_MODE & 3);
+         mpfr_set_z(temp_re, *(INT2PTR(mpz_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE & 3);
          done_re = 1;
        }
      }
@@ -2726,7 +2726,7 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
 #ifdef _MSC_VER
        mpfr_set_str(temp_im, SvPV_nolen(d), 10, DEFAULT_ROUNDING_MODE / 16);
 #else
-       mpfr_set_uj(temp_im, SvUV(d), DEFAULT_ROUNDING_MODE / 16);
+       mpfr_set_uj(temp_im, SvUVX(d), DEFAULT_ROUNDING_MODE / 16);
 #endif
        done_im = 1;
      }
@@ -2735,30 +2735,30 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
 #ifdef _MSC_VER
        mpfr_set_str(temp_im, SvPV_nolen(d), 10, DEFAULT_ROUNDING_MODE / 16);
 #else
-       mpfr_set_sj(temp_im, SvIV(d), DEFAULT_ROUNDING_MODE / 16);
+       mpfr_set_sj(temp_im, SvIVX(d), DEFAULT_ROUNDING_MODE / 16);
 #endif
        done_im = 1;
      }
 
 #else
      if(SvUOK(d) && !done_im) {
-       mpfr_set_ui(temp_im, SvUV(d), DEFAULT_ROUNDING_MODE / 16);
+       mpfr_set_ui(temp_im, SvUVX(d), DEFAULT_ROUNDING_MODE / 16);
        done_im = 1;
        }
 
      if(SvIOK(d) && !done_im) {
-       mpfr_set_si(temp_im, SvIV(d), DEFAULT_ROUNDING_MODE / 16);
+       mpfr_set_si(temp_im, SvIVX(d), DEFAULT_ROUNDING_MODE / 16);
        done_im = 1;
      }
 #endif
 
      if(SvNOK(d) && !done_im) {
 #if defined(MPC_CAN_PASS_FLOAT128)
-       mpfr_set_float128(temp_im, SvNV(d), DEFAULT_ROUNDING_MODE / 16);
+       mpfr_set_float128(temp_im, SvNVX(d), DEFAULT_ROUNDING_MODE / 16);
 #elif defined(USE_LONG_DOUBLE)
-       mpfr_set_ld(temp_im, SvNV(d), DEFAULT_ROUNDING_MODE / 16);
+       mpfr_set_ld(temp_im, SvNVX(d), DEFAULT_ROUNDING_MODE / 16);
 #else
-       mpfr_set_d(temp_im, SvNV(d), DEFAULT_ROUNDING_MODE / 16);
+       mpfr_set_d(temp_im, SvNVX(d), DEFAULT_ROUNDING_MODE / 16);
 #endif
        done_im = 1;
      }
@@ -2773,20 +2773,20 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
      if(sv_isobject(d) && !done_im) {
        const char *h = HvNAME(SvSTASH(SvRV(d)));
        if(strEQ(h, "Math::MPFR")) {
-         mpfr_set(temp_im, *(INT2PTR(mpfr_t *, SvIV(SvRV(d)))), DEFAULT_ROUNDING_MODE / 16);
+         mpfr_set(temp_im, *(INT2PTR(mpfr_t *, SvIVX(SvRV(d)))), DEFAULT_ROUNDING_MODE / 16);
          done_im = 1;
        }
        if(strEQ(h, "Math::GMPf")) {
-         mpfr_set_f(temp_im, *(INT2PTR(mpf_t *, SvIV(SvRV(d)))), DEFAULT_ROUNDING_MODE / 16);
+         mpfr_set_f(temp_im, *(INT2PTR(mpf_t *, SvIVX(SvRV(d)))), DEFAULT_ROUNDING_MODE / 16);
          done_im = 1;
        }
        if(strEQ(h, "Math::GMPq")) {
-         mpfr_set_q(temp_im, *(INT2PTR(mpq_t *, SvIV(SvRV(d)))), DEFAULT_ROUNDING_MODE / 16);
+         mpfr_set_q(temp_im, *(INT2PTR(mpq_t *, SvIVX(SvRV(d)))), DEFAULT_ROUNDING_MODE / 16);
          done_im = 1;
        }
        if(strEQ(h, "Math::GMP") ||
           strEQ(h, "Math::GMPz"))  {
-         mpfr_set_z(temp_im, *(INT2PTR(mpz_t *, SvIV(SvRV(d)))), DEFAULT_ROUNDING_MODE / 16);
+         mpfr_set_z(temp_im, *(INT2PTR(mpz_t *, SvIVX(SvRV(d)))), DEFAULT_ROUNDING_MODE / 16);
          done_im = 1;
        }
      }
@@ -2959,7 +2959,7 @@ void Rmpc_get_dc(pTHX_ SV * crop, mpc_t * op, SV * round) {
          croak("1st arg to Rmpc_get_dc is a %s object - needs to be a Math::Complex_C object", h);
      }
      else croak("1st arg to Rmpc_get_dc needs to be a Math::Complex_C object");
-     *(INT2PTR(double _Complex *, SvIV(SvRV(crop)))) = mpc_get_dc(*op, (mpc_rnd_t)SvUV(round));
+     *(INT2PTR(double _Complex *, SvIVX(SvRV(crop)))) = mpc_get_dc(*op, (mpc_rnd_t)SvUV(round));
 #else
      croak("Rmpc_get_dc not implemented");
 #endif
@@ -2974,7 +2974,7 @@ void Rmpc_get_ldc(pTHX_ SV * crop, mpc_t * op, SV * round) {
          croak("1st arg to Rmpc_get_ldc is a %s object - needs to be a Math::Complex_C::L object", h);
      }
      else croak("1st arg to Rmpc_get_ldc needs to be a Math::Complex_C::L object");
-     *(INT2PTR(long double _Complex *, SvIV(SvRV(crop)))) = mpc_get_ldc(*op, (mpc_rnd_t)SvUV(round));
+     *(INT2PTR(long double _Complex *, SvIVX(SvRV(crop)))) = mpc_get_ldc(*op, (mpc_rnd_t)SvUV(round));
 #else
      croak("Rmpc_get_ldc not implemented");
 #endif
@@ -2989,7 +2989,7 @@ SV * Rmpc_set_dc(pTHX_ mpc_t * op, SV * crop, SV * round) {
          croak("2nd arg to Rmpc_set_dc is a %s object - needs to be a Math::Complex_C object", h);
      }
      else croak("2nd arg to Rmpc_set_dc needs to be a Math::Complex_C object");
-     return newSViv(mpc_set_dc(*op, *(INT2PTR(double _Complex *, SvIV(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
+     return newSViv(mpc_set_dc(*op, *(INT2PTR(double _Complex *, SvIVX(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
 #else
      croak("Rmpc_set_dc not implemented");
 #endif
@@ -3004,7 +3004,7 @@ SV * Rmpc_set_ldc(pTHX_ mpc_t * op, SV * crop, SV * round) {
        croak("2nd arg to Rmpc_set_ldc is a %s object - needs to be a Math::Complex_C::L object", h);
      }
      else croak("2nd arg to Rmpc_set_ldc needs to be a Math::Complex_C::L object");
-     return newSViv(mpc_set_ldc(*op, *(INT2PTR(long double _Complex *, SvIV(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
+     return newSViv(mpc_set_ldc(*op, *(INT2PTR(long double _Complex *, SvIVX(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
 #else
      croak("Rmpc_set_ldc not implemented");
 #endif
@@ -3021,7 +3021,7 @@ void Rmpc_get_DC(pTHX_ SV * crop, mpc_t * op, SV * round) {
          croak("1st arg to Rmpc_get_DC is a %s object - needs to be a Math::Complex_C object", h);
      }
      else croak("1st arg to Rmpc_get_DC needs to be a Math::Complex_C object");
-     *(INT2PTR(double _Complex *, SvIV(SvRV(crop)))) = mpc_get_dc(*op, (mpc_rnd_t)SvUV(round));
+     *(INT2PTR(double _Complex *, SvIVX(SvRV(crop)))) = mpc_get_dc(*op, (mpc_rnd_t)SvUV(round));
 #else
      croak("Rmpc_get_DC not implemented");
 #endif
@@ -3035,7 +3035,7 @@ void Rmpc_get_LDC(pTHX_ SV * crop, mpc_t * op, SV * round) {
          croak("1st arg to Rmpc_get_LDC is a %s object - needs to be a Math::Complex_C::L object", h);
      }
      else croak("1st arg to Rmpc_get_LDC needs to be a Math::Complex_C::L object");
-     *(INT2PTR(long double _Complex *, SvIV(SvRV(crop)))) = mpc_get_ldc(*op, (mpc_rnd_t)SvUV(round));
+     *(INT2PTR(long double _Complex *, SvIVX(SvRV(crop)))) = mpc_get_ldc(*op, (mpc_rnd_t)SvUV(round));
 #else
      croak("Rmpc_get_LDC not implemented");
 #endif
@@ -3049,7 +3049,7 @@ SV * Rmpc_set_DC(pTHX_ mpc_t * op, SV * crop, SV * round) {
          croak("2nd arg to Rmpc_set_DC is a %s object - needs to be a Math::Complex_C object", h);
      }
      else croak("2nd arg to Rmpc_set_DC needs to be a Math::Complex_C object");
-     return newSViv(mpc_set_dc(*op, *(INT2PTR(double _Complex *, SvIV(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
+     return newSViv(mpc_set_dc(*op, *(INT2PTR(double _Complex *, SvIVX(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
 #else
      croak("Rmpc_set_DC not implemented");
 #endif
@@ -3063,7 +3063,7 @@ SV * Rmpc_set_LDC(pTHX_ mpc_t * op, SV * crop, SV * round) {
        croak("2nd arg to Rmpc_set_LDC is a %s object - needs to be a Math::Complex_C::L object", h);
      }
      else croak("2nd arg to Rmpc_set_LDC needs to be a Math::Complex_C::L object");
-     return newSViv(mpc_set_ldc(*op, *(INT2PTR(long double _Complex *, SvIV(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
+     return newSViv(mpc_set_ldc(*op, *(INT2PTR(long double _Complex *, SvIVX(SvRV(crop)))), (mpc_rnd_t)SvUV(round)));
 #else
      croak("Rmpc_set_LDC not implemented");
 #endif
@@ -3135,6 +3135,7 @@ int _can_pass_float128(void) {
 #endif
 
 }
+
 
 /* I think the CLONE function needs to come at the very end ... not sure */
 

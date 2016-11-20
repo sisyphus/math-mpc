@@ -1,5 +1,6 @@
 MANIFEST
 Makefile.PL
+math_mpc_include.h
 MPC.pm
 MPC.xs
 README

@@ -57,26 +57,28 @@ for(@ARGV) {
 }
 
 if($Config::Config{nvtype} eq '__float128' && $have_float128) {
-  # USE_LONG_DOUBLE is also defined unless $use_long_double was set to -1.
   $defines .= " -DMPC_CAN_PASS_FLOAT128" ;
 }
 
 if($do_complex_h == 1) { $defines .= " -D_DO_COMPLEX_H"}
 
-$defines =~ /-DMATH_MPC_NEED_LONG_LONG_INT/ ? print "Building with 64-bit'long long' support\n" :
+$defines =~ /\-DMATH_MPC_NEED_LONG_LONG_INT/ ? print "Building with 64-bit'long long' support\n" :
                                  print "Building without 64-bit 'long long' support\n";
 
 print "If this is wrong, see the \"64-bit support\" section in the README\n\n";
 
-$defines =~ /-DUSE_LONG_DOUBLE/ ? print "Building with 'long double' support\n" :
-                                 print "Building without 'long double' support\n";
+($defines =~ /\-DNV_IS_LONG_DOUBLE/ || $defines =~ /\-DNV_IS_FLOAT128/)
+                                 ? print "Building with 'long double' support\n"
+                                 :print "Building without 'long double' support\n";
 
 print "If this is wrong, see the \"64-bit support\" section in the README\n\n";
 
-$defines =~ /-D_DO_COMPLEX_H/ ? print "Trying to build with 'double _Complex' & 'long double _Complex' support\n" :
+($defines =~ /\-D_DO_COMPLEX_H/) ? print "Trying to build with 'double _Complex' & 'long double _Complex' support\n" :
                                  print "Building without 'double _Complex' & 'long double _Complex' support\n";
 
 print "If this is wrong, see the \"_Complex C types support\" section in the README\n\n";
+
+$defines .= " -DNV_IS_DOUBLE" if $Config{nvtype} eq 'double';
 
 my %options = (
   NAME => 'Math::MPC',

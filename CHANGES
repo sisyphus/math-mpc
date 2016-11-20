@@ -1,6 +1,8 @@
 1.06
  - Replace SvUV/SvIV/SvNV with svUVX/SvIVX/SvNVX where appropriate. (In typemap, too.)
  - Replace (throughout) the "SvNOK(b)" condition with "SvNOK(b) && !SvPOK(b)".
+ - Add support for nvtype=double -DDEBUGGING perls
+ - Bring __float128 support inro line with Math::MPFR
 
 1.05
  - Corrections to README and Makefile.PL regarding _Complex types handling

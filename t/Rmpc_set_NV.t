@@ -53,7 +53,7 @@ if($approximate == 0) {
 
   $mpc += Math::MPC->new('101.1', '-14.9');
 
-  Rmpc_set_NV_NV($mpc, 0, sqrt(3.0), MPC_RNDNN);
+  Rmpc_set_NV_NV($mpc, 0.0, sqrt(3.0), MPC_RNDNN);
 
   $mpc **= 2;
 

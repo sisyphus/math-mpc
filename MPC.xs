@@ -36,13 +36,37 @@ mp_prec_t _perl_default_prec_re = 53;
 mp_prec_t _perl_default_prec_im = 53;
 */
 
+int _win32_infnanstring(char * s) { /* MS Windows only - detect 1.#INF and 1.#IND
+                                     * Need to do this to correctly handle an inf/nan
+                                     * scalar that is both NOK and POK on older win32 perls */
 
+  /*************************************
+  * if input string    =~ /^\-1\.#INF$/ return -1
+  * elsif input string =~ /^\+?1\.#INF$/i return 1
+  * elsif input string =~ /^(\-|\+)?1\.#IND$/i return 2
+  * else return 0
+  **************************************/
 
-/* This function is used by overload_mul and overload_mul_eq whenn           */
-/* MATH_MPC_NEED_LONG_LONG_INT is defined.                                                */
-/* It is based on some code posted by Philippe Theveny.                      */
+  int sign = 1;
+  int factor = 1;
 
-int _mpc_mul_sj (mpc_ptr rop, mpc_ptr op, intmax_t i, mpc_rnd_t rnd) {
+  if(s[0] == '-') {
+    sign = -1;
+    s++;
+  }
+  else {
+    if(s[0] == '+') s++;
+  }
+
+  if(!strcmp(s, "1.#INF")) return sign;
+  if(!strcmp(s, "1.#IND")) return 2;
+
+  return 0;
+}
+
+/* This function is based on some code posted by Philippe Theveny. */
+
+int Rmpc_mul_sj (mpc_ptr rop, mpc_ptr op, intmax_t i, mpc_rnd_t rnd) {
 
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
 
@@ -60,19 +84,17 @@ int _mpc_mul_sj (mpc_ptr rop, mpc_ptr op, intmax_t i, mpc_rnd_t rnd) {
 
 #else
 
-   croak("_mpc_mul_sj not implememnted on this build of perl");
+   croak("Rmpc_mul_sj not implememnted on this build of perl");
 }
 
 #endif
 
 
-/* This function is used by overload_mul and overload_mul_eq whenn           */
-/* NV_IS_LONG_DOUBLE or NV_IS_FLOAT128 is defined.                                               */
-/* It is based on some code posted by Philippe Theveny.                      */
+/* This function is based on some code posted by Philippe Theveny. */
 
-int _mpc_mul_ld (mpc_ptr rop, mpc_ptr op, long double i, mpc_rnd_t rnd) {
+int Rmpc_mul_ld (mpc_ptr rop, mpc_ptr op, long double i, mpc_rnd_t rnd) {
 
-#if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
+#ifdef USE_LONG_DOUBLE
 
    mpfr_t x;
    int inex;
@@ -88,16 +110,15 @@ int _mpc_mul_ld (mpc_ptr rop, mpc_ptr op, long double i, mpc_rnd_t rnd) {
 
 #else
 
-   croak("_mpc_mul_ld not implememnted on this build of perl");
+   croak("Rmpc_mul_ld not implememnted on this build of perl");
 }
 
 #endif
 
 
-/* This function is used by overload_mul and overload_mul_eq.                */
-/* It is based on some code posted by Philippe Theveny.                      */
+/* This function is based on some code posted by Philippe Theveny. */
 
-int _mpc_mul_d (mpc_ptr rop, mpc_ptr op, double i, mpc_rnd_t rnd) {
+int Rmpc_mul_d (mpc_ptr rop, mpc_ptr op, double i, mpc_rnd_t rnd) {
    mpfr_t x;
    int inex;
 
@@ -111,11 +132,9 @@ int _mpc_mul_d (mpc_ptr rop, mpc_ptr op, double i, mpc_rnd_t rnd) {
 }
 
 
-/* This function is used by overload_div and overload_div_eq whenn           */
-/* MATH_MPC_NEED_LONG_LONG_INT is defined.                                                */
-/* It is based on some code posted by Philippe Theveny.                      */
+/* This function is based on some code posted by Philippe Theveny. */
 
-int _mpc_div_sj (mpc_ptr rop, mpc_ptr op, intmax_t i, mpc_rnd_t rnd) {
+int Rmpc_div_sj (mpc_ptr rop, mpc_ptr op, intmax_t i, mpc_rnd_t rnd) {
 
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
 
@@ -133,17 +152,15 @@ int _mpc_div_sj (mpc_ptr rop, mpc_ptr op, intmax_t i, mpc_rnd_t rnd) {
 
 #else
 
-   croak("_mpc_div_sj not implememnted on this build of perl");
+   croak("Rmpc_div_sj not implememnted on this build of perl");
 }
 
 #endif
 
 
-/* This function is used by overload_div and overload_div_eq whenn           */
-/* MATH_MPC_NEED_LONG_LONG_INT is defined.                                                */
-/* It is based on some code posted by Philippe Theveny.                      */
+/* This function is based on some code posted by Philippe Theveny. */
 
-int _mpc_sj_div (mpc_ptr rop, intmax_t i, mpc_ptr op, mpc_rnd_t rnd) {
+int Rmpc_sj_div (mpc_ptr rop, intmax_t i, mpc_ptr op, mpc_rnd_t rnd) {
 
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
 
@@ -161,19 +178,17 @@ int _mpc_sj_div (mpc_ptr rop, intmax_t i, mpc_ptr op, mpc_rnd_t rnd) {
 
 #else
 
-   croak("_mpc_sj_div not implememnted on this build of perl");
+   croak("Rmpc_sj_div not implememnted on this build of perl");
 }
 
 #endif
 
 
-/* This function is used by overload_div and overload_div_eq whenn           */
-/* NV_IS_LONG_DOUBLE or NV_IS_FLOAT128 is defined.                                               */
-/* It is based on some code posted by Philippe Theveny.                      */
+/* This function is based on some code posted by Philippe Theveny. */
 
-int _mpc_div_ld (mpc_ptr rop, mpc_ptr op, long double i, mpc_rnd_t rnd) {
+int Rmpc_div_ld (mpc_ptr rop, mpc_ptr op, long double i, mpc_rnd_t rnd) {
 
-#if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
+#ifdef USE_LONG_DOUBLE
 
    mpfr_t x;
    int inex;
@@ -189,19 +204,17 @@ int _mpc_div_ld (mpc_ptr rop, mpc_ptr op, long double i, mpc_rnd_t rnd) {
 
 #else
 
-   croak("_mpc_div_ld not implememnted on this build of perl");
+   croak("Rmpc_div_ld not implememnted on this build of perl");
 }
 
 #endif
 
 
-/* This function is used by overload_div and overload_div_eq whenn           */
-/* NV_IS_LONG_DOUBLE or NV_IS_FLOAT128 is defined.                                               */
-/* It is based on some code posted by Philippe Theveny.                      */
+/* This function is based on some code posted by Philippe Theveny. */
 
-int _mpc_ld_div (mpc_ptr rop, long double i, mpc_ptr op, mpc_rnd_t rnd) {
+int Rmpc_ld_div (mpc_ptr rop, long double i, mpc_ptr op, mpc_rnd_t rnd) {
 
-#if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
+#ifdef USE_LONG_DOUBLE
 
    mpfr_t x;
    int inex;
@@ -217,14 +230,14 @@ int _mpc_ld_div (mpc_ptr rop, long double i, mpc_ptr op, mpc_rnd_t rnd) {
 
 #else
 
-   croak("_mpc_ld_div not implememnted on this build of perl");
+   croak("Rmpc_ld_div not implememnted on this build of perl");
 }
 
 #endif
 
-/* This function is used by overload_div and overload_div_eq.                */
-/* It is based on some code posted by Philippe Theveny.                      */
-int _mpc_div_d (mpc_ptr rop, mpc_ptr op, double i, mpc_rnd_t rnd) {
+/* This function is based on some code posted by Philippe Theveny. */
+
+int Rmpc_div_d (mpc_ptr rop, mpc_ptr op, double i, mpc_rnd_t rnd) {
    mpfr_t x;
    int inex;
 
@@ -238,9 +251,9 @@ int _mpc_div_d (mpc_ptr rop, mpc_ptr op, double i, mpc_rnd_t rnd) {
 }
 
 
-/* This function is used by overload_div and overload_div_eq.                */
-/* It is based on some code posted by Philippe Theveny.                      */
-int _mpc_d_div (mpc_ptr rop, double i, mpc_ptr op, mpc_rnd_t rnd) {
+/* This function is based on some code posted by Philippe Theveny. */
+
+int Rmpc_d_div (mpc_ptr rop, double i, mpc_ptr op, mpc_rnd_t rnd) {
    mpfr_t x;
    int inex;
 
@@ -251,6 +264,74 @@ int _mpc_d_div (mpc_ptr rop, double i, mpc_ptr op, mpc_rnd_t rnd) {
 
    mpfr_clear (x);
    return inex;
+}
+
+
+SV * _mpfr_set_NV(pTHX_ mpfr_t * p, SV * q, unsigned int round) {
+
+#if defined(NV_IS_LONG_DOUBLE) && !defined(_MSC_VER)
+
+     if(!SvNOK(q)) croak("Second arg given to Math::MPC::_mpfr_set_NV is not an NV");
+
+     return newSViv(mpfr_set_ld(*p, (long double)SvNVX(q), (mp_rnd_t)round));
+
+#elif defined(CAN_PASS_FLOAT128)
+
+     if(!SvNOK(q)) croak("Second arg given to Rmpfr_set_NV is not an NV");
+
+     return newSViv(mpfr_set_float128(*p, (float128)SvNVX(q), (mp_rnd_t)round));
+
+#elif defined(NV_IS_FLOAT128)
+
+     char * buffer;
+     int exp, exp2 = 0;
+     float128 ld, buffer_size;
+     int returned;
+
+     if(!SvNOK(q)) croak("Second arg given to Math::MPC::_mpfr_set_NV is not an NV");
+
+
+     ld = (float128)SvNVX(q);
+
+     if(ld != ld) {
+       mpfr_set_nan(*p);
+       return newSViv(0);
+     }
+
+     if(ld != 0.0Q && (ld / ld != 1)) {
+       returned = ld > 0.0Q ? 1 : -1;
+       mpfr_set_inf(*p, returned);
+       return newSViv(0);
+     }
+
+     ld = frexpq((float128)SvNVX(q), &exp);
+
+     while(ld != floorq(ld)) {
+          ld *= 2;
+          exp2 += 1;
+     }
+
+     buffer_size = ld < 0.0Q ? ld * -1.0Q : ld;
+     buffer_size = ceilq(logq(buffer_size + 1) / 2.30258509299404568401799145468436418Q);
+
+     Newxz(buffer, buffer_size + 5, char);
+
+     returned = quadmath_snprintf(buffer, (size_t)buffer_size + 5, "%.0Qf", ld);
+     if(returned < 0) croak("In Math::MPC::_mpfr_set_NV, encoding error in quadmath_snprintf function");
+     if(returned >= buffer_size + 5) croak("In Math::MPC::_mpfr_set_NV, buffer given to quadmath_snprintf function was too small");
+     returned = mpfr_set_str(*p, buffer, 10, (mp_rnd_t)round);
+     Safefree(buffer);
+
+     if (exp2 > exp) mpfr_div_2ui(*p, *p, exp2 - exp, GMP_RNDN);
+     else mpfr_mul_2ui(*p, *p, exp - exp2, GMP_RNDN);
+     return newSViv(returned);
+
+#else
+
+     if(!SvNOK(q)) croak("Second arg given to Math::MPC::_mpfr_set_NV is not an NV");
+
+     return newSViv(mpfr_set_d (*p, (double)SvNVX(q), (mp_rnd_t)round));
+#endif
 }
 
 void Rmpc_set_default_rounding_mode(pTHX_ SV * round) {
@@ -1531,8 +1612,9 @@ SV * overload_true(pTHX_ mpc_t *a, SV *second, SV * third) {
 
 SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
      dMY_CXT;
-     mpc_t * mpc_t_obj, t;
+     mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
+     mpfr_t t;
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_mul function");
@@ -1545,29 +1627,29 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
 
      if(SvUOK(b)) {
-       mpc_init2(t, sizeof(UV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(UV) * CHAR_BIT);
 #ifdef _MSC_VER
 
-       mpc_set_str(t, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_uj(t, SvUVX(b), MPC_RNDNN);
+       mpfr_set_uj(t, SvUVX(b), GMP_RNDN);
 #endif
-       mpc_mul(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
+       mpc_mul_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
      if(SvIOK(b)) {
-       mpc_init2(t, sizeof(IV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
 
-       mpc_set_str(t, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_sj(t, SvIVX(b), MPC_RNDNN);
+       mpfr_set_sj(t, SvIVX(b), GMP_RNDN);
 
 #endif
-       mpc_mul(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
+       mpc_mul_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
@@ -1585,24 +1667,24 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
 
      if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
 #if defined(NV_IS_FLOAT128)
-       mpc_init2(t, FLT128_MANT_DIG);
-       Rmpc_set_NV(aTHX_ &t, b, MPC_RNDNN);
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
 
 #elif defined(NV_IS_LONG_DOUBLE)
-       mpc_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpc_set_ld(t, (long double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
 #else
-       mpc_init2(t, DBL_MANT_DIG);
-       mpc_set_d(t, (double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
 #endif
-       mpc_mul(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
+       mpc_mul_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
      if(SvPOK(b)) { /* assign the string with default precision */
        if(mpc_set_str(*mpc_t_obj, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
-         croak("Invalid string supplied to Math::MPC::overload_mul");
+         croak("Invalid string (%s) supplied to Math::MPC::overload_mul", SvPV_nolen(b));
        mpc_mul(*mpc_t_obj, *a, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
        return obj_ref;
      }
@@ -1620,8 +1702,9 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
 
 SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
      dMY_CXT;
-     mpc_t * mpc_t_obj, t;
+     mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
+     mpfr_t t;
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_add function");
@@ -1634,29 +1717,29 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
 
      if(SvUOK(b)) {
-       mpc_init2(t, sizeof(UV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(UV) * CHAR_BIT);
 #ifdef _MSC_VER
 
-       mpc_set_str(t, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_uj(t, SvUVX(b), MPC_RNDNN);
+       mpfr_set_uj(t, SvUVX(b), GMP_RNDN);
 #endif
-       mpc_add(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
+       mpc_add_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
      if(SvIOK(b)) {
-       mpc_init2(t, sizeof(IV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
 
-       mpc_set_str(t, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_sj(t, SvIVX(b), MPC_RNDNN);
+       mpfr_set_sj(t, SvIVX(b), GMP_RNDN);
 
 #endif
-       mpc_add(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
+       mpc_add_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
@@ -1677,24 +1760,24 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
 
      if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
 #if defined(NV_IS_FLOAT128)
-       mpc_init2(t, FLT128_MANT_DIG);
-       Rmpc_set_NV(aTHX_ &t, b, MPC_RNDNN);
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
 
 #elif defined(NV_IS_LONG_DOUBLE)
-       mpc_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpc_set_ld(t, (long double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
 #else
-       mpc_init2(t, DBL_MANT_DIG);
-       mpc_set_d(t, (double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
 #endif
-       mpc_add(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
+       mpc_add_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
      if(SvPOK(b)) { /* assign string with default precision */
        if(mpc_set_str(*mpc_t_obj, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
-         croak("Invalid string supplied to Math::MPC::overload_add");
+         croak("Invalid string (%s) supplied to Math::MPC::overload_add, SvPV_nolen(b)");
        mpc_add(*mpc_t_obj, *a, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
        return obj_ref;
      }
@@ -1712,8 +1795,9 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
 
 SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
      dMY_CXT;
-     mpc_t * mpc_t_obj, t;
+     mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
+     mpfr_t t;
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_sub function");
@@ -1726,31 +1810,31 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
 
      if(SvUOK(b)) {
-       mpc_init2(t, sizeof(UV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(UV) * CHAR_BIT);
 #ifdef _MSC_VER
 
-       mpc_set_str(t, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_uj(t, SvUVX(b), MPC_RNDNN);
+       mpfr_set_uj(t, SvUVX(b), GMP_RNDN);
 #endif
-       if(third == &PL_sv_yes) mpc_sub(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
-       else mpc_sub(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
+       if(third == &PL_sv_yes) mpc_fr_sub(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
+       else mpc_sub_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
      if(SvIOK(b)) {
-       mpc_init2(t, sizeof(IV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
 
-       mpc_set_str(t, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_sj(t, SvIVX(b), MPC_RNDNN);
+       mpfr_set_sj(t, SvIVX(b), GMP_RNDN);
 
 #endif
-       if(third == &PL_sv_yes) mpc_sub(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
-       else mpc_sub(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
+       if(third == &PL_sv_yes) mpc_fr_sub(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
+       else mpc_sub_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
@@ -1783,25 +1867,25 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
 
      if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
 #if defined(NV_IS_FLOAT128)
-       mpc_init2(t, FLT128_MANT_DIG);
-       Rmpc_set_NV(aTHX_ &t, b, MPC_RNDNN);
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
 
 #elif defined(NV_IS_LONG_DOUBLE)
-       mpc_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpc_set_ld(t, (long double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
 #else
-       mpc_init2(t, DBL_MANT_DIG);
-       mpc_set_d(t, (double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
 #endif
-       if(third == &PL_sv_yes) mpc_sub(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
-       else mpc_sub(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
+       if(third == &PL_sv_yes) mpc_fr_sub(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
+       else mpc_sub_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
      if(SvPOK(b)) { /* assign with default precision */
        if(mpc_set_str(*mpc_t_obj, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
-         croak("Invalid string supplied to Math::MPC::overload_sub");
+         croak("Invalid string (%s) supplied to Math::MPC::overload_sub", SvPV_nolen(b));
        if(third == &PL_sv_yes) mpc_sub(*mpc_t_obj, *mpc_t_obj, *a, DEFAULT_ROUNDING_MODE);
        else mpc_sub(*mpc_t_obj, *a, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
        return obj_ref;
@@ -1820,8 +1904,9 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
 
 SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
      dMY_CXT;
-     mpc_t * mpc_t_obj, t;
+     mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
+     mpfr_t t;
 
 
      New(1, mpc_t_obj, 1, mpc_t);
@@ -1835,31 +1920,31 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
 
      if(SvUOK(b)) {
-       mpc_init2(t, sizeof(UV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(UV) * CHAR_BIT);
 #ifdef _MSC_VER
 
-       mpc_set_str(t, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_uj(t, SvUV(b), MPC_RNDNN);
+       mpfr_set_uj(t, SvUVX(b), GMP_RNDN);
 #endif
-       if(third == &PL_sv_yes) mpc_div(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
-       else mpc_div(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
+       if(third == &PL_sv_yes) mpc_fr_div(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
+       else mpc_div_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
      if(SvIOK(b)) {
-       mpc_init2(t, sizeof(IV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
 
-       mpc_set_str(t, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_sj(t, SvIV(b), MPC_RNDNN);
+       mpfr_set_sj(t, SvIVX(b), GMP_RNDN);
 
 #endif
-       if(third == &PL_sv_yes) mpc_div(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
-       else mpc_div(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
+       if(third == &PL_sv_yes) mpc_fr_div(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
+       else mpc_div_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
@@ -1895,25 +1980,25 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
 
      if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
 #if defined(NV_IS_FLOAT128)
-       mpc_init2(t, FLT128_MANT_DIG);
-       Rmpc_set_NV(aTHX_ &t, b, MPC_RNDNN);
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
 
 #elif defined(NV_IS_LONG_DOUBLE)
-       mpc_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpc_set_ld(t, (long double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
 #else
-       mpc_init2(t, DBL_MANT_DIG);
-       mpc_set_d(t, (double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
 #endif
-       if(third == &PL_sv_yes) mpc_div(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
-       else mpc_div(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
+       if(third == &PL_sv_yes) mpc_fr_div(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
+       else mpc_div_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
      if(SvPOK(b)) { /* assign with default precision */
        if(mpc_set_str(*mpc_t_obj, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
-         croak("Invalid string supplied to Math::MPC::overload_div");
+         croak("Invalid string (%s) supplied to Math::MPC::overload_div", SvPV_nolen(b));
        if(third == &PL_sv_yes) mpc_div(*mpc_t_obj, *mpc_t_obj, *a, DEFAULT_ROUNDING_MODE);
        else mpc_div(*mpc_t_obj, *a, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
        return obj_ref;
@@ -1934,33 +2019,33 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
 
 SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
      dMY_CXT;
+     mpfr_t t;
      mpc_t temp;
-     mpfr_t nv;
 
      SvREFCNT_inc(a);
 
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
-       mpc_init2(temp, sizeof(UV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(UV) * CHAR_BIT);
 #ifdef _MSC_VER
-       mpc_set_str(temp, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_uj(temp, SvUVX(b), MPC_RNDNN);
+       mpfr_set_uj(t, SvUVX(b), GMP_RNDN);
 #endif
-       mpc_div(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_div_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
      }
 
      if(SvIOK(b)) {
-       mpc_init2(temp, sizeof(IV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
-       mpc_set_str(temp, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_sj(temp, SvIVX(b), MPC_RNDNN);
+       mpfr_set_sj(t, SvIVX(b), GMP_RNDN);
 #endif
-       mpc_div(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_div_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
      }
 #else
@@ -1982,39 +2067,39 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
 
      if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
 #if defined(NV_IS_FLOAT128)
-       mpc_init2(temp, FLT128_MANT_DIG);
-       Rmpc_set_NV(aTHX_ &temp, b, MPC_RNDNN);
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
 
 #elif defined(NV_IS_LONG_DOUBLE)
-       mpc_init2(temp, REQUIRED_LDBL_MANT_DIG);
-       mpc_set_ld(temp, (long double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
 #else
-       mpc_init2(temp, DBL_MANT_DIG);
-       mpc_set_d(temp, (double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
 #endif
-       mpc_div(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_div_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
-       }
+     }
 
      if(SvPOK(b)) {
-       mpc_init3(temp, DEFAULT_PREC);
+       mpc_init3(temp, DEFAULT_PREC);  /* cannot assign to an mpfr_t - may have an imaginary component */
        if(mpc_set_str(temp, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1) {
          SvREFCNT_dec(a);
-         croak("Invalid string supplied to Math::MPC::overload_div_eq");
-         }
-       mpc_div(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+         croak("Invalid string (%s) supplied to Math::MPC::overload_div_eq", SvPV_nolen(b));
+       }
+       mpc_div(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
-       }
+     }
 
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
          mpc_div(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
-         }
        }
+     }
 
      SvREFCNT_dec(a);
      croak("Invalid argument supplied to Math::MPC::overload_div_eq function");
@@ -2023,86 +2108,86 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
 
 SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
      dMY_CXT;
+     mpfr_t t;
      mpc_t temp;
-     mpfr_t nv;
 
      SvREFCNT_inc(a);
 
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
-       mpc_init2(temp, sizeof(UV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(UV) * CHAR_BIT);
 #ifdef _MSC_VER
-       mpc_set_str(temp, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_uj(temp, SvUVX(b), MPC_RNDNN);
+       mpfr_set_uj(t, SvUVX(b), GMP_RNDN);
 #endif
-       mpc_sub(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_sub_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
-       }
+     }
 
      if(SvIOK(b)) {
-       mpc_init2(temp, sizeof(IV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
-       mpc_set_str(temp, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_sj(temp, SvIVX(b), MPC_RNDNN);
+       mpfr_set_sj(t, SvIVX(b), GMP_RNDN);
 #endif
-       mpc_sub(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_sub_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
-       }
+     }
 #else
      if(SvUOK(b)) {
        mpc_sub_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
        return a;
-       }
+     }
 
      if(SvIOK(b)) {
        if(SvIV(b) >= 0) {
          mpc_sub_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
          return a;
-         }
+       }
        mpc_add_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvIVX(b) * -1, DEFAULT_ROUNDING_MODE);
        return a;
-       }
+     }
 #endif
 
      if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
 #if defined(NV_IS_FLOAT128)
-       mpc_init2(temp, FLT128_MANT_DIG);
-       Rmpc_set_NV(aTHX_ &temp, b, MPC_RNDNN);
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
 
 #elif defined(NV_IS_LONG_DOUBLE)
-       mpc_init2(temp, REQUIRED_LDBL_MANT_DIG);
-       mpc_set_ld(temp, (long double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
 #else
-       mpc_init2(temp, DBL_MANT_DIG);
-       mpc_set_d(temp, (double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
 #endif
-       mpc_sub(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_sub_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
-       }
+     }
 
      if(SvPOK(b)) {
-       mpc_init3(temp, DEFAULT_PREC);
+       mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may have an imaginary component */
        if(mpc_set_str(temp, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1) {
          SvREFCNT_dec(a);
-         croak("Invalid string supplied to Math::MPC::overload_sub_eq");
-         }
-       mpc_sub(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+         croak("Invalid string (%s) supplied to Math::MPC::overload_sub_eq", SvPV_nolen(b));
+       }
+       mpc_sub(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
-       }
+     }
 
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
          mpc_sub(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
-         }
        }
+     }
 
      SvREFCNT_dec(a);
      croak("Invalid argument supplied to Math::MPC::overload_sub_eq function");
@@ -2111,85 +2196,85 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
 
 SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
      dMY_CXT;
-     mpc_t temp;
      SvREFCNT_inc(a);
-     mpfr_t nv;
+     mpfr_t t;
+     mpc_t temp;
 
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
-       mpc_init2(temp, sizeof(UV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(UV) * CHAR_BIT);
 #ifdef _MSC_VER
-       mpc_set_str(temp, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_uj(temp, SvUV(b), MPC_RNDNN);
+       mpfr_set_uj(t, SvUV(b), GMP_RNDN);
 #endif
-       mpc_add(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_add_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
-       }
+     }
 
      if(SvIOK(b)) {
-       mpc_init2(temp, sizeof(UV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(UV) * CHAR_BIT);
  #ifdef _MSC_VER
-       mpc_set_str(temp, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_sj(temp, SvIV(b),MPC_RNDNN);
+       mpfr_set_sj(t, SvIV(b), GMP_RNDN);
 #endif
-       mpc_add(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_add_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
-       }
+     }
 #else
      if(SvUOK(b)) {
        mpc_add_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
        return a;
-       }
+     }
 
      if(SvIOK(b)) {
        if(SvIV(b) >= 0) {
          mpc_add_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
          return a;
-         }
+       }
        mpc_sub_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvIVX(b) * -1, DEFAULT_ROUNDING_MODE);
        return a;
-       }
+     }
 #endif
 
      if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
 #if defined(NV_IS_FLOAT128)
-       mpc_init2(temp, FLT128_MANT_DIG);
-       Rmpc_set_NV(aTHX_ &temp, b, MPC_RNDNN);
+       mpfr_init2(t, FLT128_MANT_DIG);
+      _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
 
 #elif defined(NV_IS_LONG_DOUBLE)
-       mpc_init2(temp, REQUIRED_LDBL_MANT_DIG);
-       mpc_set_ld(temp, (long double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
 #else
-       mpc_init2(temp, DBL_MANT_DIG);
-       mpc_set_d(temp, (double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
 #endif
-       mpc_add(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_add_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
-       }
+     }
 
      if(SvPOK(b)) {
-       mpc_init3(temp, DEFAULT_PREC);
+       mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may contain an imaginary part */
        if(mpc_set_str(temp, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1) {
          SvREFCNT_dec(a);
-         croak("Invalid string supplied to Math::MPC::overload_add_eq");
-         }
-       mpc_add(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+         croak("Invalid string (%s) supplied to Math::MPC::overload_add_eq", SvPV_nolen(b));
+       }
+       mpc_add(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
-       }
+     }
 
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
          mpc_add(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
-         }
        }
+     }
 
      SvREFCNT_dec(a);
      croak("Invalid argument supplied to Math::MPC::overload_add_eq");
@@ -2197,83 +2282,83 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
 
 SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
      dMY_CXT;
+     mpfr_t t;
      mpc_t temp;
-     mpfr_t nv;
 
      SvREFCNT_inc(a);
 
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
-       mpc_init2(temp, sizeof(UV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(UV) * CHAR_BIT);
 #ifdef _MSC_VER
-       mpc_set_str(temp, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_uj(temp, SvUVX(b), MPC_RNDNN);
+       mpfr_set_uj(t, SvUVX(b), GMP_RNDN);
 #endif
-       mpc_mul(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_mul_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
-       }
+     }
 
      if(SvIOK(b)) {
-       mpc_init2(temp, sizeof(IV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
-       mpc_set_str(temp, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_sj(temp, SvIVX(b), MPC_RNDNN);
+       mpfr_set_sj(t, SvIVX(b), GMP_RNDN);
 #endif
-       mpc_mul(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_mul_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
-       }
+     }
 #else
      if(SvUOK(b)) {
        mpc_mul_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
        return a;
-       }
+     }
 
      if(SvIOK(b)) {
        mpc_mul_si(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvIVX(b), DEFAULT_ROUNDING_MODE);
        return a;
-       }
+     }
 
 #endif
 
      if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
 #if defined(NV_IS_FLOAT128)
-       mpc_init2(temp, FLT128_MANT_DIG);
-       Rmpc_set_NV(aTHX_ &temp, b, MPC_RNDNN);
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
 
 #elif defined(NV_IS_LONG_DOUBLE)
-       mpc_init2(temp, REQUIRED_LDBL_MANT_DIG);
-       mpc_set_ld(temp, (long double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
 #else
-       mpc_init2(temp, DBL_MANT_DIG);
-       mpc_set_d(temp, (double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
 #endif
-       mpc_mul(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_mul_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
-       }
+     }
 
      if(SvPOK(b)) {
-       mpc_init3(temp, DEFAULT_PREC);
+       mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may contain an imaginary part */
        if(mpc_set_str(temp, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1) {
          SvREFCNT_dec(a);
-         croak("Invalid string supplied to Math::MPC::overload_mul_eq");
-         }
-       mpc_mul(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+         croak("Invalid string (%s) supplied to Math::MPC::overload_mul_eq", SvPV_nolen(b));
+       }
+       mpc_mul(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
-       }
+     }
 
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
          mpc_mul(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
-         }
        }
+     }
 
      SvREFCNT_dec(a);
      croak("Invalid argument supplied to Math::MPC::overload_mul_eq");
@@ -2283,7 +2368,6 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
      dMY_CXT;
      mpc_t * mpc_t_obj, t;
      SV * obj_ref, * obj;
-     mpfr_t nv;
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_pow function");
@@ -2372,7 +2456,7 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
      if(SvPOK(b)) {
        mpc_init3(t, DEFAULT_PREC);
        if(mpc_set_str(t, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
-         croak("Invalid string supplied to Math::MPC::overload_pow");
+         croak("Invalid string (%s) supplied to Math::MPC::overload_pow", SvPV_nolen(b));
        if(third == &PL_sv_yes)
          mpc_pow(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
        else
@@ -2394,33 +2478,34 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
 
 SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
      dMY_CXT;
+     mpfr_t t;
      mpc_t temp;
-     mpfr_t nv;
+
 
      SvREFCNT_inc(a);
 
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SvUOK(b)) {
-       mpc_init2(temp, sizeof(UV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(UV) * CHAR_BIT);
 #ifdef _MSC_VER
-       mpc_set_str(temp, SvPV_nolen(b), 10, DMPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_uj(temp, SvUVX(b), MPC_RNDNN);
+       mpfr_set_uj(t, SvUVX(b), GMP_RNDN);
 #endif
-       mpc_pow(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_pow_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
      }
 
      if(SvIOK(b)) {
-       mpc_init2(temp, sizeof(IV) * CHAR_BIT);
+       mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
-       mpc_set_str(temp, SvPV_nolen(b), 10, MPC_RNDNN);
+       mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
 #else
-       mpc_set_sj(temp, SvIV(b), MPC_RNDNN);
+       mpfr_set_sj(t, SvIVX(b), GMP_RNDN);
 #endif
-       mpc_pow(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_pow_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
      }
 #else
@@ -2438,28 +2523,28 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
 
      if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
 #if defined(NV_IS_FLOAT128)
-       mpc_init2(temp, FLT128_MANT_DIG);
-       Rmpc_set_NV(aTHX_ &temp, b, MPC_RNDNN);
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
 
 #elif defined(NV_IS_LONG_DOUBLE)
-       mpc_init2(temp, REQUIRED_LDBL_MANT_DIG);
-       mpc_set_ld(temp, (long double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
 #else
-       mpc_init2(temp, DBL_MANT_DIG);
-       mpc_set_d(temp, (double)SvNVX(b), MPC_RNDNN);
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
 #endif
-       mpc_pow(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
-       mpc_clear(temp);
+       mpc_pow_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
-       }
+     }
 
      if(SvPOK(b)) {
-       mpc_init3(temp, DEFAULT_PREC);
+       mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may contain an imaginary part */
        if(mpc_set_str(temp, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1) {
          SvREFCNT_dec(a);
-         croak("Invalid string supplied to Math::MPC::overload_pow_eq");
+         croak("Invalid string (%s) supplied to Math::MPC::overload_pow_eq", SvPV_nolen(b));
        }
-       mpc_pow(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
+       mpc_pow(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
        return a;
      }
@@ -2550,9 +2635,27 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
      }
 
      if(SvPOK(b)) {
-       mpc_init3(t, DEFAULT_PREC);
-       if(mpc_set_str(t, (char *)SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE))
-         croak("Invalid string supplied to Math::MPC::overload_equiv");
+#ifdef _WIN32
+       ret = _win32_infnanstring(SvPV_nolen(b));
+       if(ret) {
+         if(ret == 2) return newSViv(0);
+         else {
+           mpc_init3(t, DEFAULT_PREC);
+           mpfr_init(temp);
+           mpfr_set_inf(temp, ret);
+           mpc_set_fr(t, temp, MPC_RNDNN);
+           mpfr_clear(temp);
+         }
+       }
+       else {
+         mpc_init3(t, DEFAULT_PREC);
+         if(mpc_set_str(t, (char *)SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
+           croak("Invalid string (%s) supplied to Math::MPC::overload_equiv", SvPV_nolen(b));
+       }
+#else
+       if(mpc_set_str(t, (char *)SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
+         croak("Invalid string (%s) supplied to Math::MPC::overload_equiv", SvPV_nolen(b));
+#endif
        if(mpfr_nan_p(MPC_RE(t)) || mpfr_nan_p(MPC_IM(t))) {
          mpc_clear(t);
          return newSViv(0);
@@ -2817,7 +2920,7 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
      if(SvUOK(b) && !done_re) {
        mpfr_set_ui(temp_re, SvUVX(b), DEFAULT_ROUNDING_MODE & 3);
        done_re = 1;
-       }
+     }
 
      if(SvIOK(b) && !done_re) {
        mpfr_set_si(temp_re, SvIVX(b), DEFAULT_ROUNDING_MODE & 3);
@@ -2837,9 +2940,20 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
      }
 
      if(SvPOK(b) && !done_re) {
-       if(mpfr_set_str(temp_re, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE & 3))
-         croak("Invalid real string supplied to Math::MPC::new");
-
+#ifdef _WIN32
+       done_re = _win32_infnanstring(SvPV_nolen(b));
+       if(done_re) {
+         if(done_re == 2) mpfr_set_nan(temp_re);
+         else mpfr_set_inf(temp_re, done_re);
+       }
+       else {
+         if(mpfr_set_str(temp_re, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE & 3) == -1)
+           croak("Invalid real string (%s) supplied to Math::MPC::new", SvPV_nolen(b));
+       }
+#else
+       if(mpfr_set_str(temp_re, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE & 3) == -1)
+         croak("Invalid real string (%s) supplied to Math::MPC::new", SvPV_nolen(b));
+#endif
        done_re = 1;
      }
 
@@ -2893,7 +3007,7 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
      if(SvUOK(d) && !done_im) {
        mpfr_set_ui(temp_im, SvUVX(d), DEFAULT_ROUNDING_MODE / 16);
        done_im = 1;
-       }
+     }
 
      if(SvIOK(d) && !done_im) {
        mpfr_set_si(temp_im, SvIVX(d), DEFAULT_ROUNDING_MODE / 16);
@@ -2913,9 +3027,20 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
      }
 
      if(SvPOK(d) && !done_im) {
-       if(mpfr_set_str(temp_im, SvPV_nolen(d), 0, DEFAULT_ROUNDING_MODE / 16))
-         croak("Invalid imaginary string supplied to Math::MPC::new");
-
+#ifdef _WIN32
+       done_im = _win32_infnanstring(SvPV_nolen(d));
+       if(done_im) {
+         if(done_im == 2) mpfr_set_nan(temp_im);
+         else mpfr_set_inf(temp_im, done_im);
+       }
+       else {
+         if(mpfr_set_str(temp_im, SvPV_nolen(d), 0, DEFAULT_ROUNDING_MODE & 3) == -1)
+           croak("Invalid imaginary string (%s) supplied to Math::MPC::new", SvPV_nolen(d));
+       }
+#else
+       if(mpfr_set_str(temp_im, SvPV_nolen(d), 0, DEFAULT_ROUNDING_MODE & 3) == -1)
+         croak("Invalid imaginary string (%s) supplied to Math::MPC::new", SvPV_nolen(d));
+#endif
        done_im = 1;
      }
 
@@ -3300,67 +3425,80 @@ PROTOTYPES: DISABLE
 
 
 int
-_mpc_mul_sj (rop, op, i, rnd)
+_win32_infnanstring (s)
+	char *	s
+
+int
+Rmpc_mul_sj (rop, op, i, rnd)
 	mpc_ptr	rop
 	mpc_ptr	op
 	intmax_t	i
 	mpc_rnd_t	rnd
 
 int
-_mpc_mul_ld (rop, op, i, rnd)
+Rmpc_mul_ld (rop, op, i, rnd)
 	mpc_ptr	rop
 	mpc_ptr	op
 	long double	i
 	mpc_rnd_t	rnd
 
 int
-_mpc_mul_d (rop, op, i, rnd)
+Rmpc_mul_d (rop, op, i, rnd)
 	mpc_ptr	rop
 	mpc_ptr	op
 	double	i
 	mpc_rnd_t	rnd
 
 int
-_mpc_div_sj (rop, op, i, rnd)
+Rmpc_div_sj (rop, op, i, rnd)
 	mpc_ptr	rop
 	mpc_ptr	op
 	intmax_t	i
 	mpc_rnd_t	rnd
 
 int
-_mpc_sj_div (rop, i, op, rnd)
+Rmpc_sj_div (rop, i, op, rnd)
 	mpc_ptr	rop
 	intmax_t	i
 	mpc_ptr	op
 	mpc_rnd_t	rnd
 
 int
-_mpc_div_ld (rop, op, i, rnd)
+Rmpc_div_ld (rop, op, i, rnd)
 	mpc_ptr	rop
 	mpc_ptr	op
 	long double	i
 	mpc_rnd_t	rnd
 
 int
-_mpc_ld_div (rop, i, op, rnd)
+Rmpc_ld_div (rop, i, op, rnd)
 	mpc_ptr	rop
 	long double	i
 	mpc_ptr	op
 	mpc_rnd_t	rnd
 
 int
-_mpc_div_d (rop, op, i, rnd)
+Rmpc_div_d (rop, op, i, rnd)
 	mpc_ptr	rop
 	mpc_ptr	op
 	double	i
 	mpc_rnd_t	rnd
 
 int
-_mpc_d_div (rop, i, op, rnd)
+Rmpc_d_div (rop, i, op, rnd)
 	mpc_ptr	rop
 	double	i
 	mpc_ptr	op
 	mpc_rnd_t	rnd
+
+SV *
+_mpfr_set_NV (p, q, round)
+	mpfr_t *	p
+	SV *	q
+	unsigned int	round
+CODE:
+  RETVAL = _mpfr_set_NV (aTHX_ p, q, round);
+OUTPUT:  RETVAL
 
 void
 Rmpc_set_default_rounding_mode (round)

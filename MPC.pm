@@ -213,16 +213,6 @@ else   {$Math::MPC::no_complex_c_q = 0 }
 *Rmpc_set_d_ld  = \&Rmpc_set_ld_ld;
 *Rmpc_set_ld_d  = \&Rmpc_set_ld_ld;
 
-*Rmpc_mul_sj  = \&Math::MPC::_mpc_mul_sj;
-*Rmpc_mul_ld  = \&Math::MPC::_mpc_mul_ld;
-*Rmpc_mul_d   = \&Math::MPC::_mpc_mul_d;
-*Rmpc_div_sj  = \&Math::MPC::_mpc_div_sj;
-*Rmpc_sj_div  = \&Math::MPC::_mpc_sj_div;
-*Rmpc_div_ld  = \&Math::MPC::_mpc_div_ld;
-*Rmpc_ld_div  = \&Math::MPC::_mpc_ld_div;
-*Rmpc_div_d   = \&Math::MPC::_mpc_div_d;
-*Rmpc_d_div   = \&Math::MPC::_mpc_d_div;
-
 # Beginning with mpc-1.0, mpc_mul_2exp and mpc_div_2exp
 # were renamed to mpc_mul_2ui and mpc_div_2ui.
 *Rmpc_mul_2exp = \&Rmpc_mul_2ui;

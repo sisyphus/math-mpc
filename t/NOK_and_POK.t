@@ -1,45 +1,23 @@
 use strict;
 use warnings;
 use Math::MPC qw(:mpc);
+use Math::MPFR qw(:mpfr);
 
-print "1..26\n";
+print "1..16\n";
 
 my $n = '98765' x 80;
 my $r = '98765' x 80;
 my $z;
-my $check = 0;
-
-# $Math::MPC::NOK_POK = 1; # Uncomment to view warnings.
-
-if(Math::MPC::nok_pokflag() == $check) {print "ok 1\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 1\n";
-}
-
-adj($n, \$check, 1); # Should do nothing
 
 if($n > 0) { # sets NV slot to inf, and turns on the NOK flag
-  adj($n, \$check, 1);
   $z = Math::MPC->new($n);
 }
 
-if(Math::MPC::nok_pokflag() == $check) {print "ok 2\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 2\n";
-}
 
-if($z == $r) {print "ok 3\n"}
+if($z == $r) {print "ok 1\n"}
 else {
   warn "$z != $r\n";
-  print "not ok 3\n";
-}
-
-if(Math::MPC::nok_pokflag() == $check) {print "ok 4\n"} # No change as $r is not a dualvar.
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 4\n";
+  print "not ok 1\n";
 }
 
 my $inf = 999**(999**999); # value is inf, NOK flag is set.
@@ -48,218 +26,152 @@ my $nan = $inf / $inf; # value is nan, NOK flag is set.
 my $discard = eval{"$inf"}; # POK flag is now also set for $inf (mostly)
 $discard    = eval{"$nan"}; # POK flag is now also set for $nan (mostly)
 
-adj($inf, \$check, 1);
 
 $z = Math::MPC->new($inf);
 
-if(Math::MPC::nok_pokflag() == $check) {print "ok 5\n"}
+my $check = Math::MPFR->new();
+
+RMPC_RE($check, $z);
+
+if(Rmpfr_inf_p($check) && $check > 0) {print "ok 2\n"}
 else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 5\n";
+  warn "\n Expected +ve inf\n Got $check\n";
+  print "not ok 2\n";
 }
 
-if(Rmpc_inf_p($z)) {print "ok 6\n"}
-else {
-  warn "\n Expected inf\n Got $z\n";
-  print "not ok 6\n";
-}
-
-adj($inf, \$check, 1);
-
-if($z == $inf) {print "ok 7\n"}
+if($z == $inf) {print "ok 3\n"}
 else {
   warn "$z != inf\n";
-  print "not ok 7\n";
+  print "not ok 3\n";
 }
-
-if(Math::MPC::nok_pokflag() == $check) {print "ok 8\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 8\n";
-}
-
-adj($nan, \$check, 1);
 
 my $z2 = Math::MPC->new($nan);
 
-if(Math::MPC::nok_pokflag() == $check) {print "ok 9\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 9\n";
-}
+RMPC_RE($check, $z2);
 
-if(Rmpc_nan_p($z2)) {print "ok 10\n"}
+if(Rmpfr_nan_p($check)) {print "ok 4\n"}
 else {
-  warn "\n Expected nan\n Got $z2\n";
-  print "not ok 10\n";
+  warn "\n Expected nan\n Got $check\n";
+  print "not ok 4\n";
 }
 
 my $fr = Math::MPC->new(10);
 
-adj($n, \$check, 1);
 
-my $ret = ($fr > $n);
 
-if(Math::MPC::nok_pokflag() == $check) {print "ok 11\n"}
+my $ret = $fr * $inf;
+
+RMPC_RE($check, $ret);
+
+if(Rmpfr_inf_p($check) && $check > 0) {print "ok 5\n"}
 else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 11\n";
+  warn "\n Expected +ve inf\n Got $ret\n";
+  print "not ok 5\n";
 }
-
-adj($inf, \$check, 1);
-
-$ret = ($fr < $inf);
-
-if(Math::MPC::nok_pokflag() == $check) {print "ok 12\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 12\n";
-}
-
-adj($inf, \$check, 1);
-
-$ret = ($fr >= $inf);
-
-if(Math::MPC::nok_pokflag() == $check) {print "ok 13\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 13\n";
-}
-
-adj($inf, \$check, 1);
-
-$ret = ($fr <= $inf);
-
-if(Math::MPC::nok_pokflag() == $check) {print "ok 14\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 14\n";
-}
-
-adj($inf, \$check, 1);
-
-$ret = ($fr <=> $inf);
-
-if(Math::MPC::nok_pokflag() == $check) {print "ok 15\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 15\n";
-}
-
-adj($inf, \$check, 1);
-
-$ret = $fr * $inf;
-
-if(Math::MPC::nok_pokflag() == $check) {print "ok 16\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 16\n";
-}
-
-adj($inf, \$check, 1);
 
 $ret = $fr + $inf;
 
-if(Math::MPC::nok_pokflag() == $check) {print "ok 17\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 17\n";
-}
+RMPC_RE($check, $ret);
 
-adj($inf, \$check, 1);
+if(Rmpfr_inf_p($check) && $check > 0) {print "ok 6\n"}
+else {
+  warn "\n Expected +ve inf\n Got $ret\n";
+  print "not ok 6\n";
+}
 
 $ret = $fr - $inf;
 
-if(Math::MPC::nok_pokflag() == $check) {print "ok 18\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 18\n";
-}
+RMPC_RE($check, $ret);
 
-adj($inf, \$check, 1);
+if(Rmpfr_inf_p($check) && $check < 0) {print "ok 7\n"}
+else {
+  warn "\n Expected -ve inf\n Got $ret\n";
+  print "not ok 7\n";
+}
 
 $ret = $fr / $inf;
 
-if(Math::MPC::nok_pokflag() == $check) {print "ok 19\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 19\n";
-}
+RMPC_RE($check, $ret);
 
-adj($inf, \$check, 1);
+if(Rmpfr_zero_p($check)) {print "ok 8\n"}
+else {
+  warn "\n Expected 0\n Got $ret\n";
+  print "not ok 8\n";
+}
 
 $ret = $inf ** $fr;
 
-if(Math::MPC::nok_pokflag() == $check) {print "ok 20\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 20\n";
-}
+RMPC_RE($check, $ret);
 
-adj($inf, \$check, 1);
+if(Rmpfr_inf_p($check) && $check > 0) {print "ok 9\n"}
+else {
+  warn "\n Expected +ve inf\n Got $ret\n";
+  print "not ok 9\n";
+}
 
 $fr *= $inf;
 
-if(Math::MPC::nok_pokflag() == $check) {print "ok 21\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 21\n";
-}
+RMPC_RE($check, $fr);
 
-adj($inf, \$check, 1);
+if(Rmpfr_inf_p($check) && $check > 0) {print "ok 10\n"}
+else {
+  warn "\n Expected +ve inf\n Got $ret\n";
+  print "not ok 10\n";
+}
 
 $fr += $inf;
 
-if(Math::MPC::nok_pokflag() == $check) {print "ok 22\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 22\n";
-}
+RMPC_RE($check, $fr);
 
-adj($inf, \$check, 1);
+if(Rmpfr_inf_p($check) && $check > 0) {print "ok 11\n"}
+else {
+  warn "\n Expected +ve inf\n Got $ret\n";
+  print "not ok 11\n";
+}
 
 $fr -= $inf;
 
-if(Math::MPC::nok_pokflag() == $check) {print "ok 23\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 23\n";
-}
+RMPC_RE($check, $fr);
 
-adj($inf, \$check, 1);
+if(Rmpfr_nan_p($check)) {print "ok 12\n"}
+else {
+  warn "\n Expected nan\n Got $ret\n";
+  print "not ok 12\n";
+}
 
 $fr /= $inf;
 
-if(Math::MPC::nok_pokflag() == $check) {print "ok 24\n"}
-else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 24\n";
-}
+RMPC_RE($check, $fr);
 
-adj($inf, \$check, 1);
+if(Rmpfr_nan_p($check)) {print "ok 13\n"}
+else {
+  warn "\n Expected nan\n Got $ret\n";
+  print "not ok 13\n";
+}
 
 $inf **= Math::MPC->new(1);
 
-if(Math::MPC::nok_pokflag() == $check) {print "ok 25\n"}
+RMPC_RE($check, $inf);
+
+if(Rmpfr_inf_p($check) && $check > 0) {print "ok 14\n"}
 else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 25\n";
+  warn "\n Expected +ve inf\n Got $ret\n";
+  print "not ok 14\n";
 }
 
-adj($n, \$check, 1);
-
-$ret = ($z != $n);
-
-if(Math::MPC::nok_pokflag() == $check) {print "ok 26\n"}
+if($z != $n) {print "ok 15\n"}
 else {
-  warn "\n", Math::MPC::nok_pokflag(), " != $check\n";
-  print "not ok 26\n";
+  warn "\n$z == $n\n";
+  print "not ok 15\n";
 }
 
-########
-
-sub adj {
-  if(Math::MPC::_SvNOK($_[0]) && Math::MPC::_SvPOK($_[0])) {
-  ${$_[1]} += $_[2];
-  }
+if($z == $n) {
+  warn "\n$z == $n\n";
+  print "not ok 16\n";
 }
+else {
+  print "ok 16\n";
+}
+
+
+

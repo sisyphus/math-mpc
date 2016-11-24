@@ -80,6 +80,10 @@ print "If this is wrong, see the \"_Complex C types support\" section in the REA
 
 $defines .= " -DNV_IS_DOUBLE" if $Config{nvtype} eq 'double';
 
+if($^O =~ /MSWin32/i && $] < 5.022) {
+  $defines .= " -D_WIN32_BIZARRE_INFNAN";
+}
+
 my %options = (
   NAME => 'Math::MPC',
   AUTHOR => 'Sisyphus (sisyphus at (@) cpan dot (.) org)',

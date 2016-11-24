@@ -2885,6 +2885,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
            croak("Invalid string (%s) supplied to Math::MPC::overload_equiv", SvPV_nolen(b));
        }
 #else
+       mpc_init3(t, DEFAULT_PREC);
        if(mpc_set_str(t, (char *)SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
          croak("Invalid string (%s) supplied to Math::MPC::overload_equiv", SvPV_nolen(b));
 #endif

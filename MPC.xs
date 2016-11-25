@@ -63,7 +63,7 @@ int _win32_infnanstring(char * s) { /* MS Windows only - detect 1.#INF and 1.#IN
 
   return 0;
 #else
-  croak("_win32_infnanstring not implemented for this build of perl");
+  croak("Math::MPC::_win32_infnanstring not implemented for this build of perl");
 #endif
 }
 

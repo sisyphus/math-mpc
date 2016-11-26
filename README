@@ -53,14 +53,14 @@ perl Makefile.pl INC="-I/path/to/gmp_includes -I/path/to/mpfr_includes -I/path/t
 
 If your perl's Config reports that 'ivsize' is greater than or
 equal to 8 && 'ivtype' is not 'long', then Math::MPC will, by default,
-be built with access to the mpfr_*_uj and mpfr_*_sj functions. Else,
+be built with access to the mpc_*_uj and mpc_*_sj functions. Else,
 access to those functions is, by default, denied. You can override the
 default by opening up the Makefile.PL and uncommenting the appropriate
 line (just a few lines down from the top of the file ... the comments in
 that file should make it clear).
 
 Similarly, if your perl's Config reports that 'nvsize' is greater than
-8 then Math::MPC will be built with access to the mpfr_*_ld functions.
+8 then Math::MPC will be built with access to the mpc_*_ld functions.
 Else, access to those functions is, by default, denied. Again, you can
 override the default by opening up the Makefile.PL and uncommenting the
 appropriate line.
@@ -69,6 +69,18 @@ I believe it to be both unnecessary and inadvisable to override the
 default - but if you do find that you need to override the default,
 please let me know. That you have found it necessary to override the
 default is something I probably ought to know about.
+
+===================
+__float128 support
+===================
+
+If $Config{nvtype} is __float128 then passing these values from perl
+to Math::MPC will be automatically supported - using Rmpc_set_NV
+and Rmpc_set_NV_NV functions.
+Returning the values (as __float128) from Math::MPC has to be done via
+accessing the real and imaginary parts as Math::MPFR objects (for which
+you use RMPC_RE and RMPC_IM) - and then using Rmpfr_get_NV to return the
+__float128 values.
 
 =========================
 _Complex C types support

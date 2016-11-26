@@ -36,6 +36,14 @@ mp_prec_t _perl_default_prec_re = 53;
 mp_prec_t _perl_default_prec_im = 53;
 */
 
+int nok_pok = 0; /* flag that is incremented whenever a scalar that is both
+                 NOK and POK is passed to new or an overloaded operator */
+
+int NOK_POK_val(pTHX) {
+  /* return the numeric value of $Math::MPC::NOK_POK */
+  return SvIV(get_sv("Math::MPC::NOK_POK", 0));
+}
+
 int _win32_infnanstring(char * s) { /* MS Windows only - detect 1.#INF and 1.#IND
                                      * Need to do this to correctly handle an inf/nan
                                      * scalar that is both NOK and POK on older win32 perls */
@@ -1531,9 +1539,12 @@ SV * _Rmpc_out_strPS(pTHX_ SV * pre, FILE * stream, SV * base, SV * dig, mpc_t *
 }
 
 
-SV * Rmpc_inp_str(pTHX_ mpc_t * p, FILE * stream, SV * base, SV * round) {
-     if(SvIV(base) < 2 || SvIV(base) > 36) croak("3rd argument supplied to TRmpfr_inp_str is out of allowable range (must be between 2 and 36 inclusive)");
-     return newSViv(mpc_inp_str(*p, stream, NULL, (int)SvIV(base), (mpc_rnd_t)SvUV(round)));
+int  Rmpc_inp_str(pTHX_ mpc_t * p, FILE * stream, SV * base, SV * round) {
+     int ret;
+     if(SvIV(base) < 2 || SvIV(base) > 36) croak("3rd argument supplied to Rmpc_inp_str is out of allowable range (must be between 2 and 36 inclusive)");
+     ret = mpc_inp_str(*p, stream, NULL, (int)SvIV(base), (mpc_rnd_t)SvUV(round));
+     if(ret == -1) croak("Invalid string given to Rmpc_inp_str");
+     return ret;
 }
 
 /* Removed in mpc-0.7
@@ -1687,6 +1698,9 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
      }
 
      if(SvPOK(b)) { /* assign the string with default precision */
+
+       NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_mul");}
+
 #ifdef _WIN32_BIZARRE_INFNAN
        ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
@@ -1801,6 +1815,9 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
      }
 
      if(SvPOK(b)) { /* assign string with default precision */
+
+       NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_add");}
+
 #ifdef _WIN32_BIZARRE_INFNAN
        ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
@@ -1930,6 +1947,9 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
      }
 
      if(SvPOK(b)) { /* assign with default precision */
+
+       NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_sub");}
+
 #ifdef _WIN32_BIZARRE_INFNAN
        ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
@@ -2064,6 +2084,9 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
      }
 
      if(SvPOK(b)) { /* assign with default precision */
+
+       NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_div");}
+
 #ifdef _WIN32_BIZARRE_INFNAN
        ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
@@ -2171,6 +2194,8 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
      }
 
      if(SvPOK(b)) {
+
+       NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_div_eq");}
 
        mpc_init3(temp, DEFAULT_PREC);  /* cannot assign to an mpfr_t - may have an imaginary component */
 
@@ -2285,6 +2310,8 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
 
      if(SvPOK(b)) {
 
+       NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_sub_eq");}
+
        mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may have an imaginary component */
 
 #ifdef _WIN32_BIZARRE_INFNAN
@@ -2398,6 +2425,8 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
 
      if(SvPOK(b)) {
 
+       NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_add_eq");}
+
        mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may contain an imaginary part */
 
 #ifdef _WIN32_BIZARRE_INFNAN
@@ -2506,6 +2535,8 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
      }
 
      if(SvPOK(b)) {
+
+       NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_mul_eq");}
 
        mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may contain an imaginary part */
 
@@ -2644,6 +2675,9 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
      }
 
      if(SvPOK(b)) {
+
+       NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_pow");}
+
 #ifdef _WIN32_BIZARRE_INFNAN
        ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
@@ -2748,6 +2782,9 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
      }
 
      if(SvPOK(b)) {
+
+       NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_pow_eq");}
+
        mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may contain an imaginary part */
 
 #ifdef _WIN32_BIZARRE_INFNAN
@@ -2867,6 +2904,9 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
      }
 
      if(SvPOK(b)) {
+
+       NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_equiv");}
+
 #ifdef _WIN32_BIZARRE_INFNAN
        ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
@@ -3173,6 +3213,9 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
      }
 
      if(SvPOK(b) && !done_re) {
+
+       NOK_POK_DUALVAR_CHECK , "Math::MPC::new");}
+
 #ifdef _WIN32_BIZARRE_INFNAN
        done_re = _win32_infnanstring(SvPV_nolen(b));
        if(done_re) {
@@ -3249,6 +3292,7 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
 #endif
 
      if(SvNOK(d) && !done_im && !SvPOK(d)) {
+
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_set_float128(temp_im, SvNVX(d), DEFAULT_ROUNDING_MODE / 16);
 #elif defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
@@ -3260,6 +3304,12 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
      }
 
      if(SvPOK(d) && !done_im) {
+
+       if(SvNOK(d)) {
+         nok_pok++;
+         if(SvIV(get_sv("Math::MPC::NOK_POK", 0)))
+           warn("Scalar passed to %s is both NV and PV. Using PV (string) value", "Math::MPC::new");}
+
 #ifdef _WIN32_BIZARRE_INFNAN
        done_im = _win32_infnanstring(SvPV_nolen(d));
        if(done_im) {
@@ -3413,12 +3463,18 @@ SV * Rmpc_get_str(pTHX_ SV * base, SV * dig, mpc_t * op, SV * round) {
      return outsv;
 }
 
-SV * Rmpc_set_str(pTHX_ mpc_t * rop, SV * str, SV * base, SV * round) {
-     return newSViv(mpc_set_str(*rop, SvPV_nolen(str), (int)SvIV(base), (mpc_rnd_t)SvUV(round)));
+int  Rmpc_set_str(pTHX_ mpc_t * rop, SV * str, SV * base, SV * round) {
+     int ret;
+     ret = mpc_set_str(*rop, SvPV_nolen(str), (int)SvIV(base), (mpc_rnd_t)SvUV(round));
+     if(ret == -1)croak("Invalid string given to Rmpc_set_str");
+     return ret;
 }
 
-SV * Rmpc_strtoc(pTHX_ mpc_t * rop, SV * str, SV * base, SV * round) {
-     return newSViv(mpc_strtoc(*rop, SvPV_nolen(str), NULL, (int)SvIV(base), (mpc_rnd_t)SvUV(round)));
+int  Rmpc_strtoc(pTHX_ mpc_t * rop, SV * str, SV * base, SV * round) {
+     int ret;
+     ret = mpc_strtoc(*rop, SvPV_nolen(str), NULL, (int)SvIV(base), (mpc_rnd_t)SvUV(round));
+     if(ret == -1) croak("Invalid string given to Rmpc_strtoc");
+     return ret;
 }
 
 void Rmpc_set_nan(mpc_t * a) {
@@ -3653,6 +3709,19 @@ int _get_nv_precision(void) {
 #endif
 }
 
+
+int nok_pokflag(void) {
+  return nok_pok;
+}
+
+void clear_nok_pok(void){
+  nok_pok = 0;
+}
+
+void set_nok_pok(int x) {
+  nok_pok = x;
+}
+
 /* I think the CLONE function needs to come at the very end ... not sure */
 
 void CLONE(pTHX_ SV * x, ...) {
@@ -3664,6 +3733,13 @@ void CLONE(pTHX_ SV * x, ...) {
 MODULE = Math::MPC  PACKAGE = Math::MPC
 
 PROTOTYPES: DISABLE
+
+
+int
+NOK_POK_val ()
+CODE:
+  RETVAL = NOK_POK_val (aTHX);
+OUTPUT:  RETVAL
 
 
 int
@@ -5465,7 +5541,7 @@ CODE:
   RETVAL = _Rmpc_out_strPS (aTHX_ pre, stream, base, dig, p, round, suff);
 OUTPUT:  RETVAL
 
-SV *
+int
 Rmpc_inp_str (p, stream, base, round)
 	mpc_t *	p
 	FILE *	stream
@@ -5947,7 +6023,7 @@ CODE:
   RETVAL = Rmpc_get_str (aTHX_ base, dig, op, round);
 OUTPUT:  RETVAL
 
-SV *
+int
 Rmpc_set_str (rop, str, base, round)
 	mpc_t *	rop
 	SV *	str
@@ -5957,7 +6033,7 @@ CODE:
   RETVAL = Rmpc_set_str (aTHX_ rop, str, base, round);
 OUTPUT:  RETVAL
 
-SV *
+int
 Rmpc_strtoc (rop, str, base, round)
 	mpc_t *	rop
 	SV *	str
@@ -6189,6 +6265,42 @@ _can_pass_float128 ()
 int
 _get_nv_precision ()
 
+
+int
+nok_pokflag ()
+
+
+void
+clear_nok_pok ()
+
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        clear_nok_pok();
+        if (PL_markstack_ptr != temp) {
+          /* truly void, because dXSARGS not invoked */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
+        }
+        /* must have used dXSARGS; list context implied */
+        return; /* assume stack size is correct */
+
+void
+set_nok_pok (x)
+	int	x
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        set_nok_pok(x);
+        if (PL_markstack_ptr != temp) {
+          /* truly void, because dXSARGS not invoked */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
+        }
+        /* must have used dXSARGS; list context implied */
+        return; /* assume stack size is correct */
 
 void
 CLONE (x, ...)

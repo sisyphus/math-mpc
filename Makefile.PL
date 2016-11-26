@@ -73,6 +73,9 @@ print "If this is wrong, see the \"64-bit support\" section in the README\n\n";
 
 print "If this is wrong, see the \"64-bit support\" section in the README\n\n";
 
+($defines =~ /\-DNV_IS_FLOAT128/) ? print "Building with '__float128' support (because nvtype is __float128)\n\n"
+                                 : print "Building without '__float128' support (because nvtype is not __float128)\n\n";
+
 ($defines =~ /\-D_DO_COMPLEX_H/) ? print "Trying to build with 'double _Complex' & 'long double _Complex' support\n" :
                                  print "Building without 'double _Complex' & 'long double _Complex' support\n";
 

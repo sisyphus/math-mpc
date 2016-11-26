@@ -9,6 +9,12 @@
 #endif
 #endif
 
+#include <gmp.h>
+#include <mpfr.h>
+#include <mpc.h>
+
+#include <float.h>
+
 #if defined(MPFR_WANT_FLOAT128) || defined(NV_IS_FLOAT128)
 #include <quadmath.h>
 #if defined(NV_IS_FLOAT128) && defined(MPFR_WANT_FLOAT128) && defined(MPFR_VERSION) && MPFR_VERSION >= MPFR_VERSION_NUM(4,0,0)
@@ -22,12 +28,6 @@ typedef __float128 float128 __attribute__ ((aligned(8)));
 typedef __float128 float128;
 #endif
 #endif
-
-#include <gmp.h>
-#include <mpfr.h>
-#include <mpc.h>
-
-#include <float.h>
 
 #if LDBL_MANT_DIG == 106
 #define REQUIRED_LDBL_MANT_DIG 2098
@@ -61,6 +61,12 @@ typedef __float128 float128;
 #if MPC_VERSION_MAJOR > 0 || MPC_VERSION_MINOR > 8
 #define SIN_COS_AVAILABLE 1
 #endif
+
+#define NOK_POK_DUALVAR_CHECK \
+        if(SvNOK(b)) { \
+         nok_pok++; \
+         if(SvIV(get_sv("Math::MPC::NOK_POK", 0))) \
+           warn("Scalar passed to %s is both NV and PV. Using PV (string) value"
 
 #define MPC_RE(x) ((x)->re)
 #define MPC_IM(x) ((x)->im)

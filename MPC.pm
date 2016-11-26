@@ -190,6 +190,9 @@ Rmpc_set_nan Rmpc_swap
 Rmpc_mul_sj Rmpc_mul_ld Rmpc_mul_d Rmpc_div_sj Rmpc_sj_div Rmpc_div_ld Rmpc_ld_div Rmpc_div_d Rmpc_d_div
 )]);
 
+$Math::MPC::NOK_POK = 0; # Set to 1 to allow warnings in new() and overloaded operations when
+                          # a scalar that has set both NOK (NV) and POK (PV) flags is encountered
+
 eval {require Math::Complex_C::Q;};
 
 if($@) {$Math::MPC::no_complex_c_q = $@}
@@ -1089,7 +1092,7 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
     Math::MPC object with *current default precision*, and using
     the *current default rounding mode*.
 
-    Be aware also, that the sign of zero is not always handled
+    Be aware also, that the sign of zero may not always handled
     correctly by the overload subroutines. If it's important to you
     that the sign of zero be handled correctly, don't use the
     overloaded operators. (For multiplication, division, addition
@@ -1208,6 +1211,21 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
     used by the mpc library that Math::MPC uses.
     (The function is not exportable.)
 
+   $iv = Math::MPC::nok_pokflag(); # not exported
+    Returns the value of the nok_pok flag. This flag is
+    initialized to zero, but incemented by 1 whenever a
+    scalar that is both a float (NOK) and string (POK) is passed
+    to new() or to an overloaded operator. The value of the flag
+    therefore tells us how many times such events occurred . The
+    flag can be reset to 0 by running clear_nok_pok().
+
+   Math::MPC::set_nok_pok($iv); # not exported
+    Resets the nok_pok flag to the value specified by $iv.
+
+   Math::MPC::clear_nok_pok(); # not exported
+    Resets the nok_pok flag to 0.(Essentially the same as
+    running set_nok_pok(0).)
+
    ####################
 
 =head1 TODO
@@ -1223,8 +1241,8 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
     first thing to do is to check that the argument types
     you have supplied are appropriate.
     Also, as mentioned above in the "OPERATOR OVERLOADING" section,
-    the overloaded operators are not guaranteed to handle the sign
-    of zero correctly.
+    the overloaded operators are not guaranteed to always handle the
+    sign of zero correctly.
 
 =head1 LICENSE
 

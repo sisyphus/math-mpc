@@ -97,7 +97,7 @@ int Rmpc_mul_sj (mpc_ptr rop, mpc_ptr op, intmax_t i, mpc_rnd_t rnd) {
 
 int Rmpc_mul_ld (mpc_ptr rop, mpc_ptr op, long double i, mpc_rnd_t rnd) {
 
-#ifdef USE_LONG_DOUBLE
+#if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
 
    mpfr_t x;
    int inex;
@@ -191,7 +191,7 @@ int Rmpc_sj_div (mpc_ptr rop, intmax_t i, mpc_ptr op, mpc_rnd_t rnd) {
 
 int Rmpc_div_ld (mpc_ptr rop, mpc_ptr op, long double i, mpc_rnd_t rnd) {
 
-#ifdef USE_LONG_DOUBLE
+#if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
 
    mpfr_t x;
    int inex;
@@ -217,7 +217,7 @@ int Rmpc_div_ld (mpc_ptr rop, mpc_ptr op, long double i, mpc_rnd_t rnd) {
 
 int Rmpc_ld_div (mpc_ptr rop, long double i, mpc_ptr op, mpc_rnd_t rnd) {
 
-#ifdef USE_LONG_DOUBLE
+#if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
 
    mpfr_t x;
    int inex;
@@ -3643,6 +3643,15 @@ int _can_pass_float128(void) {
 
 }
 
+int _get_nv_precision(void) {
+#if defined(NV_IS_FLOAT128)
+ return 113;
+#elif defined(NV_IS_LONG_DOUBLE)
+ return (int) REQUIRED_LDBL_MANT_DIG;
+#else
+ return 53;
+#endif
+}
 
 /* I think the CLONE function needs to come at the very end ... not sure */
 
@@ -6175,6 +6184,10 @@ OUTPUT:  RETVAL
 
 int
 _can_pass_float128 ()
+
+
+int
+_get_nv_precision ()
 
 
 void

@@ -50,15 +50,10 @@ $ok .= 'k' if $ret == 0;
 $ok .= 'l' if $re == 32;
 $ok .= 'm' if $im == 2050;
 
-$ret = Rmpc_set_str($mpc, '(0b1p+5 +0x802z)', 0, MPC_RNDNN);
+eval{$ret = Rmpc_set_str($mpc, '(0b1p+5 +0x802z)', 0, MPC_RNDNN);};
 
-RMPC_RE($re, $mpc);
-RMPC_IM($im, $mpc);
-
-$ok .= 'n' if $ret == -1;
-$ok .= 'o' if Rmpfr_nan_p($re);
-$ok .= 'p' if Rmpfr_nan_p($im);
-$ok .= 'q' if lc(Rmpc_get_str(10, 0, $mpc, MPC_RNDNN)) eq '(@nan@ @nan@)';
+$ok .= 'nopq' if $@ =~ /^Invalid string given to Rmpc_set_str/;
 
 if($ok eq 'abcdefghijklmnopq') {print "ok 1\n"}
 else {print "not ok 1 $ok\n"}
+

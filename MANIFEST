@@ -33,6 +33,7 @@ t/out_str2.t
 t/pod.t
 t/set_str.t
 t/signed_zero.t
+t/switched_overload_args.t
 t/special.t
 t/tls.t
 typemap

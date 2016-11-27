@@ -3722,6 +3722,16 @@ void set_nok_pok(int x) {
   nok_pok = x;
 }
 
+int _SvNOK(pTHX_ SV * in) {
+  if(SvNOK(in)) return 1;
+  return 0;
+}
+
+int _SvPOK(pTHX_ SV * in) {
+  if(SvPOK(in)) return 1;
+  return 0;
+}
+
 /* I think the CLONE function needs to come at the very end ... not sure */
 
 void CLONE(pTHX_ SV * x, ...) {
@@ -6301,6 +6311,20 @@ set_nok_pok (x)
         }
         /* must have used dXSARGS; list context implied */
         return; /* assume stack size is correct */
+
+int
+_SvNOK (in)
+	SV *	in
+CODE:
+  RETVAL = _SvNOK (aTHX_ in);
+OUTPUT:  RETVAL
+
+int
+_SvPOK (in)
+	SV *	in
+CODE:
+  RETVAL = _SvPOK (aTHX_ in);
+OUTPUT:  RETVAL
 
 void
 CLONE (x, ...)

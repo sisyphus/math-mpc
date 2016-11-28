@@ -4,8 +4,8 @@ require 5.008008;
 
 $do_complex_h = 0; # Let the Makefile.PL decide whether to support the double _Complex and
                    # long double _Complex data types.
-#$do_complex_h = 1; # Force inclusion of the double _Complex and long double _Complex data types
-#$do_complex_h = -1;# Force exclusion of the double _Complex and long double _Complex data types
+#$do_complex_h = 1; # Force inclusion of the double _Complex, long double _Complex and __float128 _Complex data types
+#$do_complex_h = -1;# Force exclusion of the double _Complex, long double _Complex and __float128 _Complex data types
 
 unless ($do_complex_h) {
   eval {require Math::Complex_C;};
@@ -14,6 +14,11 @@ unless ($do_complex_h) {
 
 unless ($do_complex_h) {
   eval {require Math::Complex_C::L;};
+  $do_complex_h = $@ ? -1 : 1;
+}
+
+unless ($do_complex_h) {
+  eval {require Math::Complex_C::Q;};
   $do_complex_h = $@ ? -1 : 1;
 }
 

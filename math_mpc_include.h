@@ -1,3 +1,71 @@
+/*************************************************
+Documentation of symbols defined by Math::MPC
+
+NV_IS_LONG_DOUBLE        : Automatically defined by Makefile.PL iff
+                           $Config{nvtype} is 'long double'.
+
+NV_IS_FLOAT128           : Automatically defined by Makefile.PL iff
+                           $Config{nvtype} is __float128
+                           If NV_IS_FLOAT128 is defined we include the
+                           quadmath.h header.
+
+CAN_PASS_FLOAT128        : Defined only when both NV_IS_FLOAT128 is defined,
+                           and the Makefile.PL variable $have_float128 has
+                           been set (either by editing the value in the
+                           Makefile.PL or specifying F128=1 on the command
+                           line) - and then only if the mpfr library is at
+                           version 4.0.0 or later. (There was no __float128
+                           support in the mpfr library prior to 4.0.0.)
+                           DANGER: The assumption is that if $have_float128
+                           has been set then the mpfr library has been built
+                           with __float128 support, which won't be the case if
+                           the mpfr library wasn't configured with
+                           '--enable-float128'.
+                           I haven't yet found a way of managing this - it's
+                           instead left up to the person building Math::MPC to
+                           NOT set $have_float128 if mpfr was NOT configured
+                           with --enable-float128.
+                           In short, setting $have_float128 implies that the
+                           mpfr functions mpfr_set_float128 and mpfr_get_float128
+                           are available.
+
+
+MATH_MPC_NEED_LONG_LONG_INT
+                         : Defined by Makefile.PL if
+                           $Config{ivsize} >= 8 && $Config{ivtype} is not
+                           'long' && $use_64_bit_int (in the Makefile.PL)
+                           has not been set to -1. This symbol will also be
+                           defined if $use_64_bit_int is set to 1.
+                           The setting of this symbol is taken to imply that
+                           the mpc/mpfr _uj/_sj functions are needed for
+                           converting mpfr integer values to perl integers.
+                           Conversely, if the symbol is not defined, then
+                           the implication is that the _uj/sj functions are
+                           not needed (because the _ui/_si functions, which
+                           are alway available) provide the same
+                           functionality) - and therefore those _uj/_sj
+                           functions are then not made available.
+
+_WIN32_BIZARRE_INFNAN    : Defined (on Windows only) when the perl version
+                           (as expressed by $]) is less than 5.022.
+                           These earlier perl versions generally stringified
+                           NaNs as (-)1.#IND and (-)1.#INF.
+
+_Complex_I               : Defined by complex.h. Attempts to define _DO_COMPLEX
+                           (see below) will not succeed if _Complex_I is not
+                           defined.
+
+_DO_COMPLEX              : Automatically defined if at least one of Math::Complex_C,
+                           Math::Complex_C::L and Math::Complex_C::Q is installed.
+                           complex.h will be included iff _DO_COMPLEX is defined.
+                           Can also be defined in the Makefile.PL by setting
+                           $do_complex_h to 1 - though I can't envisage a situation
+                           where doing so will be advantageous.
+                           (Will be automatically undefined if _Complex_I is not
+                           defined following the inclusion of complex.h.)
+
+
+*************************************************/
 
 #include <stdio.h>
 
@@ -35,10 +103,9 @@ typedef __float128 float128;
 #define REQUIRED_LDBL_MANT_DIG LDBL_MANT_DIG
 #endif
 
-#ifndef _MPC_H_HAVE_COMPLEX
+/* complex.h should have defined _Complex_I */
 #ifndef _Complex_I
 #undef _DO_COMPLEX_H
-#endif
 #endif
 
 #ifdef _MSC_VER

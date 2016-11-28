@@ -61,7 +61,7 @@ for(@ARGV) {
   $have_float128 = 1 if $_ eq 'F128=1';
 }
 
-$defines .= " -DMPFR_WANT_FLOAT128" if $have_float128;" ;
+$defines .= " -DMPFR_WANT_FLOAT128" if $have_float128;
 
 if($do_complex_h == 1) { $defines .= " -D_DO_COMPLEX_H"}
 

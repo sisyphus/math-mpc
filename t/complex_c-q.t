@@ -14,7 +14,7 @@ if($@) {
 
 unless(Math::MPC::_can_pass_float128()) {
   print "1..1\n";
-  warn "\nSkipping all tests - Math::MPC not built with __float128 support\n";
+  warn "\nSkipping all tests - cannot pass float128 values between perl and mpc\n";
   print "ok 1\n";
   exit 0;
 }

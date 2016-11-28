@@ -28,7 +28,7 @@ MPFR_WANT_FLOAT128       : Defined by Makefile.PL if $have_float128 is
                            MPFR_WANT_FLOAT128 solely because we wish to make
                            use of the Math::Float128-Math::MPFR interface.
 
-CAN_PASS_FLOAT128        : Defined only when both MPFR_WANT_FLOAT128 and
+MPC_CAN_PASS_FLOAT128        : Defined only when both MPFR_WANT_FLOAT128 and
                            NV_IS_FLOAT128 is defined, and then only if the mpfr
                            library is at version 4.0.0 or later. (There was no
                            __float128 support in the mpfr library prior to
@@ -100,7 +100,7 @@ _DO_COMPLEX              : Automatically defined if at least one of Math::Comple
 #if defined(MPFR_WANT_FLOAT128) || defined(NV_IS_FLOAT128)
 #include <quadmath.h>
 #if defined(NV_IS_FLOAT128) && defined(MPFR_WANT_FLOAT128) && defined(MPFR_VERSION) && MPFR_VERSION >= MPFR_VERSION_NUM(4,0,0)
-#define CAN_PASS_FLOAT128
+#define MPC_CAN_PASS_FLOAT128
 #endif
 #if defined(__MINGW32__) && !defined(__MINGW64__)
 typedef __float128 float128 __attribute__ ((aligned(32)));

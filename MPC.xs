@@ -280,13 +280,7 @@ int Rmpc_d_div (mpc_ptr rop, double i, mpc_ptr op, mpc_rnd_t rnd) {
 
 SV * _mpfr_set_NV(pTHX_ mpfr_t * p, SV * q, unsigned int round) {
 
-#if defined(NV_IS_LONG_DOUBLE) && !defined(_MSC_VER)
-
-     if(!SvNOK(q)) croak("Second arg given to Math::MPC::_mpfr_set_NV is not an NV");
-
-     return newSViv(mpfr_set_ld(*p, (long double)SvNVX(q), (mp_rnd_t)round));
-
-#elif defined(CAN_PASS_FLOAT128)
+#if defined(CAN_PASS_FLOAT128)
 
      if(!SvNOK(q)) croak("Second arg given to Rmpfr_set_NV is not an NV");
 
@@ -336,6 +330,12 @@ SV * _mpfr_set_NV(pTHX_ mpfr_t * p, SV * q, unsigned int round) {
      if (exp2 > exp) mpfr_div_2ui(*p, *p, exp2 - exp, GMP_RNDN);
      else mpfr_mul_2ui(*p, *p, exp - exp2, GMP_RNDN);
      return newSViv(returned);
+
+#elif defined(NV_IS_LONG_DOUBLE) && !defined(_MSC_VER)
+
+     if(!SvNOK(q)) croak("Second arg given to Math::MPC::_mpfr_set_NV is not an NV");
+
+     return newSViv(mpfr_set_ld(*p, (long double)SvNVX(q), (mp_rnd_t)round));
 
 #else
 
@@ -655,7 +655,7 @@ SV * Rmpc_set_NV_NV(pTHX_ mpc_t * p, SV * re_q, SV * im_q, SV * round) {
        done_re = 1;
      }
 
-     if(!done_re)
+     if(!done_re) {
        if(re_ld != 0.0Q && (re_ld / re_ld != 1)) {
          returned = re_ld > 0.0Q ? 1 : -1;
          mpfr_set_inf(re_fr, returned);
@@ -663,20 +663,20 @@ SV * Rmpc_set_NV_NV(pTHX_ mpc_t * p, SV * re_q, SV * im_q, SV * round) {
        }
 
        if(!done_re) {
-         ld = frexpq((float128)SvNVX(q), &exp);
+         re_ld = frexpq(re_ld, &exp);
 
-         while(ld != floorq(ld)) {
-           ld *= 2;
+         while(re_ld != floorq(re_ld)) {
+           re_ld *= 2;
            exp2 += 1;
          }
 
-         buffer_size = ld < 0.0Q ? ld * -1.0Q : ld;
+         buffer_size = re_ld < 0.0Q ? re_ld * -1.0Q : re_ld;
          buffer_size = ceilq(logq(buffer_size + 1) / 2.30258509299404568401799145468436418Q);
 
          Newxz(buffer, buffer_size + 5, char);
          if(buffer == NULL) croak("Failed to allocate memory in Rmpc_set_NV_NV");
 
-         returned = quadmath_snprintf(buffer, (size_t)buffer_size + 5, "%.0Qf", ld);
+         returned = quadmath_snprintf(buffer, (size_t)buffer_size + 5, "%.0Qf", re_ld);
          if(returned < 0) croak("In Rmpc_set_NV_NV, encoding error in quadmath_snprintf function");
          if(returned >= buffer_size + 5) croak("In Rmpc_set_NV_NV, buffer given to quadmath_snprintf function was too small");
          mpfr_set_str(re_fr, buffer, 10, (mp_rnd_t)round); /* exact */
@@ -694,7 +694,7 @@ SV * Rmpc_set_NV_NV(pTHX_ mpc_t * p, SV * re_q, SV * im_q, SV * round) {
        done_im = 1;
      }
 
-     if(!done_im)
+     if(!done_im) {
        if(im_ld != 0.0Q && (im_ld / im_ld != 1)) {
          returned = im_ld > 0.0Q ? 1 : -1;
          mpfr_set_inf(im_fr, returned);
@@ -702,20 +702,20 @@ SV * Rmpc_set_NV_NV(pTHX_ mpc_t * p, SV * re_q, SV * im_q, SV * round) {
        }
 
        if(!done_im) {
-         ld = frexpq((float128)SvNVX(q), &exp);
+         im_ld = frexpq(im_ld, &exp);
 
-         while(ld != floorq(ld)) {
-           ld *= 2;
+         while(im_ld != floorq(im_ld)) {
+           im_ld *= 2;
            exp2 += 1;
          }
 
-         buffer_size = ld < 0.0Q ? ld * -1.0Q : ld;
+         buffer_size = im_ld < 0.0Q ? im_ld * -1.0Q : im_ld;
          buffer_size = ceilq(logq(buffer_size + 1) / 2.30258509299404568401799145468436418Q);
 
          Newxz(buffer, buffer_size + 5, char);
          if(buffer == NULL) croak("Failed to allocate memory in Rmpc_set_NV_NV");
 
-         returned = quadmath_snprintf(buffer, (size_t)buffer_size + 5, "%.0Qf", ld);
+         returned = quadmath_snprintf(buffer, (size_t)buffer_size + 5, "%.0Qf", im_ld);
          if(returned < 0) croak("In Rmpc_set_NV_NV, encoding error in quadmath_snprintf function");
          if(returned >= buffer_size + 5) croak("In Rmpc_set_NV_NV, buffer given to quadmath_snprintf function was too small");
          mpfr_set_str(im_fr, buffer, 10, (mp_rnd_t)round); /* exact */
@@ -3204,7 +3204,9 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
      if(SvNOK(b) && !done_re && !SvPOK(b)) {
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_set_float128(temp_re, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
-#elif defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
+#elif defined(NV_IS_FLOAT128)
+       _mpfr_set_NV(aTHX_ &temp_re, b, GMP_RNDN);
+#elif defined(NV_IS_LONG_DOUBLE)
        mpfr_set_ld(temp_re, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
 #else
        mpfr_set_d(temp_re, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
@@ -3295,7 +3297,9 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
 
 #if defined(MPC_CAN_PASS_FLOAT128)
        mpfr_set_float128(temp_im, SvNVX(d), DEFAULT_ROUNDING_MODE / 16);
-#elif defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
+#elif defined(NV_IS_FLOAT128)
+       _mpfr_set_NV(aTHX_ &temp_im, d, GMP_RNDN);
+#elif defined(NV_IS_LONG_DOUBLE)
        mpfr_set_ld(temp_im, SvNVX(d), DEFAULT_ROUNDING_MODE / 16);
 #else
        mpfr_set_d(temp_im, SvNVX(d), DEFAULT_ROUNDING_MODE / 16);

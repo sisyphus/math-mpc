@@ -280,7 +280,7 @@ int Rmpc_d_div (mpc_ptr rop, double i, mpc_ptr op, mpc_rnd_t rnd) {
 
 SV * _mpfr_set_NV(pTHX_ mpfr_t * p, SV * q, unsigned int round) {
 
-#if defined(CAN_PASS_FLOAT128)
+#if defined(MPC_CAN_PASS_FLOAT128)
 
      if(!SvNOK(q)) croak("Second arg given to Rmpfr_set_NV is not an NV");
 

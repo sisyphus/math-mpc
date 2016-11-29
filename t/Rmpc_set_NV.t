@@ -91,27 +91,60 @@ else {
   print "not ok 2\n";
 }
 
-if($imag == sqrt(3.0)) {print "ok 3\n"}
-else {
-  warn "\nexpected ", sqrt(3.0), ", got $imag\n";
-  print "not ok 3\n";
+if($prec != 2098) {
+
+  if($imag == sqrt(3.0)) {print "ok 3\n"}
+  else {
+    warn "\nexpected ", sqrt(3.0), ", got $imag\n";
+    print "not ok 3\n";
+  }
+
+  Rmpc_set_NV_NV($mpc, 0.0, sqrt(3.0), MPC_RNDNN);
+
+  $mpc **= 2;
+
+  RMPC_RE($real, $mpc);
+  RMPC_IM($imag, $mpc);
+
+  my $re_expected = (sqrt(3.0) ** 2) * -1.0;
+
+  if($real == $re_expected) {print "ok 4\n"}
+  else {
+    warn "\nexpected $re_expected, got $real\n";
+    print "not ok 4\n";
+  }
 }
-
-$mpc += Math::MPC->new('101.1', '-14.9');
-
-Rmpc_set_NV_NV($mpc, 0.0, sqrt(3.0), MPC_RNDNN);
-
-$mpc **= 2;
-
-RMPC_RE($real, $mpc);
-RMPC_IM($imag, $mpc);
-
-my $re_expected = (sqrt(3.0) ** 2) * -1.0;
-
-if($real == $re_expected) {print "ok 4\n"}
 else {
-  warn "\nexpected $re_expected, got $real\n";
-  print "not ok 4\n";
+  ##########
+  # Not sure how to get exact agreement with sqrt on double-double.
+  # In the interim, just check for approximate correctness.
+
+  my $eps = 1.3e-32;
+
+  my $ld = Rmpfr_get_ld($imag, MPFR_RNDN);
+  if($ld - sqrt(3.0) > -$eps && $ld - sqrt(3.0) < $eps) {print "ok 3\n"}
+  else {
+    warn "\nexpected ", sqrt(3.0), ", got $ld\nDifference is ", $ld - sqrt(3.0), "\n";
+    print "not ok 3\n";
+  }
+
+  Rmpc_set_NV_NV($mpc, 0.0, sqrt(3.0), MPC_RNDNN);
+
+  $mpc **= 2;
+
+  RMPC_RE($real, $mpc);
+  RMPC_IM($imag, $mpc);
+
+  my $re_expected = (sqrt(3.0) ** 2) * -1.0;
+
+  $ld = Rmpfr_get_ld($real, MPFR_RNDN);
+
+  if($ld - $re_expected > -$eps && $ld - $re_expected < $eps) {print "ok 4\n"}
+  else {
+    warn "\nexpected $re_expected, got $ld\nDifference is ", $ld - $re_expected, "\n";
+    print "not ok 4\n";
+  }
+  ###########
 }
 
 if($imag == 0) {print "ok 5\n"}

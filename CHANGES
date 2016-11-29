@@ -1,3 +1,5 @@
+1.07
+
 1.06
  - Replace SvUV/SvIV/SvNV with svUVX/SvIVX/SvNVX where appropriate. (In typemap, too.)
  - Replace (throughout) the "SvNOK(b)" condition with "SvNOK(b) && !SvPOK(b)".

@@ -1838,7 +1838,7 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
        }
 #else
        if(mpc_set_str(*mpc_t_obj, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
-         croak("Invalid string (%s) supplied to Math::MPC::overload_add, SvPV_nolen(b)");
+         croak("Invalid string (%s) supplied to Math::MPC::overload_add", SvPV_nolen(b));
 #endif
        mpc_add(*mpc_t_obj, *a, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
        return obj_ref;

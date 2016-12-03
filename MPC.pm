@@ -1143,10 +1143,14 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
        -Duse64bitint, the variable is treated as a signed long long
        int if the IOK flag is set.)
 
-    3. If the variable is a double, then that value is used. The
-       variable is considered to be a double if the NOK flag is set.
-       (In the case of perls built with -Duselongdouble, the variable
-       is treated as a long double if the NOK flag is set.)
+    3. If the variable is an NV (floating point value) then that
+       value is used. The variable is considered to be an NV if the
+       NOK flag is set && the POK flag is unset.
+       Note therefore, that if the variable is both an NV (NOK flag
+       set) and PV (POK flag also set) then the string value in the
+       PV slot will be used. This is probably, but not necessarily,
+       what you want, and it's recommended not to pass such values
+       to the overloaded operators.
 
     4. If the variable is a string (ie the POK flag is set) then the
        value of that string is used. If the POK flag is set, but the

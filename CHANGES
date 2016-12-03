@@ -1,4 +1,6 @@
 1.07
+ - Fix typo in overload_add diagnostic message that was segfaulting on amd64-freebsd.
+   Thanks to Slaven Rezic.
 
 1.06
  - Replace SvUV/SvIV/SvNV with svUVX/SvIVX/SvNVX where appropriate. (In typemap, too.)

@@ -1,5 +1,9 @@
 /*************************************************
+
 Documentation of symbols defined by Math::MPC
+
+NV_IS_DOUBLE             : Automatically defined by Makefile.PL iff
+                           $Config{nvtype} is 'double'.
 
 NV_IS_LONG_DOUBLE        : Automatically defined by Makefile.PL iff
                            $Config{nvtype} is 'long double'.

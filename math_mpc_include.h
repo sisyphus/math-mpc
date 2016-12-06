@@ -32,7 +32,7 @@ MPFR_WANT_FLOAT128       : Defined by Makefile.PL if $have_float128 is
                            MPFR_WANT_FLOAT128 solely because we wish to make
                            use of the Math::Float128-Math::MPFR interface.
 
-MPC_CAN_PASS_FLOAT128        : Defined only when both MPFR_WANT_FLOAT128 and
+MPC_CAN_PASS_FLOAT128    : Defined only when both MPFR_WANT_FLOAT128 and
                            NV_IS_FLOAT128 is defined, and then only if the mpfr
                            library is at version 4.0.0 or later. (There was no
                            __float128 support in the mpfr library prior to

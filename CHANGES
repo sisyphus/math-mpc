@@ -1,3 +1,5 @@
+1.08
+
 1.07
  - Fix typo in overload_add diagnostic message that was segfaulting on amd64-freebsd.
    Thanks to Slaven Rezic.

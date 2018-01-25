@@ -36,7 +36,7 @@
 
     use subs qw(MPC_VERSION MPC_VERSION_MAJOR MPC_VERSION_MINOR
                 MPC_VERSION_PATCHLEVEL MPC_VERSION_STRING
-                MPC_VERSION MPC_VERSION_NUM);
+                MPC_VERSION_NUM);
 
     use overload
     '+'    => \&overload_add,
@@ -405,12 +405,12 @@ sub Rmpc_out_str {
     die "Wrong number of arguments supplied to Rmpc_out_str()";
 }
 
-sub MPC_VERSION {return _MPC_VERSION()}
-sub MPC_VERSION_MAJOR {return _MPC_VERSION_MAJOR()}
-sub MPC_VERSION_MINOR {return _MPC_VERSION_MINOR()}
-sub MPC_VERSION_PATCHLEVEL {return _MPC_VERSION_PATCHLEVEL()}
-sub MPC_VERSION_STRING {return _MPC_VERSION_STRING()}
-sub MPC_VERSION_NUM {return _MPC_VERSION_NUM(@_)}
+sub MPC_VERSION            () {return _MPC_VERSION()}
+sub MPC_VERSION_MAJOR      () {return _MPC_VERSION_MAJOR()}
+sub MPC_VERSION_MINOR      () {return _MPC_VERSION_MINOR()}
+sub MPC_VERSION_PATCHLEVEL () {return _MPC_VERSION_PATCHLEVEL()}
+sub MPC_VERSION_STRING     () {return _MPC_VERSION_STRING()}
+sub MPC_VERSION_NUM        () {return _MPC_VERSION_NUM(@_)}
 
 1;
 

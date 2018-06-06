@@ -1,5 +1,6 @@
 1.09
  - Prototype subroutines listed in 'use subs()'.
+ - Add Rmpc_fma (previously missed), Rmpc_sum and Rmpc_dot (both newly available) functions.
 
 1.08
  - Add new functions Rmpc_cmp_abs and Rmpc_rootofunity

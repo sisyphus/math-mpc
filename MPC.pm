@@ -107,7 +107,7 @@ Rmpc_set_f_fr Rmpc_set_q_fr Rmpc_set_z_fr Rmpc_set_fr_f Rmpc_set_fr_q Rmpc_set_f
 
 Rmpc_set_dc Rmpc_set_ldc Rmpc_set_NV Rmpc_set_NV_NV
 Rmpc_set_DC Rmpc_set_LDC Rmpc_set_F128C
-
+Rmpc_fma Rmpc_dot Rmpc_sum
 Rmpc_add Rmpc_add_ui Rmpc_add_fr
 Rmpc_sub Rmpc_sub_ui Rmpc_ui_sub Rmpc_ui_ui_sub
 Rmpc_mul Rmpc_mul_ui Rmpc_mul_si Rmpc_mul_fr Rmpc_mul_i Rmpc_sqr Rmpc_mul_2exp
@@ -171,7 +171,7 @@ Rmpc_set_f_fr Rmpc_set_q_fr Rmpc_set_z_fr Rmpc_set_fr_f Rmpc_set_fr_q Rmpc_set_f
 
 Rmpc_set_dc Rmpc_set_ldc Rmpc_set_NV Rmpc_set_NV_NV
 Rmpc_set_DC Rmpc_set_LDC Rmpc_set_F128C
-
+Rmpc_fma Rmpc_dot Rmpc_sum
 Rmpc_add Rmpc_add_ui Rmpc_add_fr
 Rmpc_sub Rmpc_sub_ui Rmpc_ui_sub Rmpc_ui_ui_sub
 Rmpc_mul Rmpc_mul_ui Rmpc_mul_si Rmpc_mul_fr Rmpc_mul_i Rmpc_sqr Rmpc_mul_2exp
@@ -410,7 +410,7 @@ sub MPC_VERSION_MAJOR      () {return _MPC_VERSION_MAJOR()}
 sub MPC_VERSION_MINOR      () {return _MPC_VERSION_MINOR()}
 sub MPC_VERSION_PATCHLEVEL () {return _MPC_VERSION_PATCHLEVEL()}
 sub MPC_VERSION_STRING     () {return _MPC_VERSION_STRING()}
-sub MPC_VERSION_NUM        () {return _MPC_VERSION_NUM(@_)}
+sub MPC_VERSION_NUM           {return _MPC_VERSION_NUM(@_)}
 
 1;
 

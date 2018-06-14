@@ -3773,11 +3773,8 @@ SV * Rmpc_dot(pTHX_ mpc_t * rop, SV * avref_A, SV * avref_B, SV * len, SV * roun
      if(p_B == NULL) croak("Unable to allocate memory for second pointer array in Rmpc_dot");
 
      for(i = 0; i < s; ++i) {
-        elem = av_fetch((AV*)SvRV(avref_A), i, 0);
-        p_A[i] = *(INT2PTR(mpc_t *, SvIVX(SvRV(*elem))));
-     }
-
-     for(i = 0; i < s; ++i) {
+       elem = av_fetch((AV*)SvRV(avref_A), i, 0);
+       p_A[i] = *(INT2PTR(mpc_t *, SvIVX(SvRV(*elem))));
        elem = av_fetch((AV*)SvRV(avref_B), i, 0);
        p_B[i] = *(INT2PTR(mpc_t *, SvIVX(SvRV(*elem))));
      }

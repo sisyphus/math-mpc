@@ -3,6 +3,8 @@
    math_mpc_include.h.)
  - Prototype subroutines listed in 'use subs()'.
  - Add Rmpc_fma (previously missed), Rmpc_sum and Rmpc_dot (both newly available) functions.
+ - Skip buggy BSD systems (see http://www.cpantesters.org/cpan/report/c3334524-8930-11e9-9997-9db8de51d2a1)
+   in test 4 of t/Rmpc_set_NV.t.
 
 1.08
  - Add new functions Rmpc_cmp_abs and Rmpc_rootofunity

@@ -110,7 +110,8 @@ if($prec != 2098) {
 
   if($real == $re_expected) {print "ok 4\n"}
   else {
-    if(sqrt(3.0) != 3.0 ** 0.5) {
+    my $c = sqrt(3.0);
+    if(($c != 3.0 ** 0.5) || ($c ** 2 != $c * $c)) {
       warn "Skipping test 4 - this perl is bizarre\n";
       print "ok 4\n";
     }

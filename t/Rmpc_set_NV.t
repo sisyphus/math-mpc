@@ -108,11 +108,13 @@ if($prec != 2098) {
 
   my $re_expected = (sqrt(3.0) ** 2) * -1.0;
 
+  #print "MPC: $real Perl: $re_expected\n";
+
   if($real == $re_expected) {print "ok 4\n"}
   else {
     my $c = sqrt(3.0);
-    if(($c != 3.0 ** 0.5) || ($c ** 2 != $c * $c)) {   # detect buggy BSD systems that don't evaluate 3**0.5
-                                                         or $c ** 2 correctly when nvtype is long double.
+    if(($c != 3.0 ** 0.5) || ($c ** 2 != $c * $c)) {
+      # Some BSD (long double) builds have crappy powl() implementation
       warn "Skipping test 4 - this perl is bizarre\n";
       print "ok 4\n";
     }

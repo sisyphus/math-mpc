@@ -6,6 +6,8 @@
  - Skip buggy BSD (long double) systems (see
    http://www.cpantesters.org/cpan/report/c3334524-8930-11e9-9997-9db8de51d2a1)
    in test 4 of t/Rmpc_set_NV.t.
+ - In t.out_str2.t, for tests 1-6, we need to cater for a change in mpfr_out_str
+   output with mpfr-4.2.0
 
 1.08
  - Add new functions Rmpc_cmp_abs and Rmpc_rootofunity

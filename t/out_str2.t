@@ -83,11 +83,18 @@ open(RD7, '<', 'out7.txt') or die "Can't open RD7: $!";
 
 my $ok = 1;
 my $count = 0;
+my $first =  '6.50000000000000000000';
+my $second = '8.25000000000000000000';
+
+if(Math::MPFR::MPFR_VERSION >= 262400) {
+  $first .=  'e0';
+  $second .= 'e0';
+}
 
 while(<RD1>) {
      $count = $.;
      chomp;
-     unless($_ eq '(6.50000000000000000000 8.25000000000000000000)'x5) {$ok = 0}
+     unless($_ eq "($first $second)"x5) {$ok = 1}
 }
 
 if($ok && $count == 1) {print "ok 1\n"}
@@ -100,7 +107,7 @@ $count = 0;
 while(<RD2>) {
      $count = $.;
      chomp;
-     unless($_ eq 'This is the prefix (6.50000000000000000000 8.25000000000000000000)'x5) {$ok = 0}
+     unless($_ eq "This is the prefix ($first $second)"x5) {$ok = 0}
 }
 
 if($ok && $count == 1) {print "ok 2\n"}
@@ -112,7 +119,7 @@ $count = 0;
 while(<RD3>) {
      $count = $.;
      chomp;
-     unless($_ eq '(6.50000000000000000000 8.25000000000000000000) and this is the suffix') {$ok = 0}
+     unless($_ eq "($first $second) and this is the suffix") {$ok = 0}
 }
 
 if($ok && $count == 5) {print "ok 3\n"}
@@ -124,7 +131,7 @@ $count = 0;
 while(<RD4>) {
      $count = $.;
      chomp;
-     unless($_ eq 'This is the prefix (6.50000000000000000000 8.25000000000000000000) and this is the suffix') {$ok = 0}
+     unless($_ eq "This is the prefix ($first $second) and this is the suffix") {$ok = 0}
 }
 
 if($ok && $count == 5) {print "ok 4\n"}
@@ -140,10 +147,10 @@ while(<RD5>) {
        unless($_ eq 'This is the prefix ') {$ok = 0}
      }
      elsif($. == 6) {
-       unless($_ eq '(6.50000000000000000000 8.25000000000000000000)') {$ok = 0}
+       unless($_ eq "($first $second)") {$ok = 0}
      }
      else {
-       unless($_ eq '(6.50000000000000000000 8.25000000000000000000)This is the prefix ') {$ok = 0}
+       unless($_ eq "($first $second)This is the prefix ") {$ok = 0}
      }
 }
 
@@ -160,7 +167,7 @@ while(<RD6>) {
        unless($_ eq 'This is the prefix ') {$ok = 0}
      }
      else {
-       unless($_ eq '(6.50000000000000000000 8.25000000000000000000) and this is the suffix') {$ok = 0}
+       unless($_ eq "($first $second) and this is the suffix") {$ok = 0}
      }
 }
 

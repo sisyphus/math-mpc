@@ -129,7 +129,7 @@ Rmpc_mul_sj Rmpc_mul_ld Rmpc_mul_d Rmpc_div_sj Rmpc_sj_div Rmpc_div_ld Rmpc_ld_d
     our $VERSION = '1.09';
     #$VERSION = eval $VERSION;
 
-    DynaLoader::bootstrap Math::MPC $VERSION;
+    Math::MPC->DynaLoader::bootstrap($VERSION);
 
     %Math::MPC::EXPORT_TAGS =(mpc => [qw(
 MPC_RNDNN MPC_RNDND MPC_RNDNU MPC_RNDNZ MPC_RNDDN MPC_RNDUN MPC_RNDZN MPC_RNDDD

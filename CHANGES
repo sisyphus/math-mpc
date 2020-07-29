@@ -1,4 +1,5 @@
 1.11
+ - Update PREREQ_PM version of Math::MPFR to 4.15
 
 1.09
  - Cater for the possibility that _Float128 is an unknown type. (This is done in

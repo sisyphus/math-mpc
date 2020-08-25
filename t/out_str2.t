@@ -89,7 +89,7 @@ my $count = 0;
 my $first =  '6.50000000000000000000';
 my $second = '8.25000000000000000000';
 
-if(Math::MPFR::MPFR_VERSION >= 262400) {
+if(Math::MPC::_MPFR_VERSION >= 262400) {
   $first .=  'e0';
   $second .= 'e0';
 }
@@ -97,7 +97,7 @@ if(Math::MPFR::MPFR_VERSION >= 262400) {
 while(<$RD1>) {
      $count = $.;
      chomp;
-     unless($_ eq "($first $second)"x5) {$ok = 1}
+     unless($_ eq "($first $second)"x5) {$ok = 0}
 }
 
 if($ok && $count == 1) {print "ok 1\n"}

@@ -89,7 +89,7 @@ my $count = 0;
 my $first =  '6.50000000000000000000';
 my $second = '8.25000000000000000000';
 
-if(Math::MPC::_MPFR_VERSION >= 262400) {
+if(Math::MPC::_MPFR_VERSION() >= 262400) {
   $first .=  'e0';
   $second .= 'e0';
 }

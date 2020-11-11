@@ -728,8 +728,14 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
      abs (Returns an MPFR object, blessed into package Math::MPFR)
      exp log (Return object has default precision)
      sin cos (Return object has default precision)
-     = (The copy has the same precision as the copied object.)
      ""
+     = (The copy has the same precision as the copied object.)
+
+
+    NOTE: Making use of the '=' overloading is not recommended unless
+          you understand its caveats. See 'perldoc overload' and
+          read it thoroughly, including the documentation regarding
+          'copy constructors'.
 
     Attempting to use the overloaded operators with objects that
     have been blessed into some package other than 'Math::MPC'

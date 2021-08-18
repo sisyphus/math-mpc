@@ -3134,10 +3134,12 @@ void _get_i_string(pTHX_ mpc_t * p, SV * base, SV * n_digits, SV * round) {
 
 
 SV * _itsa(pTHX_ SV * a) {
-     if(SvUOK(a)) return newSVuv(1);
-     if(SvIOK(a)) return newSVuv(2);
-     if(SvNOK(a) && !SvPOK(a)) return newSVuv(3);
+     if(SvIOK(a)) {
+       if(SvUOK(a)) return newSVuv(1);
+       return newSVuv(2);
+     }
      if(SvPOK(a)) return newSVuv(4);
+     if(SvNOK(a)) return newSVuv(3);
      if(sv_isobject(a)) {
        const char *h = HvNAME(SvSTASH(SvRV(a)));
        if(strEQ(h, "Math::MPFR")) return newSVuv(5);

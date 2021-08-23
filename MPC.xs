@@ -282,7 +282,7 @@ SV * _mpfr_set_NV(pTHX_ mpfr_t * p, SV * q, unsigned int round) {
 
 #if defined(MPC_CAN_PASS_FLOAT128)
 
-     if(!SvNOK(q)) croak("Second arg given to Rmpfr_set_NV is not an NV");
+     if(!SV_IS_NOK(q)) croak("Second arg given to Rmpfr_set_NV is not an NV");
 
      return newSViv(mpfr_set_float128(*p, (float128)SvNVX(q), (mp_rnd_t)round));
 
@@ -293,7 +293,7 @@ SV * _mpfr_set_NV(pTHX_ mpfr_t * p, SV * q, unsigned int round) {
      float128 ld, buffer_size;
      int returned;
 
-     if(!SvNOK(q)) croak("Second arg given to Math::MPC::_mpfr_set_NV is not an NV");
+     if(!SV_IS_NOK(q)) croak("Second arg given to Math::MPC::_mpfr_set_NV is not an NV");
 
 
      ld = (float128)SvNVX(q);
@@ -333,13 +333,13 @@ SV * _mpfr_set_NV(pTHX_ mpfr_t * p, SV * q, unsigned int round) {
 
 #elif defined(NV_IS_LONG_DOUBLE) && !defined(_MSC_VER)
 
-     if(!SvNOK(q)) croak("Second arg given to Math::MPC::_mpfr_set_NV is not an NV");
+     if(!SV_IS_NOK(q)) croak("Second arg given to Math::MPC::_mpfr_set_NV is not an NV");
 
      return newSViv(mpfr_set_ld(*p, (long double)SvNVX(q), (mp_rnd_t)round));
 
 #else
 
-     if(!SvNOK(q)) croak("Second arg given to Math::MPC::_mpfr_set_NV is not an NV");
+     if(!SV_IS_NOK(q)) croak("Second arg given to Math::MPC::_mpfr_set_NV is not an NV");
 
      return newSViv(mpfr_set_d (*p, (double)SvNVX(q), (mp_rnd_t)round));
 #endif
@@ -543,7 +543,7 @@ SV * Rmpc_set_NV(pTHX_ mpc_t * p, SV * q, unsigned int round) {
      int ret;
      mpfr_t f128;
 
-     if(!SvNOK(q)) croak("Second arg given to Rmpc_set_NV is not an NV");
+     if(!SV_IS_NOK(q)) croak("Second arg given to Rmpc_set_NV is not an NV");
 
      mpfr_init2(f128, FLT128_MANT_DIG);
      mpfr_set_float128(f128, SvNVX(q), MPC_RNDNN);
@@ -559,7 +559,7 @@ SV * Rmpc_set_NV(pTHX_ mpc_t * p, SV * q, unsigned int round) {
      mpfr_t t;
      int returned;
 
-     if(!SvNOK(q)) croak("Second arg given to Rmpc_set_NV is not an NV");
+     if(!SV_IS_NOK(q)) croak("Second arg given to Rmpc_set_NV is not an NV");
 
      ld = (float128)SvNVX(q);
      mpfr_init2(t, FLT128_MANT_DIG);
@@ -605,12 +605,12 @@ SV * Rmpc_set_NV(pTHX_ mpc_t * p, SV * q, unsigned int round) {
 
 #elif defined(NV_IS_LONG_DOUBLE)
 
-     if(!SvNOK(q)) croak("Second arg given to Rmpc_set_NV is not an NV");
+     if(!SV_IS_NOK(q)) croak("Second arg given to Rmpc_set_NV is not an NV");
      return newSViv(mpc_set_ld(*p, SvNVX(q), (mpc_rnd_t)round));
 
 #else
 
-     if(!SvNOK(q)) croak("Second arg given to Rmpc_set_NV is not an NV");
+     if(!SV_IS_NOK(q)) croak("Second arg given to Rmpc_set_NV is not an NV");
      return newSViv(mpc_set_d(*p, SvNVX(q), (mpc_rnd_t)round));
 
 #endif
@@ -622,7 +622,7 @@ SV * Rmpc_set_NV_NV(pTHX_ mpc_t * p, SV * re_q, SV * im_q, SV * round) {
      int ret;
      mpfr_t re_f128, im_f128;
 
-     if(!SvNOK(re_q) || !SvNOK(im_q)) croak("Second and/or third arg given to Rmpc_set_NV_NV is not an NV");
+     if(!SV_IS_NOK(re_q) || !SV_IS_NOK(im_q)) croak("Second and/or third arg given to Rmpc_set_NV_NV is not an NV");
 
      mpfr_init2(re_f128, FLT128_MANT_DIG);
      mpfr_init2(im_f128, FLT128_MANT_DIG);
@@ -641,7 +641,7 @@ SV * Rmpc_set_NV_NV(pTHX_ mpc_t * p, SV * re_q, SV * im_q, SV * round) {
      mpfr_t re_fr, im_fr;
      int returned;
 
-     if(!SvNOK(re_q) || !SvNOK(im_q)) croak("Second and/or third arg given to Rmpc_set_NV_NV is not an NV");
+     if(!SV_IS_NOK(re_q) || !SV_IS_NOK(im_q)) croak("Second and/or third arg given to Rmpc_set_NV_NV is not an NV");
 
      re_ld = (float128)SvNVX(re_q);
      im_ld = (float128)SvNVX(im_q);
@@ -733,12 +733,12 @@ SV * Rmpc_set_NV_NV(pTHX_ mpc_t * p, SV * re_q, SV * im_q, SV * round) {
 
 #elif defined(NV_IS_LONG_DOUBLE)
 
-     if(!SvNOK(re_q) || !SvNOK(im_q)) croak("Second and/or third arg given to Rmpc_set_NV_NV is not an NV");
+     if(!SV_IS_NOK(re_q) || !SV_IS_NOK(im_q)) croak("Second and/or third arg given to Rmpc_set_NV_NV is not an NV");
      return newSViv(mpc_set_ld_ld(*p, SvNVX(re_q), SvNVX(im_q), (mpc_rnd_t)SvUV(round)));
 
 #else
 
-     if(!SvNOK(re_q) || !SvNOK(im_q)) croak("Second and/or third arg given to Rmpc_set_NV_NV is not an NV");
+     if(!SV_IS_NOK(re_q) || !SV_IS_NOK(im_q)) croak("Second and/or third arg given to Rmpc_set_NV_NV is not an NV");
      return newSViv(mpc_set_d_d(*p, SvNVX(re_q), SvNVX(im_q), (mpc_rnd_t)SvUV(round)));
 #endif
 }
@@ -1654,7 +1654,7 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
        return obj_ref;
      }
 
-     if(SvIOK(b)) {
+     if(SV_IS_IOK(b)) {
        mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
 
@@ -1669,35 +1669,18 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
      }
 
 #else
-     if(SvUOK(b)) {
-       mpc_mul_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
-       return obj_ref;
+     if(SV_IS_IOK(b)) {
+       if(SvUOK(b)) {
+         mpc_mul_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
+         return obj_ref;
        }
 
-     if(SvIOK(b)) {
        mpc_mul_si(*mpc_t_obj, *a, SvIVX(b), DEFAULT_ROUNDING_MODE);
        return obj_ref;
      }
 #endif
 
-     if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
-#if defined(NV_IS_FLOAT128)
-       mpfr_init2(t, FLT128_MANT_DIG);
-       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
-
-#elif defined(NV_IS_LONG_DOUBLE)
-       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
-#else
-       mpfr_init2(t, DBL_MANT_DIG);
-       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
-#endif
-       mpc_mul_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(t);
-       return obj_ref;
-     }
-
-     if(SvPOK(b)) { /* assign the string with default precision */
+     if(SV_IS_POK(b)) { /* assign the string with default precision */
 
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_mul");}
 
@@ -1724,6 +1707,23 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
          croak("Invalid string (%s) supplied to Math::MPC::overload_mul", SvPV_nolen(b));
 #endif
        mpc_mul(*mpc_t_obj, *a, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
+       return obj_ref;
+     }
+
+     if(SV_IS_NOK(b)) {
+#if defined(NV_IS_FLOAT128)
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
+
+#elif defined(NV_IS_LONG_DOUBLE)
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
+#else
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
+#endif
+       mpc_mul_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
@@ -1768,7 +1768,7 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
        return obj_ref;
      }
 
-     if(SvIOK(b)) {
+     if(SV_IS_IOK(b)) {
        mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
 
@@ -1783,12 +1783,12 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
      }
 
 #else
-     if(SvUOK(b)) {
-       mpc_add_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
-       return obj_ref;
+     if(SV_IS_IOK(b)) {
+       if(SvUOK(b)) {
+         mpc_add_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
+         return obj_ref;
        }
 
-     if(SvIOK(b)) {
        if(SvIVX(b) >= 0)
          mpc_add_ui(*mpc_t_obj, *a, SvUVX(b)     , DEFAULT_ROUNDING_MODE);
        else
@@ -1797,24 +1797,7 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
      }
 #endif
 
-     if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
-#if defined(NV_IS_FLOAT128)
-       mpfr_init2(t, FLT128_MANT_DIG);
-       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
-
-#elif defined(NV_IS_LONG_DOUBLE)
-       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
-#else
-       mpfr_init2(t, DBL_MANT_DIG);
-       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
-#endif
-       mpc_add_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(t);
-       return obj_ref;
-     }
-
-     if(SvPOK(b)) { /* assign string with default precision */
+     if(SV_IS_POK(b)) { /* assign string with default precision */
 
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_add");}
 
@@ -1841,6 +1824,23 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
          croak("Invalid string (%s) supplied to Math::MPC::overload_add", SvPV_nolen(b));
 #endif
        mpc_add(*mpc_t_obj, *a, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
+       return obj_ref;
+     }
+
+     if(SV_IS_NOK(b)) {
+#if defined(NV_IS_FLOAT128)
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
+
+#elif defined(NV_IS_LONG_DOUBLE)
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
+#else
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
+#endif
+       mpc_add_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return obj_ref;
      }
 
@@ -1886,7 +1886,7 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
        return obj_ref;
      }
 
-     if(SvIOK(b)) {
+     if(SV_IS_IOK(b)) {
        mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
 
@@ -1902,13 +1902,13 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
      }
 
 #else
-     if(SvUOK(b)) {
-       if(third == &PL_sv_yes) mpc_ui_sub(*mpc_t_obj, SvUVX(b), *a, DEFAULT_ROUNDING_MODE);
-       else mpc_sub_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
-       return obj_ref;
+     if(SV_IS_IOK(b)) {
+       if(SvUOK(b)) {
+         if(third == &PL_sv_yes) mpc_ui_sub(*mpc_t_obj, SvUVX(b), *a, DEFAULT_ROUNDING_MODE);
+         else mpc_sub_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
+         return obj_ref;
        }
 
-     if(SvIOK(b)) {
        if(third == &PL_sv_yes) {
           if(SvIVX(b) >=0) {
             mpc_ui_sub(*mpc_t_obj, SvUVX(b), *a, DEFAULT_ROUNDING_MODE);
@@ -1928,25 +1928,7 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
      }
 #endif
 
-     if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
-#if defined(NV_IS_FLOAT128)
-       mpfr_init2(t, FLT128_MANT_DIG);
-       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
-
-#elif defined(NV_IS_LONG_DOUBLE)
-       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
-#else
-       mpfr_init2(t, DBL_MANT_DIG);
-       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
-#endif
-       if(third == &PL_sv_yes) mpc_fr_sub(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
-       else mpc_sub_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(t);
-       return obj_ref;
-     }
-
-     if(SvPOK(b)) { /* assign with default precision */
+     if(SV_IS_POK(b)) { /* assign with default precision */
 
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_sub");}
 
@@ -1975,7 +1957,25 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
        if(third == &PL_sv_yes) mpc_sub(*mpc_t_obj, *mpc_t_obj, *a, DEFAULT_ROUNDING_MODE);
        else mpc_sub(*mpc_t_obj, *a, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
        return obj_ref;
-       }
+     }
+
+     if(SV_IS_NOK(b)) {
+#if defined(NV_IS_FLOAT128)
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
+
+#elif defined(NV_IS_LONG_DOUBLE)
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
+#else
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
+#endif
+       if(third == &PL_sv_yes) mpc_fr_sub(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
+       else mpc_sub_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
+       return obj_ref;
+     }
 
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
@@ -2020,7 +2020,7 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
        return obj_ref;
      }
 
-     if(SvIOK(b)) {
+     if(SV_IS_IOK(b)) {
        mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
 
@@ -2036,13 +2036,13 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
      }
 
 #else
-     if(SvUOK(b)) {
-       if(third == &PL_sv_yes) mpc_ui_div(*mpc_t_obj, SvUVX(b), *a, DEFAULT_ROUNDING_MODE);
-       else mpc_div_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
-       return obj_ref;
+     if(SV_IS_IOK(b)) {
+       if(SvUOK(b)) {
+         if(third == &PL_sv_yes) mpc_ui_div(*mpc_t_obj, SvUVX(b), *a, DEFAULT_ROUNDING_MODE);
+         else mpc_div_ui(*mpc_t_obj, *a, SvUVX(b), DEFAULT_ROUNDING_MODE);
+         return obj_ref;
        }
 
-     if(SvIOK(b)) {
        if(third == &PL_sv_yes) {
           if(SvIVX(b) >=0) {
             mpc_ui_div(*mpc_t_obj, SvUVX(b), *a, DEFAULT_ROUNDING_MODE);
@@ -2065,25 +2065,7 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
      }
 #endif
 
-     if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
-#if defined(NV_IS_FLOAT128)
-       mpfr_init2(t, FLT128_MANT_DIG);
-       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
-
-#elif defined(NV_IS_LONG_DOUBLE)
-       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
-#else
-       mpfr_init2(t, DBL_MANT_DIG);
-       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
-#endif
-       if(third == &PL_sv_yes) mpc_fr_div(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
-       else mpc_div_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(t);
-       return obj_ref;
-     }
-
-     if(SvPOK(b)) { /* assign with default precision */
+     if(SV_IS_POK(b)) { /* assign with default precision */
 
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_div");}
 
@@ -2112,7 +2094,25 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
        if(third == &PL_sv_yes) mpc_div(*mpc_t_obj, *mpc_t_obj, *a, DEFAULT_ROUNDING_MODE);
        else mpc_div(*mpc_t_obj, *a, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
        return obj_ref;
-       }
+     }
+
+     if(SV_IS_NOK(b)) {
+#if defined(NV_IS_FLOAT128)
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
+
+#elif defined(NV_IS_LONG_DOUBLE)
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
+#else
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
+#endif
+       if(third == &PL_sv_yes) mpc_fr_div(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
+       else mpc_div_fr(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
+       return obj_ref;
+     }
 
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
@@ -2148,7 +2148,7 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
        return a;
      }
 
-     if(SvIOK(b)) {
+     if(SV_IS_IOK(b)) {
        mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
        mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
@@ -2160,12 +2160,12 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
        return a;
      }
 #else
-     if(SvUOK(b)) {
-       mpc_div_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
-       return a;
-     }
+     if(SV_IS_IOK(b)) {
+       if(SvUOK(b)) {
+         mpc_div_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
+         return a;
+       }
 
-     if(SvIOK(b)) {
        if(SvIV(b) >= 0) {
          mpc_div_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
          return a;
@@ -2176,24 +2176,7 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
      }
 #endif
 
-     if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
-#if defined(NV_IS_FLOAT128)
-       mpfr_init2(t, FLT128_MANT_DIG);
-       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
-
-#elif defined(NV_IS_LONG_DOUBLE)
-       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
-#else
-       mpfr_init2(t, DBL_MANT_DIG);
-       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
-#endif
-       mpc_div_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(t);
-       return a;
-     }
-
-     if(SvPOK(b)) {
+     if(SV_IS_POK(b)) {
 
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_div_eq");}
 
@@ -2227,6 +2210,23 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
 #endif
        mpc_div(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
+       return a;
+     }
+
+     if(SV_IS_NOK(b)) {
+#if defined(NV_IS_FLOAT128)
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
+
+#elif defined(NV_IS_LONG_DOUBLE)
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
+#else
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
+#endif
+       mpc_div_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
      }
 
@@ -2264,7 +2264,7 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
        return a;
      }
 
-     if(SvIOK(b)) {
+     if(SV_IS_IOK(b)) {
        mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
        mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
@@ -2276,12 +2276,12 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
        return a;
      }
 #else
-     if(SvUOK(b)) {
-       mpc_sub_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
-       return a;
-     }
+     if(SV_IS_IOK(b)) {
+       if(SvUOK(b)) {
+         mpc_sub_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
+         return a;
+       }
 
-     if(SvIOK(b)) {
        if(SvIV(b) >= 0) {
          mpc_sub_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
          return a;
@@ -2291,24 +2291,7 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
      }
 #endif
 
-     if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
-#if defined(NV_IS_FLOAT128)
-       mpfr_init2(t, FLT128_MANT_DIG);
-       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
-
-#elif defined(NV_IS_LONG_DOUBLE)
-       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
-#else
-       mpfr_init2(t, DBL_MANT_DIG);
-       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
-#endif
-       mpc_sub_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(t);
-       return a;
-     }
-
-     if(SvPOK(b)) {
+     if(SV_IS_POK(b)) {
 
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_sub_eq");}
 
@@ -2346,6 +2329,23 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
        return a;
      }
 
+     if(SV_IS_NOK(b)) {
+#if defined(NV_IS_FLOAT128)
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
+
+#elif defined(NV_IS_LONG_DOUBLE)
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
+#else
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
+#endif
+       mpc_sub_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
+       return a;
+     }
+
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
@@ -2379,7 +2379,7 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
        return a;
      }
 
-     if(SvIOK(b)) {
+     if(SV_IS_IOK(b)) {
        mpfr_init2(t, sizeof(UV) * CHAR_BIT);
  #ifdef _MSC_VER
        mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
@@ -2391,12 +2391,13 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
        return a;
      }
 #else
-     if(SvUOK(b)) {
-       mpc_add_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
-       return a;
-     }
+     if(SV_IS_IOK(b)) {
+       if(SvUOK(b)) {
+         mpc_add_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
+         return a;
+       }
 
-     if(SvIOK(b)) {
+
        if(SvIV(b) >= 0) {
          mpc_add_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
          return a;
@@ -2406,24 +2407,7 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
      }
 #endif
 
-     if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
-#if defined(NV_IS_FLOAT128)
-       mpfr_init2(t, FLT128_MANT_DIG);
-      _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
-
-#elif defined(NV_IS_LONG_DOUBLE)
-       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
-#else
-       mpfr_init2(t, DBL_MANT_DIG);
-       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
-#endif
-       mpc_add_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(t);
-       return a;
-     }
-
-     if(SvPOK(b)) {
+     if(SV_IS_POK(b)) {
 
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_add_eq");}
 
@@ -2460,6 +2444,23 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
        return a;
      }
 
+     if(SV_IS_NOK(b)) {
+#if defined(NV_IS_FLOAT128)
+       mpfr_init2(t, FLT128_MANT_DIG);
+      _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
+
+#elif defined(NV_IS_LONG_DOUBLE)
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
+#else
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
+#endif
+       mpc_add_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
+       return a;
+     }
+
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
@@ -2493,7 +2494,7 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
        return a;
      }
 
-     if(SvIOK(b)) {
+     if(SV_IS_IOK(b)) {
        mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
        mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
@@ -2505,36 +2506,19 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
        return a;
      }
 #else
-     if(SvUOK(b)) {
-       mpc_mul_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
-       return a;
-     }
+     if(SV_IS_IOK(b)) {
+       if(SvUOK(b)) {
+         mpc_mul_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
+         return a;
+       }
 
-     if(SvIOK(b)) {
        mpc_mul_si(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvIVX(b), DEFAULT_ROUNDING_MODE);
        return a;
      }
 
 #endif
 
-     if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
-#if defined(NV_IS_FLOAT128)
-       mpfr_init2(t, FLT128_MANT_DIG);
-       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
-
-#elif defined(NV_IS_LONG_DOUBLE)
-       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
-#else
-       mpfr_init2(t, DBL_MANT_DIG);
-       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
-#endif
-       mpc_mul_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(t);
-       return a;
-     }
-
-     if(SvPOK(b)) {
+     if(SV_IS_POK(b)) {
 
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_mul_eq");}
 
@@ -2568,6 +2552,23 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
 #endif
        mpc_mul(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
+       return a;
+     }
+
+     if(SV_IS_NOK(b)) {
+#if defined(NV_IS_FLOAT128)
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
+
+#elif defined(NV_IS_LONG_DOUBLE)
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
+#else
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
+#endif
+       mpc_mul_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
      }
 
@@ -2615,7 +2616,7 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
        return obj_ref;
      }
 
-     if(SvIOK(b)) {
+     if(SV_IS_IOK(b)) {
        mpc_init2(t, sizeof(UV) * CHAR_BIT);
 #ifdef _MSC_VER
        mpc_set_str(t, SvPV_nolen(b), 10, MPC_RNDNN);
@@ -2631,18 +2632,18 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
      }
 
 #else
-     if(SvUOK(b)) {
-       mpc_init2(t, sizeof(UV) * CHAR_BIT);
-       mpc_set_ui(t, SvUVX(b), MPC_RNDNN);
-       if(third == &PL_sv_yes)
-         mpc_pow(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
-       else
-         mpc_pow(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
-       return obj_ref;
-     }
+     if(SV_IS_IOK(b)) {
+       if(SvUOK(b)) {
+         mpc_init2(t, sizeof(UV) * CHAR_BIT);
+         mpc_set_ui(t, SvUVX(b), MPC_RNDNN);
+         if(third == &PL_sv_yes)
+           mpc_pow(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
+         else
+           mpc_pow(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+         mpc_clear(t);
+         return obj_ref;
+       }
 
-     if(SvIOK(b)) {
        mpc_init2(t, sizeof(IV) * CHAR_BIT);
        mpc_set_si(t, SvIVX(b), MPC_RNDNN);
        if(third == &PL_sv_yes)
@@ -2654,27 +2655,7 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
      }
 #endif
 
-     if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
-#if defined(NV_IS_FLOAT128)
-       mpc_init2(t, FLT128_MANT_DIG);
-       Rmpc_set_NV(aTHX_ &t, b, MPC_RNDNN);
-
-#elif defined(NV_IS_LONG_DOUBLE)
-       mpc_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpc_set_ld(t, (long double)SvNVX(b), MPC_RNDNN);
-#else
-       mpc_init2(t, DBL_MANT_DIG);
-       mpc_set_d(t, (double)SvNVX(b), MPC_RNDNN);
-#endif
-       if(third == &PL_sv_yes)
-         mpc_pow(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
-       else
-         mpc_pow(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
-       mpc_clear(t);
-       return obj_ref;
-     }
-
-     if(SvPOK(b)) {
+     if(SV_IS_POK(b)) {
 
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_pow");}
 
@@ -2704,6 +2685,26 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
          mpc_pow(*mpc_t_obj, *mpc_t_obj, *a, DEFAULT_ROUNDING_MODE);
        else
          mpc_pow(*mpc_t_obj, *a, *mpc_t_obj, DEFAULT_ROUNDING_MODE);
+       return obj_ref;
+     }
+
+     if(SV_IS_NOK(b)) {
+#if defined(NV_IS_FLOAT128)
+       mpc_init2(t, FLT128_MANT_DIG);
+       Rmpc_set_NV(aTHX_ &t, b, MPC_RNDNN);
+
+#elif defined(NV_IS_LONG_DOUBLE)
+       mpc_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpc_set_ld(t, (long double)SvNVX(b), MPC_RNDNN);
+#else
+       mpc_init2(t, DBL_MANT_DIG);
+       mpc_set_d(t, (double)SvNVX(b), MPC_RNDNN);
+#endif
+       if(third == &PL_sv_yes)
+         mpc_pow(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
+       else
+         mpc_pow(*mpc_t_obj, *a, t, DEFAULT_ROUNDING_MODE);
+       mpc_clear(t);
        return obj_ref;
      }
 
@@ -2740,7 +2741,7 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
        return a;
      }
 
-     if(SvIOK(b)) {
+     if(SV_IS_IOK(b)) {
        mpfr_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
        mpfr_set_str(t, SvPV_nolen(b), 10, GMP_RNDN);
@@ -2752,36 +2753,19 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
        return a;
      }
 #else
-     if(SvUOK(b)) {
-       mpc_pow_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
-       return a;
-     }
+     if(SV_IS_IOK(b)) {
+       if(SvUOK(b)) {
+         mpc_pow_ui(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvUVX(b), DEFAULT_ROUNDING_MODE);
+         return a;
+       }
 
-     if(SvIOK(b)) {
        mpc_pow_si(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), SvIVX(b), DEFAULT_ROUNDING_MODE);
        return a;
      }
 
 #endif
 
-     if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
-#if defined(NV_IS_FLOAT128)
-       mpfr_init2(t, FLT128_MANT_DIG);
-       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
-
-#elif defined(NV_IS_LONG_DOUBLE)
-       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
-#else
-       mpfr_init2(t, DBL_MANT_DIG);
-       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
-#endif
-       mpc_pow_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
-       mpfr_clear(t);
-       return a;
-     }
-
-     if(SvPOK(b)) {
+     if(SV_IS_POK(b)) {
 
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_pow_eq");}
 
@@ -2815,6 +2799,23 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
 #endif
        mpc_pow(*(INT2PTR(mpc_t *, SvIV(SvRV(a)))), *(INT2PTR(mpc_t *, SvIV(SvRV(a)))), temp, DEFAULT_ROUNDING_MODE);
        mpc_clear(temp);
+       return a;
+     }
+
+     if(SV_IS_NOK(b)) {
+#if defined(NV_IS_FLOAT128)
+       mpfr_init2(t, FLT128_MANT_DIG);
+       _mpfr_set_NV(aTHX_ &t, b, GMP_RNDN);
+
+#elif defined(NV_IS_LONG_DOUBLE)
+       mpfr_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpfr_set_ld(t, (long double)SvNVX(b), GMP_RNDN);
+#else
+       mpfr_init2(t, DBL_MANT_DIG);
+       mpfr_set_d(t, (double)SvNVX(b), GMP_RNDN);
+#endif
+       mpc_pow_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), t, DEFAULT_ROUNDING_MODE);
+       mpfr_clear(t);
        return a;
      }
 
@@ -2852,7 +2853,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
        return newSViv(0);
      }
 
-     if(SvIOK(b)) {
+     if(SV_IS_IOK(b)) {
        mpc_init2(t, sizeof(IV) * CHAR_BIT);
 #ifdef _MSC_VER
        mpc_set_str(t, SvPV_nolen(b), 10, MPC_RNDNN);
@@ -2865,45 +2866,23 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
        return newSViv(0);
      }
 #else
-     if(SvUOK(b)) {
-       mpc_init2(t, sizeof(UV) * CHAR_BIT);
-       mpc_set_ui(t, SvUVX(b), MPC_RNDNN);
-       ret = mpc_cmp(*a, t);
-       mpc_clear(t);
-       if(ret == 0) return newSViv(1);
-       return newSViv(0);
-     }
+     if(SV_IS_IOK(b)) {
+       if(SvUOK(b)) {
+         mpc_init2(t, sizeof(UV) * CHAR_BIT);
+         mpc_set_ui(t, SvUVX(b), MPC_RNDNN);
+         ret = mpc_cmp(*a, t);
+         mpc_clear(t);
+         if(ret == 0) return newSViv(1);
+         return newSViv(0);
+       }
 
-     if(SvIOK(b)) {
        ret = mpc_cmp_si(*a, SvIVX(b));
        if(ret == 0) return newSViv(1);
        return newSViv(0);
      }
 #endif
 
-     if(SvNOK(b) && !SvPOK(b)) { /* do not use the NV if POK is set */
-#if defined(NV_IS_FLOAT128)
-       mpc_init2(t, FLT128_MANT_DIG);
-       Rmpc_set_NV(aTHX_ &t, b, MPC_RNDNN);
-
-#elif defined(NV_IS_LONG_DOUBLE)
-       mpc_init2(t, REQUIRED_LDBL_MANT_DIG);
-       mpc_set_ld(t, (long double)SvNVX(b), MPC_RNDNN);
-#else
-       mpc_init2(t, DBL_MANT_DIG);
-       mpc_set_d(t, (double)SvNVX(b), MPC_RNDNN);
-#endif
-       if(mpfr_nan_p(MPC_RE(t)) || mpfr_nan_p(MPC_IM(t))) {
-         mpc_clear(t);
-         return newSViv(0);
-       }
-       ret = mpc_cmp(*a, t);
-       mpc_clear(t);
-       if(ret == 0) return newSViv(1);
-       return newSViv(0);
-     }
-
-     if(SvPOK(b)) {
+     if(SV_IS_POK(b)) {
 
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_equiv");}
 
@@ -2928,6 +2907,28 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
        mpc_init3(t, DEFAULT_PREC);
        if(mpc_set_str(t, (char *)SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
          croak("Invalid string (%s) supplied to Math::MPC::overload_equiv", SvPV_nolen(b));
+#endif
+       if(mpfr_nan_p(MPC_RE(t)) || mpfr_nan_p(MPC_IM(t))) {
+         mpc_clear(t);
+         return newSViv(0);
+       }
+       ret = mpc_cmp(*a, t);
+       mpc_clear(t);
+       if(ret == 0) return newSViv(1);
+       return newSViv(0);
+     }
+
+     if(SV_IS_NOK(b)) {
+#if defined(NV_IS_FLOAT128)
+       mpc_init2(t, FLT128_MANT_DIG);
+       Rmpc_set_NV(aTHX_ &t, b, MPC_RNDNN);
+
+#elif defined(NV_IS_LONG_DOUBLE)
+       mpc_init2(t, REQUIRED_LDBL_MANT_DIG);
+       mpc_set_ld(t, (long double)SvNVX(b), MPC_RNDNN);
+#else
+       mpc_init2(t, DBL_MANT_DIG);
+       mpc_set_d(t, (double)SvNVX(b), MPC_RNDNN);
 #endif
        if(mpfr_nan_p(MPC_RE(t)) || mpfr_nan_p(MPC_IM(t))) {
          mpc_clear(t);
@@ -3134,12 +3135,12 @@ void _get_i_string(pTHX_ mpc_t * p, SV * base, SV * n_digits, SV * round) {
 
 
 SV * _itsa(pTHX_ SV * a) {
-     if(SvIOK(a)) {
+     if(SV_IS_IOK(a)) {
        if(SvUOK(a)) return newSVuv(1);
        return newSVuv(2);
      }
-     if(SvPOK(a)) return newSVuv(4);
-     if(SvNOK(a)) return newSVuv(3);
+     if(SV_IS_POK(a)) return newSVuv(4);
+     if(SV_IS_NOK(a)) return newSVuv(3);
      if(sv_isobject(a)) {
        const char *h = HvNAME(SvSTASH(SvRV(a)));
        if(strEQ(h, "Math::MPFR")) return newSVuv(5);
@@ -3182,7 +3183,7 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
        done_re = 1;
      }
 
-     if(SvIOK(b) && !done_re) {
+     if(SV_IS_IOK(b) && !done_re) {
 #ifdef _MSC_VER
        mpfr_set_str(temp_re, SvPV_nolen(b), 10, DEFAULT_ROUNDING_MODE & 3);
 #else
@@ -3192,31 +3193,14 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
      }
 
 #else
-     if(SvUOK(b) && !done_re) {
-       mpfr_set_ui(temp_re, SvUVX(b), DEFAULT_ROUNDING_MODE & 3);
-       done_re = 1;
-     }
-
-     if(SvIOK(b) && !done_re) {
-       mpfr_set_si(temp_re, SvIVX(b), DEFAULT_ROUNDING_MODE & 3);
+     if(SV_IS_IOK(b) && !done_re) {
+       if(SvUOK(b)) mpfr_set_ui(temp_re, SvUVX(b), DEFAULT_ROUNDING_MODE & 3);
+       else mpfr_set_si(temp_re, SvIVX(b), DEFAULT_ROUNDING_MODE & 3);
        done_re = 1;
      }
 #endif
 
-     if(SvNOK(b) && !done_re && !SvPOK(b)) {
-#if defined(MPC_CAN_PASS_FLOAT128)
-       mpfr_set_float128(temp_re, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
-#elif defined(NV_IS_FLOAT128)
-       _mpfr_set_NV(aTHX_ &temp_re, b, GMP_RNDN);
-#elif defined(NV_IS_LONG_DOUBLE)
-       mpfr_set_ld(temp_re, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
-#else
-       mpfr_set_d(temp_re, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
-#endif
-       done_re = 1;
-     }
-
-     if(SvPOK(b) && !done_re) {
+     if(SV_IS_POK(b) && !done_re) {
 
        NOK_POK_DUALVAR_CHECK , "Math::MPC::new");}
 
@@ -3233,6 +3217,19 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
 #else
        if(mpfr_set_str(temp_re, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE & 3) == -1)
          croak("Invalid real string (%s) supplied to Math::MPC::new", SvPV_nolen(b));
+#endif
+       done_re = 1;
+     }
+
+     if(SV_IS_NOK(b) && !done_re) {
+#if defined(MPC_CAN_PASS_FLOAT128)
+       mpfr_set_float128(temp_re, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
+#elif defined(NV_IS_FLOAT128)
+       _mpfr_set_NV(aTHX_ &temp_re, b, GMP_RNDN);
+#elif defined(NV_IS_LONG_DOUBLE)
+       mpfr_set_ld(temp_re, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
+#else
+       mpfr_set_d(temp_re, SvNVX(b), DEFAULT_ROUNDING_MODE & 3);
 #endif
        done_re = 1;
      }
@@ -3274,7 +3271,7 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
        done_im = 1;
      }
 
-     if(SvIOK(d) && !done_im) {
+     if(SV_IS_IOK(d) && !done_im) {
 #ifdef _MSC_VER
        mpfr_set_str(temp_im, SvPV_nolen(d), 10, DEFAULT_ROUNDING_MODE / 16);
 #else
@@ -3284,34 +3281,16 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
      }
 
 #else
-     if(SvUOK(d) && !done_im) {
-       mpfr_set_ui(temp_im, SvUVX(d), DEFAULT_ROUNDING_MODE / 16);
-       done_im = 1;
-     }
-
-     if(SvIOK(d) && !done_im) {
-       mpfr_set_si(temp_im, SvIVX(d), DEFAULT_ROUNDING_MODE / 16);
+     if(SV_IS_IOK(d) && !done_im) {
+       if(SvUOK(d)) mpfr_set_ui(temp_im, SvUVX(d), DEFAULT_ROUNDING_MODE / 16);
+       else mpfr_set_si(temp_im, SvIVX(d), DEFAULT_ROUNDING_MODE / 16);
        done_im = 1;
      }
 #endif
 
-     if(SvNOK(d) && !done_im && !SvPOK(d)) {
+     if(SV_IS_POK(d) && !done_im) {
 
-#if defined(MPC_CAN_PASS_FLOAT128)
-       mpfr_set_float128(temp_im, SvNVX(d), DEFAULT_ROUNDING_MODE / 16);
-#elif defined(NV_IS_FLOAT128)
-       _mpfr_set_NV(aTHX_ &temp_im, d, GMP_RNDN);
-#elif defined(NV_IS_LONG_DOUBLE)
-       mpfr_set_ld(temp_im, SvNVX(d), DEFAULT_ROUNDING_MODE / 16);
-#else
-       mpfr_set_d(temp_im, SvNVX(d), DEFAULT_ROUNDING_MODE / 16);
-#endif
-       done_im = 1;
-     }
-
-     if(SvPOK(d) && !done_im) {
-
-       if(SvNOK(d)) {
+       if(SV_IS_NOK(d)) {
          nok_pok++;
          if(SvIV(get_sv("Math::MPC::NOK_POK", 0)))
            warn("Scalar passed to %s is both NV and PV. Using PV (string) value", "Math::MPC::new");}
@@ -3329,6 +3308,20 @@ SV * _new_real_im(pTHX_ SV * b, SV * d) {
 #else
        if(mpfr_set_str(temp_im, SvPV_nolen(d), 0, DEFAULT_ROUNDING_MODE & 3) == -1)
          croak("Invalid imaginary string (%s) supplied to Math::MPC::new", SvPV_nolen(d));
+#endif
+       done_im = 1;
+     }
+
+     if(SV_IS_NOK(d) && !done_im) {
+
+#if defined(MPC_CAN_PASS_FLOAT128)
+       mpfr_set_float128(temp_im, SvNVX(d), DEFAULT_ROUNDING_MODE / 16);
+#elif defined(NV_IS_FLOAT128)
+       _mpfr_set_NV(aTHX_ &temp_im, d, GMP_RNDN);
+#elif defined(NV_IS_LONG_DOUBLE)
+       mpfr_set_ld(temp_im, SvNVX(d), DEFAULT_ROUNDING_MODE / 16);
+#else
+       mpfr_set_d(temp_im, SvNVX(d), DEFAULT_ROUNDING_MODE / 16);
 #endif
        done_im = 1;
      }
@@ -3749,12 +3742,12 @@ void set_nok_pok(int x) {
 }
 
 int _SvNOK(pTHX_ SV * in) {
-  if(SvNOK(in)) return 1;
+  if(SV_IS_NOK(in)) return 1;
   return 0;
 }
 
 int _SvPOK(pTHX_ SV * in) {
-  if(SvPOK(in)) return 1;
+  if(SV_IS_POK(in)) return 1;
   return 0;
 }
 

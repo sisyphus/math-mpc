@@ -12,11 +12,11 @@ print "1..2\n";
 my $_64i = Math::MPC::_has_longlong();
 my $_64d = Math::MPC::_has_longdouble();
 
-if($_64i) {print "Using 64-bit integer\n"}
-else {print "Using 32-bit integer\n"}
+if($_64i) {warn "Using 64-bit integer\n"}
+else {warn "Using 32-bit integer\n"}
 
-if($_64d) {print "Using long double\n"}
-else {print "Not using long double\n"};
+if($_64d) {warn "Using long double\n"}
+else {warn "Not using long double\n"};
 
 my $uimax = ~0;
 my $simax = ($uimax - 1) / -2;

@@ -1,4 +1,5 @@
 1.13
+- Fix handling of perls whose ivsize == 4 && nvtype eq '__float128' in t/mpc_64.t
 - Refactor IV/UV/NV/PV handling inside overload subs.
 
 1.12

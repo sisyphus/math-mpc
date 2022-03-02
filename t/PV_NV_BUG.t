@@ -92,6 +92,8 @@ my $str_sqrt = "$nv_sqrt";
 # The next 4 tests should fail if the value
 # in the PV slot of $nv_sqrt is used.
 
+Rmpc_set_default_prec($Math::MPFR::NV_properties{bits});
+
 cmp_ok(Math::MPC->new(1) * $nv_sqrt, '==', sqrt(2),
        "overload_mul() uses value in NV slot");            # Test 10
 

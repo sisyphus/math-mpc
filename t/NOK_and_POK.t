@@ -1176,7 +1176,7 @@ else {
 
 my $nv = 1.3;
 my $s  = "$nv"; # $nv should be POK && NOK if MPC_PV_NV_BUG is 1
-                # Else (ie MPC_NV_BUG is 0) and $nv should be POK only.
+                # Else (ie MPC_NV_BUG is 0) and $nv should be NOK only.
 
 $z = Math::MPC->new($nv, 0);
 

@@ -1,4 +1,5 @@
 1.16
+ - Work around perl bug in https://github.com/Perl/perl5/issues/19550
 
 1.15
  - Fix bug re inconsistent settings of POK and NOK flag, which manifests itself as (eg):

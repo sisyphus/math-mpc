@@ -64,6 +64,7 @@ $discard    = eval{"$ninf"}; # POK flag is now also set for $ninf (mostly)
 $z = Math::MPC->new($inf);
 
 adj($inf, \$count, 1);
+$count++ if Math::MPC::ISSUE_19550;
 
 if(Math::MPC::nok_pokflag() == $count) {print "ok 6\n"}
 else {
@@ -98,6 +99,7 @@ else {
 my $z2 = Math::MPC->new($nan);
 
 adj($nan, \$count, 1);
+$count++ if Math::MPC::ISSUE_19550;
 
 if(Math::MPC::nok_pokflag() == $count) {print "ok 10\n"}
 else {

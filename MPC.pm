@@ -37,7 +37,7 @@
 
     use constant MPC_PV_NV_BUG => Math::MPC::Constant::_has_pv_nv_bug();
 
-    # Inspired by https://github.com/Perl/perl5/issues/19550:
+    # Inspired by https://github.com/Perl/perl5/issues/19550, which affects only perl-5.35.10:
     use constant ISSUE_19550    => Math::MPC::Constant::_issue_19550();
 
     use subs qw(MPC_VERSION MPC_VERSION_MAJOR MPC_VERSION_MINOR
@@ -73,7 +73,7 @@
     *import = \&Exporter::import;
     require DynaLoader;
 
-    @Math::MPC::EXPORT_OK = qw(
+    my @tagged = qw(
 MPC_PV_NV_BUG
 MPC_RNDNN MPC_RNDND MPC_RNDNU MPC_RNDNZ MPC_RNDDN MPC_RNDUN MPC_RNDZN MPC_RNDDD
 MPC_RNDDU MPC_RNDDZ MPC_RNDZD MPC_RNDUD MPC_RNDUU MPC_RNDUZ MPC_RNDZU MPC_RNDZZ
@@ -133,70 +133,13 @@ Rmpc_set_nan Rmpc_swap
 Rmpc_mul_sj Rmpc_mul_ld Rmpc_mul_d Rmpc_div_sj Rmpc_sj_div Rmpc_div_ld Rmpc_ld_div Rmpc_div_d Rmpc_d_div
 );
 
+    @Math::MPC::EXPORT_OK = @tagged;
     our $VERSION = '1.17';
     #$VERSION = eval $VERSION;
 
     Math::MPC->DynaLoader::bootstrap($VERSION);
 
-    %Math::MPC::EXPORT_TAGS =(mpc => [qw(
-MPC_PV_NV_BUG
-MPC_RNDNN MPC_RNDND MPC_RNDNU MPC_RNDNZ MPC_RNDDN MPC_RNDUN MPC_RNDZN MPC_RNDDD
-MPC_RNDDU MPC_RNDDZ MPC_RNDZD MPC_RNDUD MPC_RNDUU MPC_RNDUZ MPC_RNDZU MPC_RNDZZ
-MPC_VERSION_MAJOR MPC_VERSION_MINOR MPC_VERSION_PATCHLEVEL MPC_VERSION_STRING
-MPC_VERSION MPC_VERSION_NUM Rmpc_get_version
-Rmpc_set_default_rounding_mode Rmpc_get_default_rounding_mode
-Rmpc_set_prec Rmpc_set_default_prec Rmpc_get_default_prec
-Rmpc_set_default_prec2 Rmpc_get_default_prec2
-Rmpc_set_re_prec Rmpc_set_im_prec
-Rmpc_get_prec Rmpc_get_prec2 Rmpc_get_re_prec Rmpc_get_im_prec
-Rmpc_get_dc Rmpc_get_ldc
-Rmpc_get_DC Rmpc_get_LDC Rmpc_get_F128C
-RMPC_RE RMPC_IM RMPC_INEX_RE RMPC_INEX_IM
-Rmpc_clear Rmpc_clear_ptr Rmpc_clear_mpc
-Rmpc_deref4 Rmpc_get_str
-Rmpc_init2 Rmpc_init3
-Rmpc_init2_nobless Rmpc_init3_nobless
-Rmpc_strtoc Rmpc_set_str
-Rmpc_set Rmpc_set_ui Rmpc_set_si Rmpc_set_d Rmpc_set_uj Rmpc_set_sj Rmpc_set_ld
-Rmpc_set_z Rmpc_set_q Rmpc_set_f Rmpc_set_fr
-Rmpc_set_z_z Rmpc_set_q_q Rmpc_set_f_f
-Rmpc_set_ui_ui Rmpc_set_ui_si Rmpc_set_ui_d Rmpc_set_ui_uj Rmpc_set_ui_sj Rmpc_set_ui_ld Rmpc_set_ui_fr
-Rmpc_set_si_ui Rmpc_set_si_si Rmpc_set_si_d Rmpc_set_si_uj Rmpc_set_si_sj Rmpc_set_si_ld Rmpc_set_si_fr
-Rmpc_set_d_ui Rmpc_set_d_si Rmpc_set_d_d Rmpc_set_d_uj Rmpc_set_d_sj Rmpc_set_d_ld Rmpc_set_d_fr
-Rmpc_set_uj_ui Rmpc_set_uj_si Rmpc_set_uj_d Rmpc_set_uj_uj Rmpc_set_uj_sj Rmpc_set_uj_ld Rmpc_set_uj_ld Rmpc_set_uj_fr
-Rmpc_set_sj_ui Rmpc_set_sj_si Rmpc_set_sj_d Rmpc_set_sj_uj Rmpc_set_sj_sj Rmpc_set_sj_ld Rmpc_set_sj_fr
-Rmpc_set_ld_ui Rmpc_set_ld_si Rmpc_set_ld_uj Rmpc_set_ld_d Rmpc_set_ld_sj Rmpc_set_ld_ld Rmpc_set_ld_fr
-Rmpc_set_fr_ui Rmpc_set_fr_si Rmpc_set_fr_d Rmpc_set_fr_uj Rmpc_set_fr_sj Rmpc_set_fr_ld Rmpc_set_fr_fr
-
-Rmpc_set_f_ui Rmpc_set_q_ui Rmpc_set_z_ui Rmpc_set_ui_f Rmpc_set_ui_q Rmpc_set_ui_z
-Rmpc_set_f_si Rmpc_set_q_si Rmpc_set_z_si Rmpc_set_si_f Rmpc_set_si_q Rmpc_set_si_z
-Rmpc_set_f_d Rmpc_set_q_d Rmpc_set_z_d Rmpc_set_d_f Rmpc_set_d_q Rmpc_set_d_z
-Rmpc_set_f_uj Rmpc_set_q_uj Rmpc_set_z_uj Rmpc_set_uj_f Rmpc_set_uj_q Rmpc_set_uj_z
-Rmpc_set_f_sj Rmpc_set_q_sj Rmpc_set_z_sj Rmpc_set_sj_f Rmpc_set_sj_q Rmpc_set_sj_z
-Rmpc_set_f_ld Rmpc_set_q_ld Rmpc_set_z_ld Rmpc_set_ld_f Rmpc_set_ld_q Rmpc_set_ld_z
-Rmpc_set_f_q Rmpc_set_q_f Rmpc_set_f_z Rmpc_set_z_f Rmpc_set_z_q Rmpc_set_q_z
-Rmpc_set_f_fr Rmpc_set_q_fr Rmpc_set_z_fr Rmpc_set_fr_f Rmpc_set_fr_q Rmpc_set_fr_z
-
-Rmpc_set_dc Rmpc_set_ldc Rmpc_set_NV Rmpc_set_NV_NV
-Rmpc_set_DC Rmpc_set_LDC Rmpc_set_F128C
-Rmpc_fma Rmpc_dot Rmpc_sum
-Rmpc_add Rmpc_add_ui Rmpc_add_fr
-Rmpc_sub Rmpc_sub_ui Rmpc_ui_sub Rmpc_ui_ui_sub
-Rmpc_mul Rmpc_mul_ui Rmpc_mul_si Rmpc_mul_fr Rmpc_mul_i Rmpc_sqr Rmpc_mul_2exp
-Rmpc_mul_2si Rmpc_mul_2ui
-Rmpc_div Rmpc_div_ui Rmpc_ui_div Rmpc_div_fr Rmpc_sqrt Rmpc_div_2exp
-Rmpc_div_2si Rmpc_div_2ui
-Rmpc_neg Rmpc_abs Rmpc_conj Rmpc_norm Rmpc_exp Rmpc_log Rmpc_log10
-Rmpc_cmp Rmpc_cmp_si Rmpc_cmp_si_si Rmpc_cmp_abs
-Rmpc_out_str Rmpc_inp_str c_string r_string i_string
-TRmpc_out_str TRmpc_inp_str
-Rmpc_sin Rmpc_cos Rmpc_sin_cos Rmpc_tan Rmpc_sinh Rmpc_cosh Rmpc_tanh
-Rmpc_asin Rmpc_acos Rmpc_atan Rmpc_asinh Rmpc_acosh Rmpc_atanh
-Rmpc_real Rmpc_imag Rmpc_arg Rmpc_proj
-Rmpc_pow Rmpc_pow_d Rmpc_pow_ld Rmpc_pow_si Rmpc_pow_ui Rmpc_pow_z Rmpc_pow_fr Rmpc_rootofunity
-Rmpc_set_nan Rmpc_swap
-Rmpc_mul_sj Rmpc_mul_ld Rmpc_mul_d Rmpc_div_sj Rmpc_sj_div Rmpc_div_ld Rmpc_ld_div Rmpc_div_d Rmpc_d_div
-)]);
+    %Math::MPC::EXPORT_TAGS =(mpc => \@tagged);
 
 $Math::MPC::NOK_POK = 0; # Set to 1 to allow warnings in new() and overloaded operations when
                           # a scalar that has set both NOK (NV) and POK (PV) flags is encountered

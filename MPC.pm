@@ -8,21 +8,31 @@
     use constant  MPC_RNDZN => 1;
     use constant  MPC_RNDUN => 2;
     use constant  MPC_RNDDN => 3;
+    use constant  MPC_RNDAN => 4;
 
     use constant  MPC_RNDNZ => 16;
     use constant  MPC_RNDZZ => 17;
     use constant  MPC_RNDUZ => 18;
     use constant  MPC_RNDDZ => 19;
+    use constant  MPC_RNDAZ => 20;
 
     use constant  MPC_RNDNU => 32;
     use constant  MPC_RNDZU => 33;
     use constant  MPC_RNDUU => 34;
     use constant  MPC_RNDDU => 35;
+    use constant  MPC_RNDAU => 36;
 
     use constant  MPC_RNDND => 48;
     use constant  MPC_RNDZD => 49;
     use constant  MPC_RNDUD => 50;
     use constant  MPC_RNDDD => 51;
+    use constant  MPC_RNDAD => 52;
+
+    use constant  MPC_RNDNA => 64;
+    use constant  MPC_RNDZA => 65;
+    use constant  MPC_RNDUA => 66;
+    use constant  MPC_RNDDA => 67;
+    use constant  MPC_RNDAA => 68;
 
     use constant  _UOK_T   => 1;
     use constant  _IOK_T   => 2;
@@ -77,6 +87,8 @@
 MPC_PV_NV_BUG
 MPC_RNDNN MPC_RNDND MPC_RNDNU MPC_RNDNZ MPC_RNDDN MPC_RNDUN MPC_RNDZN MPC_RNDDD
 MPC_RNDDU MPC_RNDDZ MPC_RNDZD MPC_RNDUD MPC_RNDUU MPC_RNDUZ MPC_RNDZU MPC_RNDZZ
+MPC_RNDNA MPC_RNDAN MPC_RNDAZ MPC_RNDZA MPC_RNDAD MPC_RNDDA MPC_RNDUA MPC_RNDAU
+MPC_RNDAA
 MPC_VERSION_MAJOR MPC_VERSION_MINOR MPC_VERSION_PATCHLEVEL MPC_VERSION_STRING
 MPC_VERSION MPC_VERSION_NUM Rmpc_get_version
 Rmpc_set_default_rounding_mode Rmpc_get_default_rounding_mode

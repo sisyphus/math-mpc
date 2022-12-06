@@ -4063,9 +4063,40 @@ SV * Rmpc_sum(pTHX_ mpc_t * rop, SV * avref, SV * len, SV * round) {
 
 int _has_pv_nv_bug(void) {
 #if defined(MPC_PV_NV_BUG)
-     return 1;
+    return 1;
 #else
-     return 0;
+    return 0;
+#endif
+}
+
+/****** New mpc functions in mpc-1.3.0 ******/
+
+int Rmpc_agm(pTHX_ mpc_t * rop, mpc_t * op1, mpc_t * op2, SV * rnd) {
+#if MPC_VERSION < 66304
+    croak("Rmpc_agm function requires mpc version 1.3.0. This is only version %s", MPC_VERSION_STRING);
+#else
+    return mpc_agm(*rop, *op1, *op2, (mpc_rnd_t)SvUV(rnd));
+#endif
+}
+
+int in_fund_dom(mpc_t * op) {
+  mpfr_t t;
+  if( mpfr_cmp_d(MPC_RE(*op ), -0.5) < 0 || mpfr_cmp_d(MPC_RE(*op ), 0.5) > 0 ) return 0;
+  mpfr_init2( t, mpfr_get_prec(MPC_RE(*op)) );
+  mpc_abs(t, *op, MPFR_RNDN);
+  if(mpfr_cmp_d(t, 1.0) < 1) {
+    mpfr_clear(t);
+    return 0;
+  }
+  mpfr_clear(t);
+  return 1;
+}
+
+int Rmpc_eta_fund(pTHX_ mpc_t * rop, mpc_t * op, SV * rnd) {
+#if MPC_VERSION < 66304
+    croak("Rmpc_eta_fund function requires mpc version 1.3.0. This is only version %s", MPC_VERSION_STRING);
+#else
+    return mpc_eta_fund(*rop, *op, (mpc_rnd_t)SvUV(rnd));
 #endif
 }
 
@@ -6724,6 +6755,29 @@ OUTPUT:  RETVAL
 int
 _has_pv_nv_bug ()
 
+
+int
+Rmpc_agm (rop, op1, op2, rnd)
+	mpc_t *	rop
+	mpc_t *	op1
+	mpc_t *	op2
+	SV *	rnd
+CODE:
+  RETVAL = Rmpc_agm (aTHX_ rop, op1, op2, rnd);
+OUTPUT:  RETVAL
+
+int
+in_fund_dom (op)
+	mpc_t *	op
+
+int
+Rmpc_eta_fund (rop, op, rnd)
+	mpc_t *	rop
+	mpc_t *	op
+	SV *	rnd
+CODE:
+  RETVAL = Rmpc_eta_fund (aTHX_ rop, op, rnd);
+OUTPUT:  RETVAL
 
 void
 CLONE (x, ...)

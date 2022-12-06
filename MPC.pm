@@ -143,6 +143,7 @@ Rmpc_real Rmpc_imag Rmpc_arg Rmpc_proj
 Rmpc_pow Rmpc_pow_d Rmpc_pow_ld Rmpc_pow_si Rmpc_pow_ui Rmpc_pow_z Rmpc_pow_fr Rmpc_rootofunity
 Rmpc_set_nan Rmpc_swap
 Rmpc_mul_sj Rmpc_mul_ld Rmpc_mul_d Rmpc_div_sj Rmpc_sj_div Rmpc_div_ld Rmpc_ld_div Rmpc_div_d Rmpc_d_div
+Rmpc_agm Rmpc_eta_fund in_fund_dom
 );
 
     @Math::MPC::EXPORT_OK = @tagged;
@@ -183,6 +184,8 @@ else   {$Math::MPC::no_complex_c_q = 0 }
 # were renamed to mpc_mul_2ui and mpc_div_2ui.
 *Rmpc_mul_2exp = \&Rmpc_mul_2ui;
 *Rmpc_div_2exp = \&Rmpc_div_2ui;
+
+#require Math::MPC::Radius;
 
 sub dl_load_flags {0} # Prevent DynaLoader from complaining and croaking
 

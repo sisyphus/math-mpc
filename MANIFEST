@@ -6,9 +6,15 @@ MPC.pod
 MPC.xs
 README
 CHANGES
+#Ball/Makefile.PL
+#Ball/Ball.pm
+#Ball/Ball.xs
 Constant/Constant.pm
 Constant/Constant.xs
 Constant/Makefile.PL
+#Radius/Makefile.PL
+#Radius/Radius.pm
+#Radius/Radius.xs
 t/_itsa.t
 t/aaa_compat.t
 t/aab_basic.t
@@ -35,6 +41,7 @@ t/mpc_swap.t
 t/mpc_trig.t
 t/new_in_1.1.0.t
 t/new_in_1.1.1.t
+t/new_in_1.3.0.t
 t/NOK_and_POK.t
 t/out_str1.t
 t/out_str2.t

@@ -23,12 +23,15 @@ else {
   cmp_ok("$rop", 'eq', '(2.7191494731957273 6.4237609338121771e-1)', "Rmpc_agm output is ok");
 }
 
-for( [0.49, -10], [-0.49, -10], [-0.49, 1], [-0.5, sqrt(0.8)], [0, 1.0001]  ){
+for( [0.49, -10], [-0.49, -10], [-0.49, 1], [-0.5, sqrt(0.8)], [0, 1.0001], [0.49, "Inf" + 0],
+     [0.49, 0 - "Inf"]  ){
   my $bool = in_fund_dom(Math::MPC->new(@$_));
   cmp_ok($bool, '==', 1, "[@$_] inside fundamental  domain");
 }
 
-for( [0.51, 10], [-0.51, 10], [0.49, sqrt(0.75)], [0.51, sqrt(0.75)], [-0.5, sqrt(0.7)] ){
+for( [0.51, 10], [-0.51, 10], [0.49, sqrt(0.75)], [0.51, sqrt(0.75)], [-0.5, sqrt(0.7)],
+     ["NaN" + 0, 20.0], ["NaN" + 0, "Nan" + 0], [0.4, "NaN" + 0], ["NaN" + 0, "Inf" + 0],
+     ["Inf" + 0, "NaN" + 0], ["Inf" + 0, 0.2] ){
   my $bool = in_fund_dom(Math::MPC->new(@$_));
   cmp_ok($bool, '==', 0, "[@$_] outside fundamental  domain");
 }

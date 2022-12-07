@@ -4081,7 +4081,7 @@ int Rmpc_agm(pTHX_ mpc_t * rop, mpc_t * op1, mpc_t * op2, SV * rnd) {
 
 int in_fund_dom(mpc_t * op) {
   mpfr_t t;
-  if( mpfr_cmp_d(MPC_RE(*op ), -0.5) < 0 || mpfr_cmp_d(MPC_RE(*op ), 0.5) > 0 ) return 0;
+  if( mpfr_nan_p(MPC_RE(*op)) || mpfr_cmp_d(MPC_RE(*op), -0.5) < 0 || mpfr_cmp_d(MPC_RE(*op), 0.5) > 0 ) return 0;
   mpfr_init2( t, mpfr_get_prec(MPC_RE(*op)) );
   mpc_abs(t, *op, MPFR_RNDN);
   if(mpfr_cmp_d(t, 1.0) < 1) {

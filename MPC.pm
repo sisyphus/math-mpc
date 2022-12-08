@@ -46,6 +46,7 @@
     use constant  _MATH_MPC_T    => 10;
 
     use constant MPC_PV_NV_BUG => Math::MPC::Constant::_has_pv_nv_bug();
+    use constant MPC_HEADER_V  => Math::MPC::Constant::_mpc_header_version();
 
     # Inspired by https://github.com/Perl/perl5/issues/19550, which affects only perl-5.35.10:
     use constant ISSUE_19550    => Math::MPC::Constant::_issue_19550();
@@ -84,7 +85,7 @@
     require DynaLoader;
 
     my @tagged = qw(
-MPC_PV_NV_BUG
+MPC_PV_NV_BUG MPC_HEADER_V
 MPC_RNDNN MPC_RNDND MPC_RNDNU MPC_RNDNZ MPC_RNDDN MPC_RNDUN MPC_RNDZN MPC_RNDDD
 MPC_RNDDU MPC_RNDDZ MPC_RNDZD MPC_RNDUD MPC_RNDUU MPC_RNDUZ MPC_RNDZU MPC_RNDZZ
 MPC_RNDNA MPC_RNDAN MPC_RNDAZ MPC_RNDZA MPC_RNDAD MPC_RNDDA MPC_RNDUA MPC_RNDAU

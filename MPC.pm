@@ -47,6 +47,7 @@
 
     use constant MPC_PV_NV_BUG => Math::MPC::Constant::_has_pv_nv_bug();
     use constant MPC_HEADER_V  => Math::MPC::Constant::_mpc_header_version();
+    use constant MPC_HEADER_V_STR => Math::MPC::Constant::_mpc_header_version_str();
 
     # Inspired by https://github.com/Perl/perl5/issues/19550, which affects only perl-5.35.10:
     use constant ISSUE_19550    => Math::MPC::Constant::_issue_19550();
@@ -85,7 +86,7 @@
     require DynaLoader;
 
     my @tagged = qw(
-MPC_PV_NV_BUG MPC_HEADER_V
+MPC_PV_NV_BUG MPC_HEADER_V MPC_HEADER_V_STR
 MPC_RNDNN MPC_RNDND MPC_RNDNU MPC_RNDNZ MPC_RNDDN MPC_RNDUN MPC_RNDZN MPC_RNDDD
 MPC_RNDDU MPC_RNDDZ MPC_RNDZD MPC_RNDUD MPC_RNDUU MPC_RNDUZ MPC_RNDZU MPC_RNDZZ
 MPC_RNDNA MPC_RNDAN MPC_RNDAZ MPC_RNDZA MPC_RNDAD MPC_RNDDA MPC_RNDUA MPC_RNDAU
@@ -147,13 +148,26 @@ Rmpc_mul_sj Rmpc_mul_ld Rmpc_mul_d Rmpc_div_sj Rmpc_sj_div Rmpc_div_ld Rmpc_ld_d
 Rmpc_agm Rmpc_eta_fund in_fund_dom
 );
 
-    @Math::MPC::EXPORT_OK = @tagged;
+my @radius = ();
+
+if(MPC_HEADER_V >= 66304) {
+@radius = qw(
+  Rmpcr_init  Rmpcr_init_nobless  Rmpcr_destroy
+  Rmpcr_inf_p  Rmpcr_zero_p  Rmpcr_lt_half_p  Rmpcr_cmp  Rmpcr_set_inf
+  Rmpcr_set_zero  Rmpcr_set_one  Rmpcr_set  Rmpcr_set_ui_2si  Rmpcr_max
+  Rmpcr_get_exp  Rmpcr_out_str  Rmpcr_add  Rmpcr_sub  Rmpcr_mul  Rmpcr_div
+  Rmpcr_mul_2ui  Rmpcr_div_2ui  Rmpcr_sqr  Rmpcr_sqrt  Rmpcr_sub_rnd
+  Rmpcr_c_abs_rnd  Rmpcr_add_rounding_error
+          );
+}
+
+    @Math::MPC::EXPORT_OK = (@tagged, @radius);
     our $VERSION = '1.17';
     #$VERSION = eval $VERSION;
 
     Math::MPC->DynaLoader::bootstrap($VERSION);
 
-    %Math::MPC::EXPORT_TAGS =(mpc => \@tagged);
+    %Math::MPC::EXPORT_TAGS =(mpc => [@tagged, @radius]);
 
 $Math::MPC::NOK_POK = 0; # Set to 1 to allow warnings in new() and overloaded operations when
                           # a scalar that has set both NOK (NV) and POK (PV) flags is encountered
@@ -186,7 +200,37 @@ else   {$Math::MPC::no_complex_c_q = 0 }
 *Rmpc_mul_2exp = \&Rmpc_mul_2ui;
 *Rmpc_div_2exp = \&Rmpc_div_2ui;
 
-#require Math::MPC::Radius;
+if(MPC_HEADER_V >= 66304) { # mpc library is at least version 1.3.0
+
+  require Math::MPC::Radius;
+
+  *Rmpcr_init = \&Math::MPC::Radius::Rmpcr_init;
+  *Rmpcr_init_nobless = \&Math::MPC::Radius::Rmpcr_init_nobless;
+  *Rmpcr_destroy = \&Math::MPC::Radius::Rmpcr_destroy;
+  *Rmpcr_inf_p = \&Math::MPC::Radius::Rmpcr_inf_p;
+  *Rmpcr_zero_p = \&Math::MPC::Radius::Rmpcr_zero_p;
+  *Rmpcr_lt_half_p = \&Math::MPC::Radius::Rmpcr_lt_half_p;
+  *Rmpcr_cmp = \&Math::MPC::Radius::Rmpcr_cmp;
+  *Rmpcr_set_inf = \&Math::MPC::Radius::Rmpcr_set_inf;
+  *Rmpcr_set_zero = \&Math::MPC::Radius::Rmpcr_set_zero;
+  *Rmpcr_set_one = \&Math::MPC::Radius::Rmpcr_set_one;
+  *Rmpcr_set = \&Math::MPC::Radius::Rmpcr_set;
+  *Rmpcr_set_ui_2si = \&Math::MPC::Radius::Rmpcr_set_ui_2si;
+  *Rmpcr_max = \&Math::MPC::Radius::Rmpcr_max;
+  *Rmpcr_get_exp = \&Math::MPC::Radius::Rmpcr_get_exp;
+  *Rmpcr_out_str = \&Math::MPC::Radius::Rmpcr_out_str;
+  *Rmpcr_add = \&Math::MPC::Radius::Rmpcr_add;
+  *Rmpcr_sub = \&Rmpcr_sub;
+  *Rmpcr_mul = \&Math::MPC::Radius::Rmpcr_mul;
+  *Rmpcr_div = \&Math::MPC::Radius::Rmpcr_div;
+  *Rmpcr_mul_2ui = \&Math::MPC::Radius::Rmpcr_mul_2ui;
+  *Rmpcr_div_2ui = \&Math::MPC::Radius::Rmpcr_div_2ui;
+  *Rmpcr_sqr = \&Math::MPC::Radius::Rmpcr_sqr;
+  *Rmpcr_sqrt = \&Math::MPC::Radius::Rmpcr_sqrt;
+  *Rmpcr_sub_rnd = \&Math::MPC::Radius::Rmpcr_sub_rnd;
+  *Rmpcr_c_abs_rnd = \&Math::MPC::Radius::Rmpcr_c_abs_rnd;
+  *Rmpcr_add_rounding_error = \&Math::MPC::Radius::Rmpcr_add_rounding_error;
+}
 
 sub dl_load_flags {0} # Prevent DynaLoader from complaining and croaking
 

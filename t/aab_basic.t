@@ -3,7 +3,7 @@ use strict;
 use Math::MPC qw(:mpc);
 use Math::MPFR qw(:mpfr);
 
-print "1..6\n";
+print "1..7\n";
 
 my $string = Rmpc_get_version();
 
@@ -45,4 +45,8 @@ else {
   print "not ok 6\n";
 }
 
-
+if(MPC_HEADER_V == MPC_VERSION) {print "ok 7\n" }
+else {
+  warn MPC_HEADER_V, " != ", MPC_VERSION;
+  print "not ok 7\n";
+}

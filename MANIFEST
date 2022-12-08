@@ -12,9 +12,9 @@ CHANGES
 Constant/Constant.pm
 Constant/Constant.xs
 Constant/Makefile.PL
-#Radius/Makefile.PL
-#Radius/Radius.pm
-#Radius/Radius.xs
+Radius/Makefile.PL
+Radius/Radius.pm
+Radius/Radius.xs
 t/_itsa.t
 t/aaa_compat.t
 t/aab_basic.t
@@ -48,6 +48,7 @@ t/out_str2.t
 t/overload_switch.t
 t/pod.t
 t/PV_NV_BUG.t
+t/Radius.t
 t/set_str.t
 t/signed_zero.t
 t/switched_overload_args.t

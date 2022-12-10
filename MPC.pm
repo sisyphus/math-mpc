@@ -154,10 +154,11 @@ if(MPC_HEADER_V >= 66304) {
 @radius = qw(
   Rmpcr_init  Rmpcr_init_nobless  Rmpcr_destroy
   Rmpcr_inf_p  Rmpcr_zero_p  Rmpcr_lt_half_p  Rmpcr_cmp  Rmpcr_set_inf
-  Rmpcr_set_zero  Rmpcr_set_one  Rmpcr_set  Rmpcr_set_ui_2si  Rmpcr_max
-  Rmpcr_get_exp  Rmpcr_out_str  Rmpcr_add  Rmpcr_sub  Rmpcr_mul  Rmpcr_div
+  Rmpcr_set_zero  Rmpcr_set_one  Rmpcr_set  Rmpcr_set_ui64_2si64  Rmpcr_set_str_2str
+  Rmpcr_max Rmpcr_get_exp  Rmpcr_add  Rmpcr_sub  Rmpcr_mul  Rmpcr_div
   Rmpcr_mul_2ui  Rmpcr_div_2ui  Rmpcr_sqr  Rmpcr_sqrt  Rmpcr_sub_rnd
   Rmpcr_c_abs_rnd  Rmpcr_add_rounding_error
+  Rmpcr_print  Rmpcr_say  Rmpcr_out_str
           );
 }
 
@@ -215,10 +216,13 @@ if(MPC_HEADER_V >= 66304) { # mpc library is at least version 1.3.0
   *Rmpcr_set_zero = \&Math::MPC::Radius::Rmpcr_set_zero;
   *Rmpcr_set_one = \&Math::MPC::Radius::Rmpcr_set_one;
   *Rmpcr_set = \&Math::MPC::Radius::Rmpcr_set;
-  *Rmpcr_set_ui_2si = \&Math::MPC::Radius::Rmpcr_set_ui_2si;
+  *Rmpcr_set_ui64_2si64 = \&Math::MPC::Radius::Rmpcr_set_ui64_2si64;
+  *Rmpcr_set_str_2str = \&Math::MPC::Radius::Rmpcr_set_str_2str;
   *Rmpcr_max = \&Math::MPC::Radius::Rmpcr_max;
   *Rmpcr_get_exp = \&Math::MPC::Radius::Rmpcr_get_exp;
   *Rmpcr_out_str = \&Math::MPC::Radius::Rmpcr_out_str;
+  *Rmpcr_print = \&Math::MPC::Radius::Rmpcr_print;
+  *Rmpcr_say = \&Math::MPC::Radius::Rmpcr_say;
   *Rmpcr_add = \&Math::MPC::Radius::Rmpcr_add;
   *Rmpcr_sub = \&Rmpcr_sub;
   *Rmpcr_mul = \&Math::MPC::Radius::Rmpcr_mul;

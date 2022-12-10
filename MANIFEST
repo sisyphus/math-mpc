@@ -8,12 +8,14 @@ README
 CHANGES
 #Ball/Makefile.PL
 #Ball/Ball.pm
+#Ball/Ball.pod
 #Ball/Ball.xs
 Constant/Constant.pm
 Constant/Constant.xs
 Constant/Makefile.PL
 Radius/Makefile.PL
 Radius/Radius.pm
+Radius/Radius.pod
 Radius/Radius.xs
 t/_itsa.t
 t/aaa_compat.t

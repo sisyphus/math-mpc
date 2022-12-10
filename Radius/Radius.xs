@@ -61,27 +61,18 @@ SV * Rmpcr_init_nobless(pTHX) {
 #endif
 }
 
-void Rmpcr_set_IV(mpcr_ptr rop, IV mantissa, IV exponent) {
+void Rmpcr_set_str_2str(mpcr_ptr rop, char * mantissa, char* exponent) {
 #if MPC_VERSION >= 66304
-  rop->mant = (int64_t)mantissa;
-  rop->exp  = (int64_t)exponent;
-#else
-  croak("Rmpcr_* functions need mpc-1.3.0. This is only mpc-%s", MPC_VERSION_STRING);
-#endif
-}
-
-void Rmpcr_set_str(mpcr_ptr rop, char * mantissa, char* exponent) {
-#if MPC_VERSION >= 66304
-  int64_t i;
+  int64_t m, e;
   char c;
-  int scanned = sscanf(mantissa, "%" SCNd64 "%c", &i, &c);
+  int scanned = sscanf(mantissa, "%" SCNd64 "%c", &m, &c);
   if(scanned < 1) croak("Scan of first input (%s) to Rmpc_set_str failed", mantissa);
   if(scanned > 1) warn("Extra data found in scan of first input (%s) to Rmpc_set_str", mantissa);
-  rop->mant = i;
-  scanned = sscanf(exponent, "%" SCNd64 "%c", &i, &c);
+
+  scanned = sscanf(exponent, "%" SCNd64 "%c", &e, &c);
   if(scanned < 1) croak("Scan of second input (%s) to Rmpc_set_str failed", exponent);
   if(scanned > 1) warn("Extra data found in scan of second input (%s) to Rmpc_set_str", exponent);
-  rop->exp  = i;
+  mpcr_set_ui64_2si64(rop, m, e);
 #else
   croak("Rmpcr_* functions need mpc-1.3.0. This is only mpc-%s", MPC_VERSION_STRING);
 #endif
@@ -173,9 +164,9 @@ void Rmpcr_set(mpcr_ptr rop, mpcr_ptr op) {
 #endif
 }
 
-void Rmpcr_set_ui_2si(mpcr_ptr rop, IV mantissa, IV exponent) {
+void Rmpcr_set_ui64_2si64(mpcr_ptr rop, IV mantissa, IV exponent) {
 #if MPC_VERSION >= 66304
-   mpcr_set_ui_2si(rop, (int64_t)mantissa, (int64_t)exponent);
+   mpcr_set_ui64_2si64(rop, (int64_t)mantissa, (int64_t)exponent);
 #else
   croak("Rmpcr_* functions need mpc-1.3.0. This is only mpc-%s", MPC_VERSION_STRING);
 #endif
@@ -205,6 +196,26 @@ void Rmpcr_out_str (pTHX_ FILE *stream, mpcr_ptr op) {
   croak("Rmpcr_* functions need mpc-1.3.0. This is only mpc-%s", MPC_VERSION_STRING);
 #endif
 }
+
+void Rmpcr_print (pTHX_ mpcr_ptr op) {
+#if MPC_VERSION >= 66304
+   mpcr_out_str(stdout, op);
+   fflush(stdout);
+#else
+  croak("Rmpcr_* functions need mpc-1.3.0. This is only mpc-%s", MPC_VERSION_STRING);
+#endif
+}
+
+void Rmpcr_say (pTHX_ mpcr_ptr op) {
+#if MPC_VERSION >= 66304
+   mpcr_out_str(stdout, op);
+   fflush(stdout);
+   printf("\n");
+#else
+  croak("Rmpcr_* functions need mpc-1.3.0. This is only mpc-%s", MPC_VERSION_STRING);
+#endif
+}
+
 
 void Rmpcr_add (mpcr_ptr rop, mpcr_ptr op1, mpcr_ptr op2) {
 #if MPC_VERSION >= 66304
@@ -313,25 +324,7 @@ CODE:
 OUTPUT:  RETVAL
 
 void
-Rmpcr_set_IV (rop, mantissa, exponent)
-	mpcr_ptr	rop
-	IV	mantissa
-	IV	exponent
-        PREINIT:
-        I32* temp;
-        PPCODE:
-        temp = PL_markstack_ptr++;
-        Rmpcr_set_IV(rop, mantissa, exponent);
-        if (PL_markstack_ptr != temp) {
-          /* truly void, because dXSARGS not invoked */
-          PL_markstack_ptr = temp;
-          XSRETURN_EMPTY; /* return empty stack */
-        }
-        /* must have used dXSARGS; list context implied */
-        return; /* assume stack size is correct */
-
-void
-Rmpcr_set_str (rop, mantissa, exponent)
+Rmpcr_set_str_2str (rop, mantissa, exponent)
 	mpcr_ptr	rop
 	char *	mantissa
 	char *	exponent
@@ -339,7 +332,7 @@ Rmpcr_set_str (rop, mantissa, exponent)
         I32* temp;
         PPCODE:
         temp = PL_markstack_ptr++;
-        Rmpcr_set_str(rop, mantissa, exponent);
+        Rmpcr_set_str_2str(rop, mantissa, exponent);
         if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
           PL_markstack_ptr = temp;
@@ -463,7 +456,7 @@ Rmpcr_set (rop, op)
         return; /* assume stack size is correct */
 
 void
-Rmpcr_set_ui_2si (rop, mantissa, exponent)
+Rmpcr_set_ui64_2si64 (rop, mantissa, exponent)
 	mpcr_ptr	rop
 	IV	mantissa
 	IV	exponent
@@ -471,7 +464,7 @@ Rmpcr_set_ui_2si (rop, mantissa, exponent)
         I32* temp;
         PPCODE:
         temp = PL_markstack_ptr++;
-        Rmpcr_set_ui_2si(rop, mantissa, exponent);
+        Rmpcr_set_ui64_2si64(rop, mantissa, exponent);
         if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
           PL_markstack_ptr = temp;
@@ -511,6 +504,38 @@ Rmpcr_out_str (stream, op)
         PPCODE:
         temp = PL_markstack_ptr++;
         Rmpcr_out_str(aTHX_ stream, op);
+        if (PL_markstack_ptr != temp) {
+          /* truly void, because dXSARGS not invoked */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
+        }
+        /* must have used dXSARGS; list context implied */
+        return; /* assume stack size is correct */
+
+void
+Rmpcr_print (op)
+	mpcr_ptr	op
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpcr_print(aTHX_ op);
+        if (PL_markstack_ptr != temp) {
+          /* truly void, because dXSARGS not invoked */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
+        }
+        /* must have used dXSARGS; list context implied */
+        return; /* assume stack size is correct */
+
+void
+Rmpcr_say (op)
+	mpcr_ptr	op
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpcr_say(aTHX_ op);
         if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
           PL_markstack_ptr = temp;

@@ -1,0 +1,117 @@
+=pod
+
+=head1 FUNCTIONS
+
+   In this documentation:
+    Arguments "$op" and "$rop" denote Math::MPC::Radius (mpcr_ptr)
+    object, with "$op" being an argument, and "$rop" being the
+    object that receives the value, returned by the function.
+    "$fh" is a specified stream - eg stdout or sderr or a filehandle.
+    "$ui64" is a perl integer scalar that will be cast to uint64_t.
+    "$si64" is a perl integer scalar that will be cast to 'int64_t'.
+    "$i" is a perl integer type containing a 'signed int' value.
+    "$si" is a perl integer type containing a 'signed long int' value.
+    "$ui" is a perl integer type containing an 'unsigned long int' value.
+    "$iv" is a perl signed scalar IV.
+    "$uv" is a perl unsigned scalar UV.
+    "$str" is a string - ie a perl scalar PV.
+
+   $rop = Rmpcr_init();
+   $rop = Rmpcr_init_nobless();
+    Create a Math::MPC::Radius object with a value of zero.
+    Creating the object using the "nobless" variant results in an object
+    that has not been blessed into the Math::MPC::Radius package. This is
+    generally NOT what is wanted as it puts the burden of freeing
+    allocated memory onto the user by calling Rmpcr_destroy($rop) at the
+    appropriate time.
+
+   $i = Rmpcr_inf_p ($op);
+   $i = Rmpcr_zero_p ($op);
+    Test whether $op is infinity or zero, respectively, and return a
+    boolean.
+
+   $i = Rmpcr_lt_half_p ($op);
+    Return 'true' if $op <  1/2, and 'false' otherwise.
+
+   $i = Rmpcr_cmp ($op1, $op2);
+    Return +1, 0 or -1 depending on whether $op1 is larger than, equal to
+    or less than $op2, with the natural total order on the compactified
+    non-negative real axis letting 0 be smaller and letting infinity be
+    larger than any finite real number.
+
+   Rmpcr_set_inf ($rop);
+   Rmpcr_set_zero ($rop);
+   Rmpcr_set_one ($rop);
+   Rmpcr_set ($rop, $op);
+   Rmpcr_set_ui64_2si64 ($rop, $ui64, $si64);
+    Set $rop to infinity, zero, 1, $op or $ui64 * (2 ** $si64),
+    respectively.
+
+   Rmpcr_set_str_2str ($rop, $str1, $str2);
+    A replacement for Rmpcr_set_ui64_2si64 on perls whose IV size < 8.
+    The 64-bit values can be represented as Decimal integer strings,
+    with $rop being set to $str1 * (2 ** $str2).
+
+   Rmpcr_max ($rop, $op1, $op2);
+    Set $rop to the maximum of $op1 and $op2.
+
+   $iv = Rmpcr_get_exp ($op);
+    $iv will be assigned an int64_t value - and could therefore be
+    subjected to overflow if $Config{ivsize} < 8.
+    Assuming that $op is neither infinity nor 0, return its exponent
+    $iv, such that $op == m * (2 ** $iv) 1/2 = m < 1.
+    This function's behaviour is undefined when $op is either Inf or 0.
+
+   Rmpcr_out_str ($fh, $op);
+   Rmpcr_print($op);
+   Rmpcr_say($op);
+    Rmpcr_out_str outputs $op on $fh, which may be 'stdout'.
+    Rmpcr_print and Rmpcr_say print to 'stdout', with Rmpcr_say adding
+    a newline - as with perl's say() function.
+    Caveat: These functions so far serve mainly for debugging purposes.
+            Their behaviour might change in the future.
+
+   Rmpcr_add ($rop, $op1, $op2);
+   Rmpcr_sub ($rop, $op1, $op2);
+   Rmpcr_mul ($rop, $op1, $op2);
+   Rmpcr_div ($rop, $op1, $op2);
+   Rmpcr_mul_2ui ($rop, $op, $ui);
+   Rmpcr_div_2ui ($rop, $op, $ui);
+   Rmpcr_sqr ($rop, $op);
+   Rmpcr_sqrt ($rop, $op);
+    Set rop to the sum, difference, product or quotient of $op1 and $op2,
+    or to $op * (2 ** $ui) or to $p / (2 ** $ui), or to the square or the
+    square root of $op.  If any of the arguments is infinity, or if a
+    difference is negative, the result is infinity.
+
+   Rmpcr_sub_rnd ($rop, $op1, $op2, $round); # $round is a Math::MPFR
+                                             # rounding value
+    Set $op to the difference of $op1 and $op2, rounded according to
+    $round, which can be one of 'MPFR_RNDU' or 'MPFR_RNDD'.  If one of
+    the arguments is infinity or the difference is negative, the result
+    is infinity.  Calling the function with 'MPFR_RNDU' is equivalent to
+    calling 'Rmpcr_sub'.
+    This is one out of several functions taking a rounding parameter.
+    Rounding down may be useful to obtain an upper bound when dividing
+    by the result.
+
+   Rmpcr_c_abs_rnd ($rop, $mpc, $round); # $mpc is a Math::MPC object.
+                                      # $round is a Math::MPFR rounding
+                                      # value
+    Set $rop to the absolute value of the complex number $mpc, rounded
+    in the direction $round, which may be one of 'MPFR_RNDU' or
+    'MPFR_RNDD'.
+
+   Rmpcr_add_rounding_error ($rop, $uv, $round); # $round is a Math::MPFR
+                                                 # rounding value
+    Set $rop to r + (1 + r) 2 ** {-p} if $round equals 'MPFR_RNDN', and
+    to r + (1 + r) 2 ** {1-p} otherwise.  The idea is that if a
+    (potentially not representable) centre of an ideal complex ball of
+    radius R is rounded to a representable complex number at precision
+    $prec, this shifts the centre by up to 1/2 ulp (for rounding to
+    nearest) or 1ulp (for directed rounding of at least one of the real
+    or imaginary parts), which increases the radius accordingly.  So this
+    function is typically called internally at the end of each operation
+    with complex balls to account for the error made by rounding the centre.
+
+=cut

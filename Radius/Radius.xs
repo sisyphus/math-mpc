@@ -17,7 +17,8 @@
 /*********************
  If the mpc library is not at version 1.3.0 or higher, then
  we allow this XS file to compile, by specifying the following
- typedef - even though every functions will croak() if called.
+ compltely bogus typedef - even though every function will
+ croak() if called.
  TODO: Handle less insanely.
 *********************/
 
@@ -34,6 +35,7 @@ SV * Rmpcr_init(pTHX) {
   if(mpcr_t_obj == NULL) croak("Failed to allocate memory in Rmpcr_init function");
   obj_ref = newSV(0);
   obj = newSVrv(obj_ref, "Math::MPC::Radius");
+  mpcr_set_zero(*mpcr_t_obj);
 
   sv_setiv(obj, INT2PTR(IV,mpcr_t_obj));
   SvREADONLY_on(obj);
@@ -52,6 +54,7 @@ SV * Rmpcr_init_nobless(pTHX) {
   if(mpcr_t_obj == NULL) croak("Failed to allocate memory in Rmpcr_init_nobless function");
   obj_ref = newSV(0);
   obj = newSVrv(obj_ref, NULL);
+  mpcr_set_zero(*mpcr_t_obj);
 
   sv_setiv(obj, INT2PTR(IV,mpcr_t_obj));
   SvREADONLY_on(obj);

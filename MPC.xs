@@ -744,7 +744,7 @@ SV * Rmpc_set_NV_NV(pTHX_ mpc_t * p, SV * re_q, SV * im_q, SV * round) {
          returned = quadmath_snprintf(buffer, (size_t)buffer_size + 5, "%.0Qf", re_ld);
          if(returned < 0) croak("In Rmpc_set_NV_NV, encoding error in quadmath_snprintf function");
          if(returned >= buffer_size + 5) croak("In Rmpc_set_NV_NV, buffer given to quadmath_snprintf function was too small");
-         mpfr_set_str(re_fr, buffer, 10, (mpc_rnd_t)round); /* exact */
+         mpfr_set_str(re_fr, buffer, 10, (mpc_rnd_t)SvUV(round)); /* exact */
          Safefree(buffer);
 
          if (exp2 > exp) mpfr_div_2ui(re_fr, re_fr, exp2 - exp, GMP_RNDN);
@@ -783,7 +783,7 @@ SV * Rmpc_set_NV_NV(pTHX_ mpc_t * p, SV * re_q, SV * im_q, SV * round) {
          returned = quadmath_snprintf(buffer, (size_t)buffer_size + 5, "%.0Qf", im_ld);
          if(returned < 0) croak("In Rmpc_set_NV_NV, encoding error in quadmath_snprintf function");
          if(returned >= buffer_size + 5) croak("In Rmpc_set_NV_NV, buffer given to quadmath_snprintf function was too small");
-         mpfr_set_str(im_fr, buffer, 10, (mpc_rnd_t)round); /* exact */
+         mpfr_set_str(im_fr, buffer, 10, (mpc_rnd_t)SvUV(round)); /* exact */
          Safefree(buffer);
 
          if (exp2 > exp) mpfr_div_2ui(im_fr, im_fr, exp2 - exp, GMP_RNDN);

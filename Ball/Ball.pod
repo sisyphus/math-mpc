@@ -1,5 +1,62 @@
 =pod
 
+=head1 DESCRIPTION
+
+   This module defines the "ball" type and functions.
+
+   The ball type (mpcb_t) is defined by
+   typedef struct {
+    mpc_t  c;
+    mpcr_t r;
+   }
+
+   where the 'mpcr_t' is the radius type. See the Math::MPC::Radius
+   documentation. The components should only be accessed through
+   the provided functions.
+
+   To understand functions on balls, one needs to consider the balls
+   passed as arguments as sets of complex values, to which a mathematical
+   function is applied; the function 'rounds up' in the sense that it
+   returns a ball containing all possible values of the function in all the
+   possible input values.  Reasonable effort is made to return small balls,
+   but again there is no guarantee that the result is the smallest possible
+   one.  In the current implementation, the centre of a ball returned as a
+   value is obtained by applying the function to the centres of the balls
+   passed as arguments, and rounding.  While this is a natural approach, it
+   is not the only possible one; however, it also simplifies the error
+   analysis as already carried out for functions with regular complex
+   arguments.  Whenever the centre of a complex ball has a non-finite real
+   or imaginary part (positive or negative infinity or NaN) the radius is
+   set to infinity; this can be interpreted as the 'useless ball',
+   representing the whole complex plane, whatever the value of the centre
+   is.
+
+   Unlike for variables of ‘mpc_t’ type, where the precision needs to be
+   set explicitly at initialisation, variables of type ‘mpcb_t’ handle
+   their precision dynamically.  Ball centres always have the same
+   precision for their real and their imaginary parts (again this is a
+   choice of the implementation; if they are of very different sizes, one
+   could theoretically reduce the precision of the part that is smaller in
+   absolute value, which is more strongly affected by the common error
+   coded in the radius).  When setting a complex ball from a value of a
+   different type, an additional precision parameter is passed, which
+   determines the precision of the centre.  Functions on complex balls set
+   the precision of their result depending on the input.  In the current
+   implementation, this is the minimum of the argument precisions, so if
+   all balls are initially set to the same precision, this is preserved
+   throughout the computations.  (Notice that the exponent of the radius
+   encodes roughly the number of correct binary digits of the ball centre;
+   so it would also make sense to reduce the precision if the radius
+   becomes larger.)
+
+   The following functions on complex balls are currently available; the
+   eclectic collection is motivated by the desire to provide an
+   implementation of the arithmetic-geometric mean of complex numbers
+   through the use of ball arithmetic.  As for functions taking complex
+   arguments, there may be arbitrary overlaps between variables
+   representing arguments and results; for instance 'mpcb_mul (Z, Z, Z)'
+   is an allowed way of replacing the ball Z by its square.
+
 =head1 FUNCTIONS
 
    In this documentation:
@@ -29,7 +86,7 @@
     Creating the object using the "nobless" variant results in an object
     that has not been blessed into the Math::MPC::Ball package. This is
     generally NOT what is wanted as it puts the burden of freeing
-    allocated memory onto the user by calling Rmpcr_destroy($rop) at the
+    allocated memory onto the user by calling Rmpcb_clear($rop) at the
     appropriate time.
 
    $uv = Rmpcb_get_prec ($op);
@@ -154,9 +211,19 @@
     Set the mpc_t encapsulated in $op to $mpc.
     Set the mpcr_t encapsulated in $op to $mpcr.
 
-   Rmpcb_destroy($op);
+   Rmpcb_clear($op);
     Free memory associated with $op.
     It's normally unnecessary to call this function unless $op was
     created using Rmpcb_init_nobless().
+
+=head1 LICENSE
+
+    This program is free software; you may redistribute it and/or
+    modify it under the same terms as Perl itself.
+    Copyright 2022 Sisyphus
+
+=head1 AUTHOR
+
+    Sisyphus <sisyphus at(@) cpan dot (.) org>
 
 =cut

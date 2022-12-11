@@ -20,10 +20,17 @@ if(MPC_HEADER_V < 66304) {
 my $rop = Rmpcr_init();
 my $chk = Rmpcr_init();
 my $one = Rmpcr_init();
+my $two = Rmpcr_init();
+my $four = Rmpcr_init();
+my $half = Rmpcr_init();
+my $qtr = Rmpcr_init();
 my $nbl = Rmpcr_init_nobless(); # no magic
 
 Rmpcr_set_inf($rop);
 Rmpcr_set_inf($nbl);
+
+cmp_ok(ref($rop), 'eq', 'Math::MPC::Radius', 'isa Math::MPC::Radius object');
+cmp_ok(ref($nbl), 'eq', 'SCALAR', 'ref() of unblessed object is SCALAR');
 
 cmp_ok(Rmpcr_inf_p($rop), '!=', 0, "Object is Inf");
 cmp_ok(Rmpcr_zero_p($nbl), '==', 0, "Object is not Zero");
@@ -60,7 +67,16 @@ cmp_ok(Rmpcr_cmp($rop, $chk), '==', 0, "Rmpcr_c_abs_rnd is consistent");
 Rmpcr_c_abs_rnd($chk, $mpc2, 3); # MPFR_RNDD
 cmp_ok(Rmpcr_cmp($rop, $chk), '>', 0, "Value is lessened by rounding down");
 
-# TODO: More tests
+Rmpcr_set_ui64_2si64($two , 2, 0);# 1073741824, -29);
+Rmpcr_set_ui64_2si64($four, 4, 0);# 1073741824, -28);
+Rmpcr_set_ui64_2si64($half, 1073741824, -31);
+Rmpcr_set_ui64_2si64($qtr , 1073741824, -32);
+Rmpcr_set_str_2str($chk, "1", "-1");
+cmp_ok(Rmpcr_cmp($half, $chk), '==', 0, "Rmpcr_str_2str functions correctly");
+
+#Rmpcr_out_str(*stdout, $one); print "\n";
+#Rmpcr_print($one); print "\n";
+#Rmpcr_say($one); print "OK\n";
 
 Rmpcr_destroy($nbl); # $nbl is unblessed and must be specifically
                      # freed in order to avoid memory leak.

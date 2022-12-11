@@ -1,5 +1,35 @@
 =pod
 
+=head1 DESCRIPTION
+
+   This module defines the "radius" type and functions, for use
+   in Ball arithmetic. (See the Math::MPC::Ball documentation for
+   information on Ball arithmetic.)
+
+   The radius type (mpcr_t) is defined by
+   struct {
+      int64_t mant;
+      int64_t exp;
+   }
+   It can contain the special values infinity or zero, or floating
+   point numbers encoded as mant * (2 ** exp) for a positive mant and an
+   arbitrary (usually negative) exponent exp.  Normalised finite radii
+   use 31 bits for the mantissa  - ie (2 ** 30) <= mant <= (2 ** 30) - 1.
+   The special values infinity and 0 are encoded through the sign of
+   m, but should be tested for and set using the dedicated functions.
+
+   Unless indicated otherwise, the following functions assume radius
+   arguments to be normalised, they return normalised results, and they
+   round their results up, not necessarily to the smallest representable
+   number, although reasonable effort is made to get a tight upper bound:
+   They only guarantee that their outputs are an upper bound on the true
+   results.  (There may be a trade-off between tightness of the result
+   and speed of computation.  For instance, when a 32-bit mantissa is
+   normalised, an even mantissa should be divided by 2, an odd mantissa
+   should be divided by 2 and 1 should be added, and then in both cases
+   the exponent must be increased by 1.  It might be more efficient to
+   add 1 all the time instead of testing the last bit of the mantissa.)
+
 =head1 FUNCTIONS
 
    In this documentation:
@@ -113,5 +143,15 @@
     or imaginary parts), which increases the radius accordingly.  So this
     function is typically called internally at the end of each operation
     with complex balls to account for the error made by rounding the centre.
+
+=head1 LICENSE
+
+    This program is free software; you may redistribute it and/or
+    modify it under the same terms as Perl itself.
+    Copyright 2022 Sisyphus
+
+=head1 AUTHOR
+
+    Sisyphus <sisyphus at(@) cpan dot (.) org>
 
 =cut

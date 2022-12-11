@@ -1,0 +1,162 @@
+=pod
+
+=head1 FUNCTIONS
+
+   In this documentation:
+    Arguments "$op" and "$rop" denote Math::MPC::Ball (mpc_t) objects,
+    with "$op" being an argument, and "$rop" being the object
+    that receives the value, returned by the function
+   "$ui64" is a perl integer scalar that will be cast to uint64_t.
+   "$si64" is a perl integer scalar that will be cast to 'int64_t'.
+   "$i" is a perl integer type containing a 'signed int' value.
+   "$si" is a perl integer type containing a 'signed long int' value.
+   "$ui" is a perl integer type containing an 'unsigned long int' value.
+   "$iv" is a perl signed scalar IV.
+   "$uv" is a perl unsigned scalar UV.
+   "$re" is a perl unsigned scalar UV, relating to the "real" component.
+   "$im" is a perl unsigned scalar UV, relating to the "imaginary"
+         component.
+   "$prec" is a perl unsigned scalar UV, relating to precision.
+   "$mpc" is a Math::MPC object (mpc_t)
+   "$mpcr" is an mpcr_t (Radius) type.
+
+   $rop = Rmpcb_init();
+   $rop = Rmpcb_init_nobless();
+    Create a Math::MPC::Ball object. Both the real and imaginary
+    components of the encapsulated mpc_t object have unfixed precision
+    and values of NaN. The value of the encapsulated Radius (mpcr_t)
+    object is set to Inf.
+    Creating the object using the "nobless" variant results in an object
+    that has not been blessed into the Math::MPC::Ball package. This is
+    generally NOT what is wanted as it puts the burden of freeing
+    allocated memory onto the user by calling Rmpcr_destroy($rop) at the
+    appropriate time.
+
+   $uv = Rmpcb_get_prec ($op);
+     Return the (common) precision of the real and the complex parts of
+     the centre of $op.
+
+   Rmpcb_set ($rop, $op);
+     Set $rop to $op, preserving the precision of the centre.
+
+   Rmpcb_set_inf ($rop);
+     Set $rop to the whole complex plane.  This is intended to be used
+     much in the spirit of an assertion: When a precondition is not
+     satisfied inside a function, it can set its result to this value,
+      which willpropagate through further computations.
+
+   Rmpcb_set_c ($rop, $mpc, $prec, $re, $im);
+    Set $rop to a ball with centre $mpc at precision $prec. If $prec
+    is at least the maximum of the precisions of the real and the
+    imaginary parts of $mpc and $re (real error) and $im (imaginary
+    error) are 0, then the resulting ball is exact with radius zero.
+    Using a larger value for $prec makes sense if $mpc is considered
+    exact and a larger target precision for the result is desired, or
+    some leeway for the working precision is to be taken into account.
+    If $prec is less than the precision of $mpc, then usually some
+    rounding error occurs when setting the centre, which is taken
+    into account in the radius.
+
+    If $re (real error) and $im (imaginary error) are non-zero, the
+    argument $mpc is considered as an inexact complex number, with a
+    bound on the absolute error of its real part given in $re as a
+    multiple of 1/2 ulp of the real part of $mpc, and a bound on the
+    absolute error of its imaginary part given in $im as a multiple of
+    1/2 ulp of the imaginary part of $mpc. (Notice that if the parts
+    of $mp have different precisions or exponents, the absolute values
+    of their ulp differ.)  Then $rop is created as a ball with centre
+    $mpc and a radius taking these errors $mpc as well as the
+    potential additional rounding error for the centre into account.
+    If the real part of $mpc is 0, then $re must be 0, since ulp of
+    0 makes no sense; otherwise the radius is set to infinity.
+    The same remark holds for the imaginary part.
+
+    Using $re and $im different from 0 is particularly useful in
+    two settings: If $mpc is itself the result of a call to an 'Rmpc_'
+    function with exact input and rounding mode 'MPC_RNDNN' of both
+    parts to nearest, then its parts are known with errors of at most
+    1/2 ulp, and setting $re and $im to 1 yields a ball which is
+    known to contain the exact result (this motivates the strange unit
+    of 1/2 ulp); if directed rounding was used, $re and $im can
+    be set to 2 instead.
+
+    And if $mpc is the result of a sequence of calls to 'Rmpc_'
+    functions for which some error analysis has been carried out (as
+    is frequently the case internally when implementing complex
+    functions), again the resulting ball $rop is known to contain the
+    exact result when using appropriate values for $re and $im.
+
+   Rmpcb_set_ui_ui ($rop, $re, $im, $prec);
+    Set $rop to a ball with centre $re + (i * $im) at precision $prec
+    or the size of an 'unsigned long int', whatever is larger.
+
+   Rmpcb_neg ($rop, $op);
+   Rmpcb_add ($rop, $op1, $op2);
+   Rmpcb_mul ($rop, $op1, $op2);
+   Rmpcb_sqr ($rop, $op);
+   Rmpcb_pow_ui ($rop, $op, $ui);
+   Rmpcb_sqrt ($rop, $op);
+   Rmpcb_div ($rop, $op1, $op2);
+   Rmpcb_div_2ui ($rop, $op, $ui);
+    These are the exact counterparts of the corresponding functions
+    'Rmpc_neg', 'Rmpc_add' and so on, but on complex balls instead of
+    complex numbers.
+
+   int Rmpcb_can_round ($op, $prec_re, $prec_im,
+                       $rnd); # $rnd is a Math::MPC rounding value
+    If the function returns 'true' (a non-zero number), then rounding
+    any of the complex numbers in the ball to a complex number with
+    precision $prec_re of its real and precision $prec_im of its
+    imaginary part and rounding mode $rnd yields the same result and
+    rounding direction value, cf.
+    If the function returns 'false' (that is, 0), then it could not
+    conclude, or there are two numbers in the ball which would be
+    rounded to a different complex number or in a different direction.
+    Notice that the function works in a best effort mode and errs on
+    the side of caution by potentially returning 'false' on a
+    roundable ball; this is consistent with computational functions
+    not necessarily returning the smallest enclosing ball.
+
+    If $op contains the result of evaluating some mathematical function
+    through a sequence of calls to 'Rmpcb' functions, starting with
+    exact complex numbers, that is, balls of radius 0, then a return
+    value of 'true' indicates that rounding any value in the ball (its
+    centre is readily available) in direction $rnd yields the correct
+    result of the function and the correct rounding direction value
+    with the usual MPC semantics.
+
+    Notice that when the precision of $op is larger than $prec_re or
+    $prec_im, the centre need not be representable at the desired
+    precision, and in fact the ball need not contain a representable
+    number at all to be 'roundable'.  Even worse, when $rnd is a
+    directed rounding mode for the real or the imaginary part and the
+    ball of non-zero radius contains a representable number, the return
+    value is necessarily 'false'.  Even worse, when the rounding mode
+    for one part is to nearest, the corresponding part of the centre of
+    the ball is representable and the ball has a non-zero radius, then
+    the return value is also necessarily 'false', since even if
+    rounding may be possible, the rounding direction value cannot be
+    determined.
+
+   int Rmpcb_round ($mpc, $op, $rnd); # $rnd is a Math::MPC
+                                      # rounding value.
+    Set $mpc to the centre of $op, rounded in direction $rnd, and return
+    the corresponding rounding direction value.  If 'Rmpcb_can_round',
+    called with $op, the precisions of $mpc and the rounding mode $rnd
+    returns 'true', then this function does what is expected, it
+    'correctly rounds the ball' and returns a rounding direction value
+    that is valid for all of the ball.  As explained above, the result
+    is then not necessarily (in the presence of directed rounding with
+    radius different from 0, it is rather necessarily not) an element
+    of the ball.
+
+   Rmpcb_retrieve($mpc, $mpcr, $op);
+    Set the mpc_t encapsulated in $op to $mpc.
+    Set the mpcr_t encapsulated in $op to $mpcr.
+
+   Rmpcb_destroy($op);
+    Free memory associated with $op.
+    It's normally unnecessary to call this function unless $op was
+    created using Rmpcb_init_nobless().
+
+=cut

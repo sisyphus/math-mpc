@@ -149,7 +149,7 @@ Rmpc_agm Rmpc_eta_fund in_fund_dom
 );
 
 my @radius = ();
-
+my @ball = ();
 if(MPC_HEADER_V >= 66304) {
 @radius = qw(
   Rmpcr_init  Rmpcr_init_nobless  Rmpcr_destroy
@@ -160,15 +160,23 @@ if(MPC_HEADER_V >= 66304) {
   Rmpcr_c_abs_rnd  Rmpcr_add_rounding_error
   Rmpcr_print  Rmpcr_say  Rmpcr_out_str
           );
+
+@ball = qw (
+Rmpcb_init Rmpcb_init_nobless Rmpcb_clear
+Rmpcb_get_prec Rmpcb_set Rmpcb_set_c Rmpcb_set_ui_ui Rmpcb_neg
+Rmpcb_add Rmpcb_mul Rmpcb_sqr Rmpcb_pow_ui Rmpcb_sqrt
+Rmpcb_div Rmpcb_div_2ui
+Rmpcb_can_round Rmpcb_round Rmpcb_retrieve
+         );
 }
 
-    @Math::MPC::EXPORT_OK = (@tagged, @radius);
+    @Math::MPC::EXPORT_OK = (@tagged, @radius, @ball);
     our $VERSION = '1.17';
     #$VERSION = eval $VERSION;
 
     Math::MPC->DynaLoader::bootstrap($VERSION);
 
-    %Math::MPC::EXPORT_TAGS =(mpc => [@tagged, @radius]);
+    %Math::MPC::EXPORT_TAGS =(mpc => [@tagged, @radius, @ball]);
 
 $Math::MPC::NOK_POK = 0; # Set to 1 to allow warnings in new() and overloaded operations when
                           # a scalar that has set both NOK (NV) and POK (PV) flags is encountered
@@ -204,6 +212,7 @@ else   {$Math::MPC::no_complex_c_q = 0 }
 if(MPC_HEADER_V >= 66304) { # mpc library is at least version 1.3.0
 
   require Math::MPC::Radius;
+  require Math::MPC::Ball;
 
   *Rmpcr_init = \&Math::MPC::Radius::Rmpcr_init;
   *Rmpcr_init_nobless = \&Math::MPC::Radius::Rmpcr_init_nobless;
@@ -234,6 +243,25 @@ if(MPC_HEADER_V >= 66304) { # mpc library is at least version 1.3.0
   *Rmpcr_sub_rnd = \&Math::MPC::Radius::Rmpcr_sub_rnd;
   *Rmpcr_c_abs_rnd = \&Math::MPC::Radius::Rmpcr_c_abs_rnd;
   *Rmpcr_add_rounding_error = \&Math::MPC::Radius::Rmpcr_add_rounding_error;
+
+  *Rmpcb_init = \&Math::MPC::Ball::Rmpcb_init;
+  *Rmpcb_init_nobless = \&Math::MPC::Ball::Rmpcb_init_nobless;
+  *Rmpcb_clear = \&Math::MPC::Ball::Rmpcb_clear;
+  *Rmpcb_get_prec = \&Math::MPC::Ball::Rmpcb_get_prec;
+  *Rmpcb_set = \&Math::MPC::Ball::Rmpcb_set;
+  *Rmpcb_set_c = \&Math::MPC::Ball::Rmpcb_set_c;
+  *Rmpcb_set_ui_ui = \&Math::MPC::Ball::Rmpcb_set_ui_ui;
+  *Rmpcb_neg = \&Math::MPC::Ball::Rmpcb_neg;
+  *Rmpcb_add = \&Math::MPC::Ball::Rmpcb_add;
+  *Rmpcb_mul = \&Math::MPC::Ball::Rmpcb_mul;
+  *Rmpcb_sqr = \&Math::MPC::Ball::Rmpcb_sqr;
+  *Rmpcb_pow_ui = \&Math::MPC::Ball::Rmpcb_pow_ui;
+  *Rmpcb_sqrt = \&Math::MPC::Ball::Rmpcb_sqrt;
+  *Rmpcb_div = \&Math::MPC::Ball::Rmpcb_div;
+  *Rmpcb_div_2ui = \&Math::MPC::Ball::Rmpcb_div_2ui;
+  *Rmpcb_can_round = \&Math::MPC::Ball::Rmpcb_can_round;
+  *Rmpcb_round = \&Math::MPC::Ball::Rmpcb_round;
+  *Rmpcb_retrieve = \&Math::MPC::Ball::Rmpcb_retrieve;
 }
 
 sub dl_load_flags {0} # Prevent DynaLoader from complaining and croaking

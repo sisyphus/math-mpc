@@ -6,10 +6,10 @@ MPC.pod
 MPC.xs
 README
 CHANGES
-#Ball/Makefile.PL
-#Ball/Ball.pm
-#Ball/Ball.pod
-#Ball/Ball.xs
+Ball/Makefile.PL
+Ball/Ball.pm
+Ball/Ball.pod
+Ball/Ball.xs
 Constant/Constant.pm
 Constant/Constant.xs
 Constant/Makefile.PL
@@ -20,6 +20,7 @@ Radius/Radius.xs
 t/_itsa.t
 t/aaa_compat.t
 t/aab_basic.t
+t/Ball.t
 t/bool.t
 t/complex_c.t
 t/complex_c-l.t

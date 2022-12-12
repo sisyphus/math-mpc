@@ -81,10 +81,10 @@ void Rmpcr_set_str_2str(mpcr_ptr rop, char * mantissa, char* exponent) {
 #endif
 }
 
-void Rmpcr_destroy(mpcr_ptr op) {
+void Rmpcr_clear(mpcr_ptr op) {
 #if MPC_VERSION >= 66304
 # ifdef MATH_MPC_DEBUG
-  printf("Rmpcr_destroy()ing mpcr_ptr\n");
+  printf("Rmpcr_clear()ing mpcr_ptr\n");
 # endif
   Safefree(op);
 #else
@@ -345,13 +345,13 @@ Rmpcr_set_str_2str (rop, mantissa, exponent)
         return; /* assume stack size is correct */
 
 void
-Rmpcr_destroy (op)
+Rmpcr_clear (op)
 	mpcr_ptr	op
         PREINIT:
         I32* temp;
         PPCODE:
         temp = PL_markstack_ptr++;
-        Rmpcr_destroy(op);
+        Rmpcr_clear(op);
         if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
           PL_markstack_ptr = temp;

@@ -3,6 +3,10 @@
 =head1 DESCRIPTION
 
    This module defines the "ball" type and functions.
+   It needs the mpc-1.3.0 library, or later.
+
+   If building against mpc-1.2.x (or earlier) this module will be
+   effectively ignored. There are no actions that need to be taken.
 
    The ball type (mpcb_t) is defined by
    typedef struct {
@@ -31,8 +35,8 @@
    representing the whole complex plane, whatever the value of the centre
    is.
 
-   Unlike for variables of ‘mpc_t’ type, where the precision needs to be
-   set explicitly at initialisation, variables of type ‘mpcb_t’ handle
+   Unlike for variables of 'mpc_t' type, where the precision needs to be
+   set explicitly at initialisation, variables of type 'mpcb_t' handle
    their precision dynamically.  Ball centres always have the same
    precision for their real and their imaginary parts (again this is a
    choice of the implementation; if they are of very different sizes, one

@@ -5,6 +5,10 @@
    This module defines the "radius" type and functions, for use
    in Ball arithmetic. (See the Math::MPC::Ball documentation for
    information on Ball arithmetic.)
+   It needs the mpc-1.3.0 library, or later.
+
+   If building against mpc-1.2.x (or earlier) this module will be
+   effectively ignored. There are no actions that need to be taken.
 
    The radius type (mpcr_t) is defined by
    struct {
@@ -52,8 +56,14 @@
     Creating the object using the "nobless" variant results in an object
     that has not been blessed into the Math::MPC::Radius package. This is
     generally NOT what is wanted as it puts the burden of freeing
-    allocated memory onto the user by calling Rmpcr_destroy($rop) at the
+    allocated memory onto the user by calling Rmpcr_clear($rop) at the
     appropriate time.
+
+   Rmpcr_clear($rop);
+    Free the memory associated with $rop.
+    Use this only if $rop was initialized using Rmpcr_init_nobless().
+    If $rop was initialized with Rmpcr_init(), then perl will free the
+    memory as soon as is appropriate.
 
    $i = Rmpcr_inf_p ($op);
    $i = Rmpcr_zero_p ($op);

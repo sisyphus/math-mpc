@@ -78,6 +78,6 @@ cmp_ok(Rmpcr_cmp($half, $chk), '==', 0, "Rmpcr_str_2str functions correctly");
 #Rmpcr_print($one); print "\n";
 #Rmpcr_say($one); print "OK\n";
 
-Rmpcr_destroy($nbl); # $nbl is unblessed and must be specifically
+Rmpcr_clear($nbl); # $nbl is unblessed and must be specifically
                      # freed in order to avoid memory leak.
 done_testing();

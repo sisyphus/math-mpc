@@ -152,7 +152,7 @@ my @radius = ();
 my @ball = ();
 if(MPC_HEADER_V >= 66304) {
 @radius = qw(
-  Rmpcr_init  Rmpcr_init_nobless  Rmpcr_destroy
+  Rmpcr_init  Rmpcr_init_nobless  Rmpcr_clear
   Rmpcr_inf_p  Rmpcr_zero_p  Rmpcr_lt_half_p  Rmpcr_cmp  Rmpcr_set_inf
   Rmpcr_set_zero  Rmpcr_set_one  Rmpcr_set  Rmpcr_set_ui64_2si64  Rmpcr_set_str_2str
   Rmpcr_max Rmpcr_get_exp  Rmpcr_add  Rmpcr_sub  Rmpcr_mul  Rmpcr_div
@@ -216,7 +216,7 @@ if(MPC_HEADER_V >= 66304) { # mpc library is at least version 1.3.0
 
   *Rmpcr_init = \&Math::MPC::Radius::Rmpcr_init;
   *Rmpcr_init_nobless = \&Math::MPC::Radius::Rmpcr_init_nobless;
-  *Rmpcr_destroy = \&Math::MPC::Radius::Rmpcr_destroy;
+  *Rmpcr_clear = \&Math::MPC::Radius::Rmpcr_clear;
   *Rmpcr_inf_p = \&Math::MPC::Radius::Rmpcr_inf_p;
   *Rmpcr_zero_p = \&Math::MPC::Radius::Rmpcr_zero_p;
   *Rmpcr_lt_half_p = \&Math::MPC::Radius::Rmpcr_lt_half_p;

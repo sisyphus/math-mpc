@@ -252,7 +252,7 @@ void Rmpcr_div (mpcr_ptr rop, mpcr_ptr op1, mpcr_ptr op2) {
 #endif
 }
 
-void Rmpcr_mul_2ui (mpcr_ptr rop, mpcr_ptr op, unsigned long int ui) {
+void Rmpcr_mul_2ui (mpcr_ptr rop, mpcr_ptr op, unsigned long ui) {
 #if MPC_VERSION >= 66304
    mpcr_mul_2ui(rop, op, ui);
 #else
@@ -260,7 +260,7 @@ void Rmpcr_mul_2ui (mpcr_ptr rop, mpcr_ptr op, unsigned long int ui) {
 #endif
 }
 
-void Rmpcr_div_2ui (mpcr_ptr rop, mpcr_ptr op, unsigned long int ui) {
+void Rmpcr_div_2ui (mpcr_ptr rop, mpcr_ptr op, unsigned long ui) {
 #if MPC_VERSION >= 66304
    mpcr_div_2ui(rop, op, ui);
 #else
@@ -611,6 +611,42 @@ Rmpcr_div (rop, op1, op2)
         PPCODE:
         temp = PL_markstack_ptr++;
         Rmpcr_div(rop, op1, op2);
+        if (PL_markstack_ptr != temp) {
+          /* truly void, because dXSARGS not invoked */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
+        }
+        /* must have used dXSARGS; list context implied */
+        return; /* assume stack size is correct */
+
+void
+Rmpcr_mul_2ui (rop, op, ui)
+	mpcr_ptr	rop
+	mpcr_ptr	op
+	unsigned long	ui
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpcr_mul_2ui(rop, op, ui);
+        if (PL_markstack_ptr != temp) {
+          /* truly void, because dXSARGS not invoked */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
+        }
+        /* must have used dXSARGS; list context implied */
+        return; /* assume stack size is correct */
+
+void
+Rmpcr_div_2ui (rop, op, ui)
+	mpcr_ptr	rop
+	mpcr_ptr	op
+	unsigned long	ui
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpcr_div_2ui(rop, op, ui);
         if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
           PL_markstack_ptr = temp;

@@ -10,6 +10,9 @@
    If building against mpc-1.2.x (or earlier) this module will be
    effectively ignored. There are no actions that need to be taken.
 
+   The following documentation is essentially a copy of the official
+   mpc documentation.
+
    The radius type (mpcr_t) is defined by
    struct {
       int64_t mant;
@@ -99,7 +102,7 @@
     $iv will be assigned an int64_t value - and could therefore be
     subjected to overflow if $Config{ivsize} < 8.
     Assuming that $op is neither infinity nor 0, return its exponent
-    $iv, such that $op == m * (2 ** $iv) 1/2 = m < 1.
+    $iv, such that $op == m * (2 ** $iv), with 1/2 <= m < 1.
     This function's behaviour is undefined when $op is either Inf or 0.
 
    Rmpcr_out_str ($fh, $op);
@@ -144,11 +147,11 @@
 
    Rmpcr_add_rounding_error ($rop, $uv, $round); # $round is a Math::MPFR
                                                  # rounding value
-    Set $rop to r + (1 + r) 2 ** {-p} if $round equals 'MPFR_RNDN', and
-    to r + (1 + r) 2 ** {1-p} otherwise.  The idea is that if a
-    (potentially not representable) centre of an ideal complex ball of
-    radius R is rounded to a representable complex number at precision
-    $prec, this shifts the centre by up to 1/2 ulp (for rounding to
+    Set $rop to $rop + ((1 + $rop) * (2 ** - $uv)) if $round equals
+   'MPFR_RNDN', else to $rop + ((1 + $rop) * (2 ** (1- $uv))) . The idea is
+    that if a (potentially not representable) centre of an ideal complex
+    ball of radius $rop is rounded to a representable complex number at
+    precision $uv, this shifts the centre by up to 1/2 ulp (for rounding to
     nearest) or 1ulp (for directed rounding of at least one of the real
     or imaginary parts), which increases the radius accordingly.  So this
     function is typically called internally at the end of each operation

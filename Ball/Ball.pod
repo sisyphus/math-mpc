@@ -8,6 +8,9 @@
    If building against mpc-1.2.x (or earlier) this module will be
    effectively ignored. There are no actions that need to be taken.
 
+   The following documentation is essentially a copy of the official
+   mpc documentation.
+
    The ball type (mpcb_t) is defined by
    typedef struct {
     mpc_t  c;
@@ -169,7 +172,7 @@
     any of the complex numbers in the ball to a complex number with
     precision $prec_re of its real and precision $prec_im of its
     imaginary part and rounding mode $rnd yields the same result and
-    rounding direction value, cf.
+    rounding direction value'.
     If the function returns 'false' (that is, 0), then it could not
     conclude, or there are two numbers in the ball which would be
     rounded to a different complex number or in a different direction.

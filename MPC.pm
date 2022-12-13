@@ -165,7 +165,7 @@ if(MPC_HEADER_V >= 66304) {
 Rmpcb_init Rmpcb_init_nobless Rmpcb_clear
 Rmpcb_get_prec Rmpcb_set Rmpcb_set_c Rmpcb_set_ui_ui Rmpcb_neg
 Rmpcb_add Rmpcb_mul Rmpcb_sqr Rmpcb_pow_ui Rmpcb_sqrt
-Rmpcb_div Rmpcb_div_2ui
+Rmpcb_div Rmpcb_div_2ui Rmpcb_set_inf
 Rmpcb_can_round Rmpcb_round Rmpcb_retrieve
          );
 }
@@ -233,7 +233,7 @@ if(MPC_HEADER_V >= 66304) { # mpc library is at least version 1.3.0
   *Rmpcr_print = \&Math::MPC::Radius::Rmpcr_print;
   *Rmpcr_say = \&Math::MPC::Radius::Rmpcr_say;
   *Rmpcr_add = \&Math::MPC::Radius::Rmpcr_add;
-  *Rmpcr_sub = \&Rmpcr_sub;
+  *Rmpcr_sub = \&Math::MPC::Radius::Rmpcr_sub;
   *Rmpcr_mul = \&Math::MPC::Radius::Rmpcr_mul;
   *Rmpcr_div = \&Math::MPC::Radius::Rmpcr_div;
   *Rmpcr_mul_2ui = \&Math::MPC::Radius::Rmpcr_mul_2ui;
@@ -249,6 +249,7 @@ if(MPC_HEADER_V >= 66304) { # mpc library is at least version 1.3.0
   *Rmpcb_clear = \&Math::MPC::Ball::Rmpcb_clear;
   *Rmpcb_get_prec = \&Math::MPC::Ball::Rmpcb_get_prec;
   *Rmpcb_set = \&Math::MPC::Ball::Rmpcb_set;
+  *Rmpcb_set_inf = \&Math::MPC::Ball::Rmpcb_set_inf;
   *Rmpcb_set_c = \&Math::MPC::Ball::Rmpcb_set_c;
   *Rmpcb_set_ui_ui = \&Math::MPC::Ball::Rmpcb_set_ui_ui;
   *Rmpcb_neg = \&Math::MPC::Ball::Rmpcb_neg;

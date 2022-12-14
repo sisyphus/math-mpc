@@ -105,6 +105,15 @@
     $iv, such that $op == m * (2 ** $iv), with 1/2 <= m < 1.
     This function's behaviour is undefined when $op is either Inf or 0.
 
+   @parts = Rmpcr_split($op);
+    If $op is zero, @parts is a one-element array, containing the UV 0.
+    If $op is Inf, @parts is a one-element array, containing the string
+    "Inf".
+    Otherwise, @parts is a two-element array. The first element is a UV
+    holding the value of the mantissa of $op, and the second element is
+    an IV holding the value of the exponent of $op.
+    $op then represents the "radius" value $parts[0] * (2 ** $parts[1]).
+
    Rmpcr_out_str ($fh, $op);
    Rmpcr_print($op);
    Rmpcr_say($op);

@@ -167,9 +167,9 @@ void Rmpcr_set(mpcr_ptr rop, mpcr_ptr op) {
 #endif
 }
 
-void Rmpcr_set_ui64_2si64(mpcr_ptr rop, IV mantissa, IV exponent) {
+void Rmpcr_set_ui64_2si64(pTHX_ mpcr_ptr rop, UV mantissa, IV exponent) {
 #if MPC_VERSION >= 66304
-   mpcr_set_ui64_2si64(rop, (int64_t)mantissa, (int64_t)exponent);
+   mpcr_set_ui64_2si64(rop,mantissa, exponent);
 #else
   croak("Rmpcr_* functions need mpc-1.3.0. This is only mpc-%s", MPC_VERSION_STRING);
 #endif
@@ -306,6 +306,23 @@ void Rmpcr_add_rounding_error (pTHX_ mpcr_ptr rop, SV * op, SV * round) {
 #else
   croak("Rmpcr_* functions need mpc-1.3.0. This is only mpc-%s", MPC_VERSION_STRING);
 #endif
+}
+
+void Rmpcr_split(pTHX_  mpcr_ptr op) {
+   dXSARGS;
+   if(mpcr_zero_p(op)) {
+     ST(0) = sv_2mortal(newSVuv(0));
+     XSRETURN(1);
+   }
+
+   if(mpcr_inf_p(op)) {
+     ST(0) = sv_2mortal(newSVpv("Inf", 0));
+     XSRETURN(1);
+   }
+
+   ST(0) = sv_2mortal(newSVuv(op->mant));
+   ST(1) = sv_2mortal(newSViv(op->exp));
+   XSRETURN(2);
 }
 
 
@@ -461,13 +478,13 @@ Rmpcr_set (rop, op)
 void
 Rmpcr_set_ui64_2si64 (rop, mantissa, exponent)
 	mpcr_ptr	rop
-	IV	mantissa
+	UV	mantissa
 	IV	exponent
         PREINIT:
         I32* temp;
         PPCODE:
         temp = PL_markstack_ptr++;
-        Rmpcr_set_ui64_2si64(rop, mantissa, exponent);
+        Rmpcr_set_ui64_2si64(aTHX_ rop, mantissa, exponent);
         if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
           PL_markstack_ptr = temp;
@@ -736,6 +753,22 @@ Rmpcr_add_rounding_error (rop, op, round)
         PPCODE:
         temp = PL_markstack_ptr++;
         Rmpcr_add_rounding_error(aTHX_ rop, op, round);
+        if (PL_markstack_ptr != temp) {
+          /* truly void, because dXSARGS not invoked */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
+        }
+        /* must have used dXSARGS; list context implied */
+        return; /* assume stack size is correct */
+
+void
+Rmpcr_split (op)
+	mpcr_ptr	op
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpcr_split(aTHX_ op);
         if (PL_markstack_ptr != temp) {
           /* truly void, because dXSARGS not invoked */
           PL_markstack_ptr = temp;

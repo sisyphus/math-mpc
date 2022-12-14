@@ -215,8 +215,19 @@
     of the ball.
 
    Rmpcb_retrieve($mpc, $mpcr, $op);
-    Set the mpc_t encapsulated in $op to $mpc.
-    Set the mpcr_t encapsulated in $op to $mpcr.
+   @parts = Rmpc_split($op)
+    Rmpcb_retrieve sets the mpc_t encapsulated in $op to $mpc, and sets
+    the mpcr_t encapsulated in $op to $mpcr.
+    Rmpcb_split goes a bit further:
+     $parts[0] is a Math::MPFR object that holds the value of the Real
+       part of $mpc;
+     $parts[1] is a Math::MPFR object that holds the value of the
+       Imaginary part of $mpc;
+     $parts[2] is the same Radius object ($mpcr) set in Rmpcb_retrieve.
+
+    Note: $parts[2] can be further split into its 'mantissa' and
+          'exponent' parts by calling Rmpcr_split($parts[2]). See the
+          'Rmpcr_split' documentation in the Math::MPC::Radius docs.
 
    Rmpcb_clear($op);
     Free memory associated with $op.

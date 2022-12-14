@@ -146,6 +146,7 @@ Rmpc_pow Rmpc_pow_d Rmpc_pow_ld Rmpc_pow_si Rmpc_pow_ui Rmpc_pow_z Rmpc_pow_fr R
 Rmpc_set_nan Rmpc_swap
 Rmpc_mul_sj Rmpc_mul_ld Rmpc_mul_d Rmpc_div_sj Rmpc_sj_div Rmpc_div_ld Rmpc_ld_div Rmpc_div_d Rmpc_d_div
 Rmpc_agm Rmpc_eta_fund in_fund_dom
+Rmpcb_split
 );
 
 my @radius = ();
@@ -158,7 +159,7 @@ if(MPC_HEADER_V >= 66304) {
   Rmpcr_max Rmpcr_get_exp  Rmpcr_add  Rmpcr_sub  Rmpcr_mul  Rmpcr_div
   Rmpcr_mul_2ui  Rmpcr_div_2ui  Rmpcr_sqr  Rmpcr_sqrt  Rmpcr_sub_rnd
   Rmpcr_c_abs_rnd  Rmpcr_add_rounding_error
-  Rmpcr_print  Rmpcr_say  Rmpcr_out_str
+  Rmpcr_print  Rmpcr_say  Rmpcr_out_str Rmpcr_split
           );
 
 @ball = qw (
@@ -171,7 +172,7 @@ Rmpcb_can_round Rmpcb_round Rmpcb_retrieve
 }
 
     @Math::MPC::EXPORT_OK = (@tagged, @radius, @ball);
-    our $VERSION = '1.17';
+    our $VERSION = '1.30';
     #$VERSION = eval $VERSION;
 
     Math::MPC->DynaLoader::bootstrap($VERSION);
@@ -230,6 +231,7 @@ if(MPC_HEADER_V >= 66304) { # mpc library is at least version 1.3.0
   *Rmpcr_max = \&Math::MPC::Radius::Rmpcr_max;
   *Rmpcr_get_exp = \&Math::MPC::Radius::Rmpcr_get_exp;
   *Rmpcr_out_str = \&Math::MPC::Radius::Rmpcr_out_str;
+  *Rmpcr_split = \&Math::MPC::Radius::Rmpcr_split;
   *Rmpcr_print = \&Math::MPC::Radius::Rmpcr_print;
   *Rmpcr_say = \&Math::MPC::Radius::Rmpcr_say;
   *Rmpcr_add = \&Math::MPC::Radius::Rmpcr_add;
@@ -447,6 +449,21 @@ sub Rmpc_out_str {
       return _Rmpc_out_strPS($_[0], $_[1], $_[2], $_[3], $_[4], $_[5], $_[6]);
     }
     die "Wrong number of arguments supplied to Rmpc_out_str()";
+}
+
+sub Rmpcb_split {
+  if(MPC_HEADER_V >= 66304) { # mpc library is at least version 1.3.0
+    my($re, $im, $mpc, $mpcr) = (Math::MPFR->new(), Math::MPFR->new(),
+                                 Math::MPC->new(), Rmpcr_init());
+    my $mpcb = shift;
+    Rmpcb_retrieve($mpc, $mpcr, $mpcb);
+    RMPC_RE($re, $mpc);
+    RMPC_IM($im, $mpc);
+    return($re, $im, $mpcr);
+  }
+  else {
+    die "Rmpc_split function not implemented - needs mpc-1.3.0 but we have only mpc-", MPC_HEADER_V_STR, "\n";
+  }
 }
 
 sub MPC_VERSION            () {return _MPC_VERSION()}

@@ -36,13 +36,28 @@ my $qtr = Rmpcr_init();  # (1073741824, -32)
 my $zero = Rmpcr_init();
 Rmpcr_set_zero($zero);
 
-my $str = Rmpcr_init();
+my @parts = Rmpcr_split($zero);
+cmp_ok(@parts, '==', 1, "Rmpcr_split: one element for zero");
+cmp_ok($parts[0], '==', 0, "Rmpcr_split: zero returns 0");
+
+@parts = Rmpcr_split_mpfr($zero);
+cmp_ok(@parts, '==', 1, "Rmpcr_split_mpfr: one element for zero");
+cmp_ok(Math::MPFR::Rmpfr_zero_p($parts[0]), '!=', 0, "Rmpcr_split_mpfr: zero returns 0");
 
 cmp_ok(Rmpcr_zero_p($zero), '!=', 0, "zero is zero");
 my $nbl = Rmpcr_init_nobless(); # no magic
 
 Rmpcr_set_inf($rop);
 Rmpcr_set_inf($nbl);
+
+@parts = Rmpcr_split($rop);
+cmp_ok(@parts, '==', 1, "Rmpcr_split: one element for Inf");
+cmp_ok($parts[0], 'eq', 'Inf', "Rmpcr_split: Inf returns 'Inf'");
+
+@parts = Rmpcr_split_mpfr($rop);
+cmp_ok(@parts, '==', 1, "Rmpcr_split_mpfr: one element for Inf");
+cmp_ok($parts[0], 'eq', 'Inf', "Rmpcr_split_mpfr: Inf returns 'Inf'");
+cmp_ok(ref($parts[0]), 'ne', 'Math::MPFR', "Rmpcr_split_mpfr: 'Inf' is not a Math::MPFR object");
 
 cmp_ok(ref($rop), 'eq', 'Math::MPC::Radius', 'isa Math::MPC::Radius object');
 cmp_ok(ref($nbl), 'eq', 'SCALAR', 'ref() of unblessed object is SCALAR');
@@ -88,6 +103,17 @@ Rmpcr_set_ui64_2si64($half, 1073741824, -31);
 Rmpcr_set_ui64_2si64($qtr , 1073741824, -32);
 Rmpcr_set_str_2str($chk, "1", "-1");
 cmp_ok(Rmpcr_cmp($half, $chk), '==', 0, "1: Rmpcr_str_2str functions correctly");
+
+@parts = Rmpcr_split_mpfr($two);
+cmp_ok(Math::MPFR::Rmpfr_get_prec($parts[0]), '==', 64, "mantissa is a 64-bit prec Math::MPFR object");
+cmp_ok(Math::MPFR::Rmpfr_get_prec($parts[1]), '==', 64, "exponent is a 64-bit prec Math::MPFR object");
+cmp_ok($parts[0], '==', '1073741824', "mantissa is 1073741824");
+cmp_ok($parts[1], '==', '-29', "mantissa is -29");
+
+@parts = Rmpcr_split($two);
+cmp_ok(@parts, '==', 2, "Rmpcr_split: 2 elements for real non-zero radius");
+cmp_ok($parts[0], '==', 1073741824, "Rmpcr_split: mant is 1073741824");
+cmp_ok($parts[1], '==', -29, "Rmpcr_split: exp is -29");
 
 cmp_ok(Rmpcr_lt_half_p($qtr), '!=', 0, "0.25 < 0.5");
 
@@ -176,6 +202,29 @@ Rmpcr_add_rounding_error($chk, 30, 0); # MPFR_RNDD
 
 # Now check that $rop and $chk are different.
 cmp_ok(Rmpcr_cmp($chk, $rop), '!=', 0, "different results at different rounding and prec");
+
+my $tinyr = Rmpcr_init();
+Rmpcr_set_str_2str($tinyr, '1', '-36028797018963968');
+
+my @check = ();
+
+if($Config{ivsize} < 8) {
+  eval{@parts = Rmpcr_split($tinyr);};
+  like($@, qr/^Use Rmpcr_split_mpfr function instead/, "Rmpcr_split: croaks on overflow when IVSIZE < 8");
+  @check = Rmpcr_split_mpfr($tinyr);
+}
+else {
+  Rmpcr_set_ui64_2si64($rop, 1, -36028797018963968);
+  cmp_ok(Rmpcr_cmp($tinyr, $rop), '==', 0, "tiny radius values match");
+  @check = Rmpcr_split($tinyr);
+}
+
+@parts = Rmpcr_split_mpfr($tinyr);
+
+cmp_ok($parts[0], '==', $check[0], "Rmpcr_split and Rmpcr_split_mpfr have same mantissa");
+cmp_ok($parts[1], '==', $check[1], "Rmpcr_split and Rmpcr_split_mpfr have same exponent");
+
+Rmpcr_say($tinyr);
 
 Rmpcr_clear($nbl); # $nbl is unblessed and must be specifically
                    # freed in order to avoid memory leak.

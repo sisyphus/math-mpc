@@ -224,7 +224,7 @@ else {
 cmp_ok($parts[0], '==', $check[0], "Rmpcr_split and Rmpcr_split_mpfr have same mantissa");
 cmp_ok($parts[1], '==', $check[1], "Rmpcr_split and Rmpcr_split_mpfr have same exponent");
 
-Rmpcr_say($tinyr);
+#Rmpcr_say($tinyr);
 
 Rmpcr_clear($nbl); # $nbl is unblessed and must be specifically
                    # freed in order to avoid memory leak.

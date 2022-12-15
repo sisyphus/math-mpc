@@ -146,7 +146,7 @@ Rmpc_pow Rmpc_pow_d Rmpc_pow_ld Rmpc_pow_si Rmpc_pow_ui Rmpc_pow_z Rmpc_pow_fr R
 Rmpc_set_nan Rmpc_swap
 Rmpc_mul_sj Rmpc_mul_ld Rmpc_mul_d Rmpc_div_sj Rmpc_sj_div Rmpc_div_ld Rmpc_ld_div Rmpc_div_d Rmpc_d_div
 Rmpc_agm Rmpc_eta_fund in_fund_dom
-Rmpcb_split
+Rmpcb_split Rmpcr_split_mpfr
 );
 
 my @radius = ();
@@ -462,7 +462,29 @@ sub Rmpcb_split {
     return($re, $im, $mpcr);
   }
   else {
-    die "Rmpc_split function not implemented - needs mpc-1.3.0 but we have only mpc-", MPC_HEADER_V_STR, "\n";
+    die "Rmpcb_split function not implemented - needs mpc-1.3.0 but we have only mpc-", MPC_HEADER_V_STR, "\n";
+  }
+}
+
+sub Rmpcr_split_mpfr {
+  if(MPC_HEADER_V >= 66304) { # mpc library is at least version 1.3.0
+    my $r = shift; # mpcr_t object
+    if(Rmpcr_zero_p($r)) {
+      my $ret = Math::MPFR::Rmpfr_init2(64);
+      Math::MPFR::Rmpfr_set_zero($ret, 0);
+      return $ret;
+    }
+    if(Rmpcr_inf_p($r)) {
+      return "Inf";
+    }
+
+    my $m = Math::MPC::Radius::_get_radius_mantissa($r); # $m is a Math::MPFR object.
+    my $e = Math::MPC::Radius::_get_radius_exponent($r); # $e is a Math::MPFR object.
+
+    return($m, $e);
+  }
+  else {
+    die "Rmpcr_split_mpfr function not implemented - needs mpc-1.3.0 but we have only mpc-", MPC_HEADER_V_STR, "\n";
   }
 }
 

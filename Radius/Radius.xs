@@ -310,6 +310,7 @@ void Rmpcr_add_rounding_error (pTHX_ mpcr_ptr rop, SV * op, SV * round) {
 
 void Rmpcr_split(pTHX_  mpcr_ptr op) {
    dXSARGS;
+
    if(mpcr_zero_p(op)) {
      ST(0) = sv_2mortal(newSVuv(0));
      XSRETURN(1);
@@ -320,11 +321,68 @@ void Rmpcr_split(pTHX_  mpcr_ptr op) {
      XSRETURN(1);
    }
 
+#  if IVSIZE < 8
+   if(op->mant > UV_MAX) {
+     warn("mantissa overflows UV in Rmpcr_split function\n");
+     croak("Use Rmpcr_split_mpfr function instead");
+   }
+
+   if(op->exp > IV_MAX || op->exp < IV_MIN) {
+     warn("exponent overflows IV in Rmpcr_split function\n");
+     croak("Use Rmpcr_split_mpfr function instead");
+   }
+#  endif
+
    ST(0) = sv_2mortal(newSVuv(op->mant));
    ST(1) = sv_2mortal(newSViv(op->exp));
    XSRETURN(2);
 }
 
+SV * _get_radius_mantissa(pTHX_  mpcr_ptr op) {
+#if MPC_VERSION >= 66304
+  mpfr_t * mpfr_t_obj;
+  SV * obj_ref, * obj;
+
+  /* For use of Rmpcr_split_mpfr. Check that op is neither Inf nor 0 */
+  if(mpcr_zero_p(op) || mpcr_inf_p(op)) croak("_get_radius_mantissa function does not handle Inf or 0");
+
+  New(1, mpfr_t_obj, 1, mpfr_t);
+  if(mpfr_t_obj == NULL) croak("Failed to allocate memory in Rmpcr_split_mpfr function");
+  obj_ref = newSV(0);
+  obj = newSVrv(obj_ref, "Math::MPFR");
+  mpfr_init2 (*mpfr_t_obj, 64);
+  mpfr_set_uj(*mpfr_t_obj, op->mant, 0); /* MPFR_RNDN */
+
+  sv_setiv(obj, INT2PTR(IV,mpfr_t_obj));
+  SvREADONLY_on(obj);
+  return obj_ref;
+#else
+  croak("Rmpcr_* functions need mpc-1.3.0. This is only mpc-%s", MPC_VERSION_STRING);
+#endif
+}
+
+SV * _get_radius_exponent(pTHX_  mpcr_ptr op) {
+#if MPC_VERSION >= 66304
+  mpfr_t * mpfr_t_obj;
+  SV * obj_ref, * obj;
+
+  /* For use of Rmpcr_split_mpfr. Check that op is neither Inf nor 0 */
+  if(mpcr_zero_p(op) || mpcr_inf_p(op)) croak("_get_radius_exponent function does not handle Inf or 0");
+
+  New(1, mpfr_t_obj, 1, mpfr_t);
+  if(mpfr_t_obj == NULL) croak("Failed to allocate memory in Rmpcr_split_mpfr function");
+  obj_ref = newSV(0);
+  obj = newSVrv(obj_ref, "Math::MPFR");
+  mpfr_init2 (*mpfr_t_obj, 64);
+  mpfr_set_sj(*mpfr_t_obj, op->exp, 0); /* MPFR_RNDN */
+
+  sv_setiv(obj, INT2PTR(IV,mpfr_t_obj));
+  SvREADONLY_on(obj);
+  return obj_ref;
+#else
+  croak("Rmpcr_* functions need mpc-1.3.0. This is only mpc-%s", MPC_VERSION_STRING);
+#endif
+}
 
 MODULE = Math::MPC::Radius  PACKAGE = Math::MPC::Radius
 
@@ -776,4 +834,18 @@ Rmpcr_split (op)
         }
         /* must have used dXSARGS; list context implied */
         return; /* assume stack size is correct */
+
+SV *
+_get_radius_mantissa (op)
+	mpcr_ptr	op
+CODE:
+  RETVAL = _get_radius_mantissa (aTHX_ op);
+OUTPUT:  RETVAL
+
+SV *
+_get_radius_exponent (op)
+	mpcr_ptr	op
+CODE:
+  RETVAL = _get_radius_exponent (aTHX_ op);
+OUTPUT:  RETVAL
 

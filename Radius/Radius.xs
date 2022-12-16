@@ -339,6 +339,7 @@ void Rmpcr_add_rounding_error (pTHX_ mpcr_ptr rop, SV * op, SV * round) {
 }
 
 void Rmpcr_split(pTHX_  mpcr_ptr op) {
+#if MPC_VERSION >= 66304
    dXSARGS;
 
    if(mpcr_zero_p(op)) {
@@ -366,6 +367,9 @@ void Rmpcr_split(pTHX_  mpcr_ptr op) {
    ST(0) = sv_2mortal(newSVuv(op->mant));
    ST(1) = sv_2mortal(newSViv(op->exp));
    XSRETURN(2);
+#else
+  croak("Rmpcr_* functions need mpc-1.3.0. This is only mpc-%s", MPC_VERSION_STRING);
+#endif
 }
 
 SV * _get_radius_mantissa(pTHX_  mpcr_ptr op) {

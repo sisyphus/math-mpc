@@ -11,7 +11,11 @@
    effectively ignored. There are no actions that need to be taken.
 
    The following documentation is essentially a copy of the official
-   mpc documentation.
+   mpc documentation. The Rmpcr_* functions are generally functions
+   that simply wrap the mpc library's matching mpcr_* function.
+   However, there are some Rmpcr_* functions (eg Rmpcr_split) that
+   are functions "in their own right", without any "mpcr_*"
+   counterpart.
 
    The radius type (mpcr_t) is defined by
    struct {
@@ -99,11 +103,18 @@
     Set $rop to the maximum of $op1 and $op2.
 
    $iv = Rmpcr_get_exp ($op);
-    $iv will be assigned an int64_t value - and could therefore be
-    subjected to overflow if $Config{ivsize} < 8.
     Assuming that $op is neither infinity nor 0, return its exponent
     $iv, such that $op == m * (2 ** $iv), with 1/2 <= m < 1.
     This function's behaviour is undefined when $op is either Inf or 0.
+    If perl's ivsize is less than 8 bytes and the returned value will
+    overflow the IV, then the function croaks with a message
+    recommending that Rmpcr_get_exp_mpfr (below) be used instead.
+
+   $mpfr = Rmpcr_get_exp_mpfr($op); # $mpfr is a 64-bit precision
+                                    # Math::MPFR object.
+    As for Rmpcr_get_exp (above), except that it returns the 64-bit
+    integer value as a 64-bit precision Math::MPFR object. This avoids
+    the problem of having 64-bit values overflow the 4-byte IV.
 
    @parts = Rmpcr_split($op);
     If $op is zero, @parts is a one-element array, containing the UV 0.

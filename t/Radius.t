@@ -163,7 +163,8 @@ cmp_ok(Rmpcr_cmp($rop, $chk), '==', 0, "2: Rmpcr_set_str_2str works");
 Rmpcr_max($rop, $one, $two);
 cmp_ok(Rmpcr_cmp($rop, $two), '==', 0, "Rmpcr_max works");
 
-cmp_ok(Rmpcr_get_exp($two), '==', 2, "Rmpcr_exp works");
+cmp_ok(Rmpcr_get_exp($two),      '==', 2, "Rmpcr_get_exp works");
+cmp_ok(Rmpcr_get_exp_mpfr($two), '==', 2, "Rmpcr_get_exp_mpfr works");
 
 my $op1 = Rmpcr_init();
 my $op2 = Rmpcr_init();
@@ -212,19 +213,28 @@ if($Config{ivsize} < 8) {
   eval{@parts = Rmpcr_split($tinyr);};
   like($@, qr/^Use Rmpcr_split_mpfr function instead/, "Rmpcr_split: croaks on overflow when IVSIZE < 8");
   @check = Rmpcr_split_mpfr($tinyr);
+
+  eval{Rmpcr_get_exp($tinyr);};
+  like($@, qr/^Use Rmpcr_get_exp_mpfr function instead/, "Rmpcr_get_exp: croaks on overflow when IVSIZE < 8");
+
+  my $p = Math::MPFR::Rmpfr_get_default_prec();
+  Math::MPFR::Rmpfr_set_default_prec(64); # Allow correct use of overloaded '==' operator.
+  cmp_ok(Rmpcr_get_exp_mpfr($tinyr), '==', '-36028797018963967', "correct exponent of -36028797018963967 returned");
+  Math::MPFR::Rmpfr_set_default_prec($p); # Restore original default.
 }
 else {
   Rmpcr_set_ui64_2si64($rop, 1, -36028797018963968);
   cmp_ok(Rmpcr_cmp($tinyr, $rop), '==', 0, "tiny radius values match");
   @check = Rmpcr_split($tinyr);
+  my $check = Rmpcr_get_exp_mpfr($tinyr);
+  cmp_ok("$check", '==', -36028797018963968, "Rmpcr_get_exp ok");
+  cmp_ok($check, '==', Rmpcr_get_exp($tinyr), "Rmpcr_get_exp and Rmpcr_get_exp agree");
 }
 
 @parts = Rmpcr_split_mpfr($tinyr);
 
 cmp_ok($parts[0], '==', $check[0], "Rmpcr_split and Rmpcr_split_mpfr have same mantissa");
 cmp_ok($parts[1], '==', $check[1], "Rmpcr_split and Rmpcr_split_mpfr have same exponent");
-
-#Rmpcr_say($tinyr);
 
 Rmpcr_clear($nbl); # $nbl is unblessed and must be specifically
                    # freed in order to avoid memory leak.

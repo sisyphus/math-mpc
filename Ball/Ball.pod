@@ -9,7 +9,10 @@
    effectively ignored. There are no actions that need to be taken.
 
    The following documentation is essentially a copy of the official
-   mpc documentation.
+   mpc documentation. The Rmpcb_* functions are generally functions
+   that simply wrap the mpc library's matching mpcb_* function.
+   The one exception is Rmpcb_retrieve, for which the mpc library does
+   not provide a counterpart.
 
    The ball type (mpcb_t) is defined by
    typedef struct {

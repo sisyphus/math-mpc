@@ -227,8 +227,9 @@ else {
   cmp_ok(Rmpcr_cmp($tinyr, $rop), '==', 0, "tiny radius values match");
   @check = Rmpcr_split($tinyr);
   my $check = Rmpcr_get_exp_mpfr($tinyr);
-  cmp_ok("$check", '==', -36028797018963968, "Rmpcr_get_exp ok");
-  cmp_ok($check, '==', Rmpcr_get_exp($tinyr), "Rmpcr_get_exp and Rmpcr_get_exp agree");
+  cmp_ok(Math::MPFR::Rmpfr_cmp_IV($check, -36028797018963967), '==', 0, "1: Rmpcr_get_exp_mpfr ok");
+  cmp_ok($check, '==', -36028797018963967, "2: Rmpcr_get_exp_mpfr ok");
+  cmp_ok($check, '==', Rmpcr_get_exp($tinyr), "Rmpcr_get_exp_mpfr and Rmpcr_get_exp agree");
 }
 
 @parts = Rmpcr_split_mpfr($tinyr);

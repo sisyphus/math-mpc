@@ -1,3 +1,7 @@
+# Here, we test only the wrapping of mpc_eta and mpc_agm.
+# Testing of the ball functions, also new in mpc-1.3.0, is
+# conducted in the (new) test scripts Radius.t and Ball.t.
+
 use strict;
 use warnings;
 use Math::MPC qw(:mpc);

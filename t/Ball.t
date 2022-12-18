@@ -50,9 +50,15 @@ cmp_ok(Math::MPFR::Rmpfr_nan_p($mpfr), '!=', 0, 'imaginary part of initialized M
 
 cmp_ok(Rmpcr_inf_p($r_rop), '!=', 0, 'radius part of initialized Math::MPC::Ball object is Inf');
 
-Rmpcb_set_ui_ui($mpcb, 600, 205, 42); # Set centre of $mpcb to 600 + (i * 205); precision = 42 bits.
+my($requested_size, $allocated_size) = (42, 42);
+$allocated_size = 64 if $Config{longsize} == 8;
 
-cmp_ok(Rmpcb_get_prec($mpcb), '==', 42, "Rmpcb_get_prec works");
+Rmpcb_set_ui_ui($mpcb, 600, 205, $requested_size); # Set centre of $mpcb to 600 + (i * 205).
+                                                   # Precision will be 42 if $Config{longsize} == 4.
+                                                   # Otherwise precision will be 64 - as specified
+                                                   # in the Rmpcb_set_ui_ui() documentation.
+
+cmp_ok(Rmpcb_get_prec($mpcb), '==', $allocated_size, "Rmpcb_get_prec works");
 
 my @rounds = (
   MPC_RNDNN, MPC_RNDZN, MPC_RNDUN, MPC_RNDDN, MPC_RNDAN,
@@ -71,14 +77,15 @@ for(@rounds) {
 }
 
 Rmpcb_set($rop, $mpcb);
+cmp_ok(Rmpcb_get_prec($mpcb), '==', $allocated_size, "Rmpcb_get_prec is still $allocated_size");
 my ($re, $im, $radius) = Rmpcb_split($rop);
 
 # If the next 5 tests pass then we know that
 # Rmpcb_set worked as expected.
 cmp_ok($re, '==', 600, "Rmpcb_set: same real value");
-cmp_ok(Math::MPFR::Rmpfr_get_prec($re), '==', 42, "Rmpcb_set: same real prec");
+cmp_ok(Math::MPFR::Rmpfr_get_prec($re), '==', $allocated_size, "Rmpcb_set: same real prec");
 cmp_ok($im, '==', 205, "Rmpcb_set: same imaginary value");
-cmp_ok(Math::MPFR::Rmpfr_get_prec($im), '==', 42, "Rmpcb_set: same imaginary prec");
+cmp_ok(Math::MPFR::Rmpfr_get_prec($im), '==', $allocated_size, "Rmpcb_set: same imaginary prec");
 cmp_ok(Rmpcr_zero_p($radius), '!=', 0, "Rmpcb_set: zero radius");
 
 my $inf = Rmpcb_init();
@@ -158,6 +165,8 @@ Rmpcb_div_2ui($rop, $rop, 2);
 cmp_ok($re, '==', 4, "Rmpcb_div_2ui: real value is 4");
 cmp_ok($im, '==', 0, "Rmpcb_div_2ui: imaginary value is 0");
 cmp_ok(Rmpcr_zero_p($radius), '==', 0, "Rmpcb_div_2ui: radius is not 0");
+
+
 
 Rmpcb_clear($unblessed); # must be explicitly freed to avoid memory leak.
 

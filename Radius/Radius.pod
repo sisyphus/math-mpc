@@ -126,24 +126,17 @@
     $op then represents the "radius" value $parts[0] * (2 ** $parts[1]).
     This function will croak if perl's ivsize is 4 and the value of the
     mantissa or the exponent overflows the 4-byte IV. In such a case,
-    the diagnostic recommends using Rmpcr_split_mpfr (below) instead.
+    the message recommends using Rmpcr_split_mpfr (below) instead.
 
-  @parts = Rmpcr_split_mpfr($op);
-    The same as Rmpcr_split, except that the numeric values returned
-    are Math::MPFR objects with 64-bit precision, not IV or UV.
-    This avoids the problem of having 64-bit values overflow the 4-byte
-    IV or UV.
-    If $op is zero, @parts is a one-element array, containing a
-    Math::MPFR object with value zero.
-    If $op is Inf, @parts is a one-element array, containing the string
-    "Inf".
-    Otherwise, @parts is a two-element array. The first element is a
-    Math::MPFR object holding the value of the mantissa of $op, and the
-    second element is a Math::MPFR object holding the value of the
-    exponent of $op.
+   @parts = Rmpcr_split_mpfr($op);
+    NOTE: Provided for the benefit of those perls whose ivsize is 4, but
+          can be used with all perls, irrespective of their IVSIZE.
+    The same as Rmpcr_split except that, where Rmpcr_split returns an IV
+    or UV, Rmpcr_split_mpfr returns the same value in the form of a
+    Math::MPFR object with 64-bit precision. This avoids the problem of
+    having 64-bit values overflow the 4-byte IV or UV.
 
-
-   Rmpcr_out_str ($fh, $op);
+  Rmpcr_out_str ($fh, $op);
    Rmpcr_print($op);
    Rmpcr_say($op);
     Rmpcr_out_str outputs $op on $fh, which may be 'stdout'.

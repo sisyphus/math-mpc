@@ -202,7 +202,7 @@ else {
   my $mpc = Rmpc_init2($Config{ivsize} * 8);
   Rmpc_set_fr_fr($mpc, $re, $im, MPC_RNDNN);
   my $mpcb = Rmpcb_init();
-  Rmpcb_set_c($mpcb, $mpc, 32, 0, 0);
+  Rmpcb_set_c($mpcb, $mpc, $Config{ivsize} * 8, 0, 0);
   my @p = Rmpcb_split($mpcb);
   if($Config{ivsize} == 4) {
     # $Config{ivsize} and $Config{longsize} are 4
@@ -215,7 +215,7 @@ else {
     cmp_ok(Rmpcr_zero_p($p[2]), '!=', 0, "Radius is zero");
   }
   else {
-    # $Config{ivsize} and $Config{longsize} are 4
+    # $Config{ivsize} and $Config{longsize} are 8
     cmp_ok(Math::MPFR::Rmpfr_get_prec($p[0]), '==', 64, "prec of mpc real is 64");
     cmp_ok(Math::MPFR::Rmpfr_get_prec($p[1]), '==', 64, "prec of mpc real is 64");
     cmp_ok($re, '==', 18446744073709551615, "value of mpc real is 18446744073709551615");

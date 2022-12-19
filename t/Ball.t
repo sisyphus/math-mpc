@@ -166,7 +166,65 @@ cmp_ok($re, '==', 4, "Rmpcb_div_2ui: real value is 4");
 cmp_ok($im, '==', 0, "Rmpcb_div_2ui: imaginary value is 0");
 cmp_ok(Rmpcr_zero_p($radius), '==', 0, "Rmpcb_div_2ui: radius is not 0");
 
+if($Config{ivsize} > $Config{longsize}) {
+  # ivsize is 8 and long size is 4
+  # We would probably expect that Rmpcb_set_ui_ui($rop, ~0, ~0 - 115, 64) would set
+  # the centre of $rop to the 64-bit prec mpc_t:
+  #   (18446744073709551615, i * 18446744073709551500).
+  # That won't happen - so we check that the desired result can be achieved by
+  # using Rmpcb_set_c():
 
+  my($re, $im) = (Math::MPFR::Rmpfr_init2(64), Math::MPFR::Rmpfr_init2(64));
+  Math::MPFR::Rmpfr_set_IV($re, 18446744073709551615, 0);
+  Math::MPFR::Rmpfr_set_IV($im, 18446744073709551500, 0);
+  my $mpc = Rmpc_init2(64);
+  Rmpc_set_fr_fr($mpc, $re, $im, MPC_RNDNN);
+  my $mpcb = Rmpcb_init();
+  Rmpcb_set_c($mpcb, $mpc, 64, 0, 0);
+  my @p = Rmpcb_split($mpcb);
+  cmp_ok(Math::MPFR::Rmpfr_get_prec($p[0]), '==', 64, "prec of mpc real is 64");
+  cmp_ok(Math::MPFR::Rmpfr_get_prec($p[1]), '==', 64, "prec of mpc real is 64");
+  cmp_ok($re, '==', 18446744073709551615, "value of mpc real is 18446744073709551615");
+  cmp_ok($im, '==', 18446744073709551500, "value of mpc real is 18446744073709551500");
+
+  # Also we need to check that $p[2] is zero:
+  cmp_ok(Rmpcr_zero_p($p[2]), '!=', 0, "Radius is zero");
+}
+else {
+  # ivsize == longsize. (Either both are 4, or both are 8.)
+  # Check that Rmpcb_set_c can also be used here to do the
+  # same as Rmpcb_set_ui_ui
+
+  my($re, $im) = (Math::MPFR::Rmpfr_init2($Config{ivsize} * 8),
+                  Math::MPFR::Rmpfr_init2($Config{ivsize} * 8));
+  Math::MPFR::Rmpfr_set_IV($re, ~0, 0);
+  Math::MPFR::Rmpfr_set_IV($im, ~0 - 115, 0);
+  my $mpc = Rmpc_init2($Config{ivsize} * 8);
+  Rmpc_set_fr_fr($mpc, $re, $im, MPC_RNDNN);
+  my $mpcb = Rmpcb_init();
+  Rmpcb_set_c($mpcb, $mpc, 32, 0, 0);
+  my @p = Rmpcb_split($mpcb);
+  if($Config{ivsize} == 4) {
+    # $Config{ivsize} and $Config{longsize} are 4
+    cmp_ok(Math::MPFR::Rmpfr_get_prec($p[0]), '==', 32, "prec of mpc real is 32");
+    cmp_ok(Math::MPFR::Rmpfr_get_prec($p[1]), '==', 32, "prec of mpc real is 32");
+    cmp_ok($re, '==', 4294967295, "value of mpc real is 4294967295");
+    cmp_ok($im, '==', 4294967180, "value of mpc real is 4294967180");
+
+    # Also we need to check that $p[2] is zero:
+    cmp_ok(Rmpcr_zero_p($p[2]), '!=', 0, "Radius is zero");
+  }
+  else {
+    # $Config{ivsize} and $Config{longsize} are 4
+    cmp_ok(Math::MPFR::Rmpfr_get_prec($p[0]), '==', 64, "prec of mpc real is 64");
+    cmp_ok(Math::MPFR::Rmpfr_get_prec($p[1]), '==', 64, "prec of mpc real is 64");
+    cmp_ok($re, '==', 18446744073709551615, "value of mpc real is 18446744073709551615");
+    cmp_ok($im, '==', 18446744073709551500, "value of mpc real is 18446744073709551500");
+
+    # Also we need to check that $p[2] is zero:
+    cmp_ok(Rmpcr_zero_p($p[2]), '!=', 0, "Radius is zero");
+  }
+}
 
 Rmpcb_clear($unblessed); # must be explicitly freed to avoid memory leak.
 

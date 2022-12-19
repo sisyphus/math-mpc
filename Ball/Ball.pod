@@ -155,7 +155,10 @@
 
    Rmpcb_set_ui_ui ($rop, $re, $im, $prec);
     Set $rop to a ball with centre $re + (i * $im) at precision $prec
-    or the size of an 'unsigned long int', whatever is larger.
+    or the bitsize of an 'unsigned long int' (ie $Config{longsize} * 8),
+    whichever is larger.
+    If $Config{ivsize} > $Config{longsize}, you may need to use
+    Rmpcb_set_c instead to meet your intention.
 
    Rmpcb_neg ($rop, $op);
    Rmpcb_add ($rop, $op1, $op2);

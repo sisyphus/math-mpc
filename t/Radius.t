@@ -154,7 +154,7 @@ Rmpcr_sqrt($rop, $four);
 cmp_ok(Rmpcr_cmp($rop, $two), '==', 0, "4**0.5 == 2");
 
 Rmpcr_sqr($rop, $rop);
-cmp_ok(Rmpcr_cmp($rop, $four), '>', 0, "(4**0.5)**2 > 2");
+cmp_ok(Rmpcr_cmp($rop, $four), '>', 0, "(4**0.5)**2 > 4");
 
 Rmpcr_set_ui64_2si64($chk, 11717, -22);
 Rmpcr_set_str_2str($rop, '11717', '-22');
@@ -237,6 +237,8 @@ else {
 cmp_ok($parts[0], '==', $check[0], "Rmpcr_split and Rmpcr_split_mpfr have same mantissa");
 cmp_ok($parts[1], '==', $check[1], "Rmpcr_split and Rmpcr_split_mpfr have same exponent");
 
-Rmpcr_clear($nbl); # $nbl is unblessed and must be specifically
-                   # freed in order to avoid memory leak.
-done_testing();
+#################################################################
+Rmpcr_clear($nbl); # $nbl is unblessed and must be specifically #
+                   # freed in order to avoid memory leak.       #
+done_testing();                                                 #
+#################################################################

@@ -435,11 +435,12 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
    $si = Rmpc_agm ($rop, $op1, $op2, $rnd); # mpc-1.3.0 &
                                             # later only
     Set $rop to the arithmetic-geometric mean (AGM) of $op1 and $op2,
-    rounded according to $rnd with the precision of $rop.  Concerning
-    the branch cut, the function is computed by homogeneity either as:
-    1) $op1 AGM(1,b0) with b0=$op2/$op1 if |A|>=|B|
+    rounded according to $rnd with the precision of $rop. Let's call
+    the complex number 1 + (0 * i) "$one".  Concerning the branch cut,
+    the function is computed by homogeneity either as:
+    1) $op1 * AGM($one,b0) with b0=$op2/$op1 if |$op1|>=|$op2|
        or, otherwise, as:
-    2) $op2 AGM(1,b0) with b0=$op1/$op2.
+    2) $op2 * AGM($one,b0) with b0=$op1/$op2.
     Then when b0 is real and negative, AGM(1,b0) is chosen to have
     positive imaginary part.
 
@@ -873,6 +874,20 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
 
    ####################
 
+   RADIUS FUNCTIONS
+
+   See the Math::MPC::Radius documentation:
+     perldoc Math::MPC::Radius
+
+  ####################
+
+   BALL FUNCTIONS
+
+   See the Math::MPC::Ball documentation:
+     perldoc Math::MPC::Ball
+
+  ####################
+
 =head1 TODO
 
     For completeness, we probably should wrap mpc_realref and
@@ -893,7 +908,7 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
 
     This program is free software; you may redistribute it and/or
     modify it under the same terms as Perl itself.
-    Copyright 2006-2011, 2014, 2016, 2018, 2020 Sisyphus
+    Copyright 2006-2011, 2014, 2016, 2018, 2020, 2022 Sisyphus
 
 =head1 AUTHOR
 

@@ -166,18 +166,23 @@ cmp_ok($re, '==', 4, "Rmpcb_div_2ui: real value is 4");
 cmp_ok($im, '==', 0, "Rmpcb_div_2ui: imaginary value is 0");
 cmp_ok(Rmpcr_zero_p($radius), '==', 0, "Rmpcb_div_2ui: radius is not 0");
 
+# Next, check that Rmpcb_set_c() can emulate Rmpcb_set_ui_ui()
+
+($re, $im) = (Math::MPFR::Rmpfr_init2($Config{ivsize} * 8),
+              Math::MPFR::Rmpfr_init2($Config{ivsize} * 8));
+Math::MPFR::Rmpfr_set_IV($re, ~0, 0);
+Math::MPFR::Rmpfr_set_IV($im, ~0 - 115, 0);
+$mpc = Rmpc_init2($Config{ivsize} * 8);
+
 if($Config{ivsize} > $Config{longsize}) {
   # ivsize is 8 and long size is 4
   # We would probably expect that Rmpcb_set_ui_ui($rop, ~0, ~0 - 115, 64) would set
   # the centre of $rop to the 64-bit prec mpc_t:
   #   (18446744073709551615, i * 18446744073709551500).
-  # That won't happen - so we check that the desired result can be achieved by
+  # That won't happen because longsize is only 4, not 8.
+  # So let's check that the desired result can be achieved by
   # using Rmpcb_set_c():
 
-  my($re, $im) = (Math::MPFR::Rmpfr_init2(64), Math::MPFR::Rmpfr_init2(64));
-  Math::MPFR::Rmpfr_set_IV($re, 18446744073709551615, 0);
-  Math::MPFR::Rmpfr_set_IV($im, 18446744073709551500, 0);
-  my $mpc = Rmpc_init2(64);
   Rmpc_set_fr_fr($mpc, $re, $im, MPC_RNDNN);
   my $mpcb = Rmpcb_init();
   Rmpcb_set_c($mpcb, $mpc, 64, 0, 0);
@@ -195,11 +200,6 @@ else {
   # Check that Rmpcb_set_c can also be used here to do the
   # same as Rmpcb_set_ui_ui
 
-  my($re, $im) = (Math::MPFR::Rmpfr_init2($Config{ivsize} * 8),
-                  Math::MPFR::Rmpfr_init2($Config{ivsize} * 8));
-  Math::MPFR::Rmpfr_set_IV($re, ~0, 0);
-  Math::MPFR::Rmpfr_set_IV($im, ~0 - 115, 0);
-  my $mpc = Rmpc_init2($Config{ivsize} * 8);
   Rmpc_set_fr_fr($mpc, $re, $im, MPC_RNDNN);
   my $mpcb = Rmpcb_init();
   Rmpcb_set_c($mpcb, $mpc, $Config{ivsize} * 8, 0, 0);

@@ -1,3 +1,5 @@
+1.31
+
 1.30
  - Jump straight to version 1.30, as this module now contains a fair amount of new
    functionality that requires version 1.3.0 (or later) of the mpc library.

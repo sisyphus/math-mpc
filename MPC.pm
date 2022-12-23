@@ -173,7 +173,7 @@ Rmpcb_can_round Rmpcb_round Rmpcb_retrieve
 }
 
     @Math::MPC::EXPORT_OK = (@tagged, @radius, @ball);
-    our $VERSION = '1.30';
+    our $VERSION = '1.31';
     #$VERSION = eval $VERSION;
 
     Math::MPC->DynaLoader::bootstrap($VERSION);

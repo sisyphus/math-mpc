@@ -1,4 +1,5 @@
 1.31
+ - Add new functions Rmpcr_out_str_win, Rmpc_say_win & Rmpcr_print_win.
 
 1.30
  - Jump straight to version 1.30, as this module now contains a fair amount of new

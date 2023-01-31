@@ -143,16 +143,21 @@
     Rmpcr_print and Rmpcr_say print to 'stdout', with Rmpcr_say adding
     a newline - as with perl's say() function.
     Caveat: These functions so far serve mainly for debugging purposes.
-            Their behaviour might change in the future.
+            Their output format changed after the release of mpc-1.3.1,
+            and might yet might change again in the future.
 
 
    Rmpcr_out_str_win($fh, $op); # Available on MS Windows only
    Rmpcr_print_win($op);        # Available on MS Windows only
    Rmpcr_say_win($op);          # Available on MS Windows only
-    Same as Rpmcr_out_str, Rmpcr_print and Rmpcr_say, except that they
-    temporarily activate codepage 65001. Without this, on MS Windows the
-    functions will present the plus-or-minus and infinity symbols in a
-    garbled form if the output is being sent to STDOUT or STDERR.
+    If the MPC library is at a version later than 1.3.1 then these
+    functions serve no useful purpose, and produce the same output
+    as Rpmcr_out_str, Rmpcr_print and Rmpcr_say.
+    Otherwise, they are the same as Rpmcr_out_str, Rmpcr_print and
+    Rmpcr_say, except that they temporarily activate codepage 65001.
+    Without this, on MS Windows the functions will present the
+    plus-or-minus and infinity symbols in a garbled form if the output
+    is being sent to STDOUT or STDERR.
     If Rmpcr_out_str is sending the output to a file, then it should
     work just fine on MS Windows.
 

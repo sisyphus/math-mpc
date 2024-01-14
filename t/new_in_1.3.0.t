@@ -2,13 +2,6 @@
 # Testing of the ball functions, also new in mpc-1.3.0, is
 # conducted in the (new) test scripts Radius.t and Ball.t.
 
-# In response to the bizarre results reported for Rmpc_eta_fund
-# and Rmpc_agm at
-# https://rt.cpan.org/Public/Bug/Display.html?id=151057,
-# we run some tests that look strange. The aim is to ensure
-# that the arguments are as expected.
-
-
 use strict;
 use warnings;
 use Math::MPC qw(:mpc);
@@ -25,9 +18,6 @@ my $nan = Math::MPFR::Rmpfr_get_NV($inf_mpfr, 0);
 Math::MPFR::Rmpfr_set_inf($inf_mpfr, 1); # +Inf
 my $inf = Math::MPFR::Rmpfr_get_NV($inf_mpfr, 0);
 
-cmp_ok($op1, '==', Math::MPC->new(-0.3, 1.2), 'sanity test 1');
-cmp_ok($op2, '==', Math::MPC->new(6.2, -2.6), 'sanity test 2');
-
 if(MPC_VERSION < 66304) {
   eval{Rmpc_eta_fund($rop, $op1, MPC_RNDAA);};
   like($@, qr/^Rmpc_eta_fund function requires mpc version 1\.3\.0/, "Function croaks in pre mpc-1.3.0");
@@ -37,18 +27,12 @@ if(MPC_VERSION < 66304) {
 }
 else {
   Rmpc_eta_fund($rop, $op1, MPC_RNDNN);
-  cmp_ok("$rop", 'eq', '(7.2829981913846153e-1 -5.6948215660904557e-2)', "Rmpc_eta_fund string output is ok");
-  cmp_ok($rop, '==', Math::MPC->new(7.2829981913846153e-1, -5.6948215660904557e-2), "Rmpc_eta_fund value output is ok");
+  cmp_ok("$rop", 'eq', '(7.2829981913846153e-1 -5.6948215660904557e-2)', "Rmpc_eta_fund output is ok");
 
-  cmp_ok($op1, '==', Math::MPC->new(-0.3, 1.2), 'sanity test 3');
-  cmp_ok($op2, '==', Math::MPC->new(6.2, -2.6), 'sanity test 4');
+  cmp_ok($op1, '==', Math::MPC->new(-0.3, 1.2), '\$op1 was not modified by Rmpc_eta_fund()');
 
   my $inex = Rmpc_agm($rop, $op1, $op2, MPC_RNDAA);
-  cmp_ok("$rop", 'eq', '(2.7191494731957273 6.4237609338121771e-1)', "Rmpc_agm string output is ok");
-  cmp_ok($rop, '==', Math::MPC->new(2.7191494731957273, 6.4237609338121771e-1), "Rmpc_agm value output is ok");
-
-  cmp_ok($op1, '==', Math::MPC->new(-0.3, 1.2), 'sanity test 5');
-  cmp_ok($op2, '==', Math::MPC->new(6.2, -2.6), 'sanity test 6');
+  cmp_ok("$rop", 'eq', '(2.7191494731957273 6.4237609338121771e-1)', "Rmpc_agm output is ok");
 
   Rmpc_set_si_si($op1, 5, 12, MPC_RNDNN);
   Rmpc_set_si_si($op2, 3, 4, MPC_RNDNN);

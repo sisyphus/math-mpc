@@ -3311,7 +3311,7 @@ void _get_r_string(pTHX_ mpc_t * p, SV * base, SV * n_digits, SV * round) {
 
      if(b < 2 || b > 36) croak("Second argument supplied to r_string is not in acceptable range");
 
-     out = mpfr_get_str(0, &ptr, b, SvUV(n_digits), MPC_RE(*p), (mpc_rnd_t)SvUV(round) & 3);
+     out = mpfr_get_str(NULL, &ptr, b, SvUV(n_digits), MPC_RE(*p), (mpc_rnd_t)SvUV(round) & 3);
 
      if(out == NULL) croak("An error occurred in _get_r_string");
 
@@ -3331,7 +3331,7 @@ void _get_i_string(pTHX_ mpc_t * p, SV * base, SV * n_digits, SV * round) {
 
      if(b < 2 || b > 36) croak("Second argument supplied to i_string is not in acceptable range");
 
-     out = mpfr_get_str(0, &ptr, b, SvUV(n_digits), MPC_IM(*p), (mpc_rnd_t)SvUV(round) & 3);
+     out = mpfr_get_str(NULL, &ptr, b, SvUV(n_digits), MPC_IM(*p), (mpc_rnd_t)SvUV(round) & 3);
 
      if(out == NULL) croak("An error occurred in _get_i_string");
 

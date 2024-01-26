@@ -2057,6 +2057,7 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
      dMY_CXT;
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
+     int ret;
      mpfr_t t;
      PERL_UNUSED_ARG(third);
 
@@ -2106,7 +2107,7 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_mul");}
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       int ret = _win32_infnanstring(SvPV_nolen(b));
+       ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(t);
          if(ret == 2) {
@@ -2124,6 +2125,7 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
            croak("Invalid string (%s) supplied to Math::MPC::overload_mul", SvPV_nolen(b));
        }
 #else
+       PERL_UNUSED_ARG(ret);
        if(mpc_set_str(*mpc_t_obj, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
          croak("Invalid string (%s) supplied to Math::MPC::overload_mul", SvPV_nolen(b));
 #endif
@@ -2549,6 +2551,7 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
      dMY_CXT;
      mpfr_t t;
      mpc_t temp;
+     int ret;
      PERL_UNUSED_ARG(third);
 
      SvREFCNT_inc(a);
@@ -2599,7 +2602,7 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
        mpc_init3(temp, DEFAULT_PREC);  /* cannot assign to an mpfr_t - may have an imaginary component */
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       int ret = _win32_infnanstring(SvPV_nolen(b));
+       ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(t);
          if(ret == 2) {
@@ -2619,6 +2622,7 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
          }
        }
 #else
+       PERL_UNUSED_ARG(ret);
        if(mpc_set_str(temp, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1) {
          SvREFCNT_dec(a);
          croak("Invalid string (%s) supplied to Math::MPC::overload_div_eq", SvPV_nolen(b));
@@ -2668,6 +2672,7 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
      dMY_CXT;
      mpfr_t t;
      mpc_t temp;
+     int ret;
      PERL_UNUSED_ARG(third);
 
      SvREFCNT_inc(a);
@@ -2716,7 +2721,7 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
        mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may have an imaginary component */
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       int ret = _win32_infnanstring(SvPV_nolen(b));
+       ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(t);
          if(ret == 2) {
@@ -2736,7 +2741,7 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
          }
        }
 #else
-
+       PERL_UNUSED_ARG(ret);
        if(mpc_set_str(temp, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1) {
          SvREFCNT_dec(a);
          croak("Invalid string (%s) supplied to Math::MPC::overload_sub_eq", SvPV_nolen(b));
@@ -2787,6 +2792,7 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
      SvREFCNT_inc(a);
      mpfr_t t;
      mpc_t temp;
+     int ret;
      PERL_UNUSED_ARG(third);
 
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
@@ -2834,7 +2840,7 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
        mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may contain an imaginary part */
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       int ret = _win32_infnanstring(SvPV_nolen(b));
+       ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(t);
          if(ret == 2) {
@@ -2854,6 +2860,7 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
          }
        }
 #else
+       PERL_UNUSED_ARG(ret);
        if(mpc_set_str(temp, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1) {
          SvREFCNT_dec(a);
          croak("Invalid string (2: %s) supplied to Math::MPC::overload_add_eq", SvPV_nolen(b));
@@ -2902,6 +2909,7 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
      dMY_CXT;
      mpfr_t t;
      mpc_t temp;
+     int ret;
      PERL_UNUSED_ARG(third);
 
      SvREFCNT_inc(a);
@@ -2949,7 +2957,7 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
        mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may contain an imaginary part */
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       int ret = _win32_infnanstring(SvPV_nolen(b));
+       ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(t);
          if(ret == 2) {
@@ -2969,6 +2977,7 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
          }
        }
 #else
+       PERL_UNUSED_ARG(ret);
        if(mpc_set_str(temp, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1) {
          SvREFCNT_dec(a);
          croak("Invalid string (%s) supplied to Math::MPC::overload_mul_eq", SvPV_nolen(b));
@@ -3017,6 +3026,8 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
      dMY_CXT;
      mpc_t * mpc_t_obj, t;
      SV * obj_ref, * obj;
+     mpfr_t temp;
+     int ret;
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_pow function");
@@ -3080,8 +3091,7 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_pow");}
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       mpfr_t temp;
-       int ret = _win32_infnanstring(SvPV_nolen(b));
+       ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(temp);
          if(ret == 2) {
@@ -3099,6 +3109,8 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
            croak("Invalid string (%s) supplied to Math::MPC::overload_pow", SvPV_nolen(b));
        }
 #else
+       PERL_UNUSED_ARG(ret);
+       PERL_UNUSED_ARG(temp);
        if(mpc_set_str(*mpc_t_obj, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
          croak("Invalid string (%s) supplied to Math::MPC::overload_pow", SvPV_nolen(b));
 #endif
@@ -3149,6 +3161,7 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
      dMY_CXT;
      mpfr_t t;
      mpc_t temp;
+     int ret;
      PERL_UNUSED_ARG(third);
 
      SvREFCNT_inc(a);
@@ -3195,7 +3208,7 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
        mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may contain an imaginary part */
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       int ret = _win32_infnanstring(SvPV_nolen(b));
+       ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(t);
          if(ret == 2) {
@@ -3215,6 +3228,7 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
          }
        }
 #else
+       PERL_UNUSED_ARG(ret);
        if(mpc_set_str(temp, SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1) {
          SvREFCNT_dec(a);
          croak("Invalid string (%s) supplied to Math::MPC::overload_pow_eq", SvPV_nolen(b));
@@ -3263,6 +3277,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
      dMY_CXT;
      mpc_t t;
      int ret;
+     mpfr_t temp;
      PERL_UNUSED_ARG(third);
 
      if(mpfr_nan_p(MPC_RE(*a)) || mpfr_nan_p(MPC_IM(*a))) return newSViv(0);
@@ -3312,7 +3327,6 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_equiv");}
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       mpfr_t temp;
        ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          if(ret == 2) return newSViv(0);
@@ -3330,6 +3344,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
            croak("Invalid string (%s) supplied to Math::MPC::overload_equiv", SvPV_nolen(b));
        }
 #else
+       PERL_UNUSED_ARG(temp);
        mpc_init3(t, DEFAULT_PREC);
        if(mpc_set_str(t, (char *)SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
          croak("Invalid string (%s) supplied to Math::MPC::overload_equiv", SvPV_nolen(b));

@@ -71,6 +71,7 @@ int _win32_infnanstring(char * s) { /* MS Windows only - detect 1.#INF and 1.#IN
 
   return 0;
 #else
+  PERL_UNUSED_ARG(s);
   croak("Math::MPC::_win32_infnanstring not implemented for this build of perl");
 #endif
 }
@@ -108,7 +109,10 @@ int Rmpc_mul_sj (mpc_ptr rop, mpc_ptr op, intmax_t i, mpc_rnd_t rnd) {
 }
 
 #else
-
+   PERL_UNUSED_ARG(rop);
+   PERL_UNUSED_ARG(op);
+   PERL_UNUSED_ARG(i);
+   PERL_UNUSED_ARG(rnd);
    croak("Rmpc_mul_sj not implememnted on this build of perl");
 }
 
@@ -139,7 +143,10 @@ int Rmpc_mul_ld (mpc_ptr rop, mpc_ptr op, long double i, mpc_rnd_t rnd) {
 }
 
 #else
-
+  PERL_UNUSED_ARG(rop);
+  PERL_UNUSED_ARG(op);
+  PERL_UNUSED_ARG(i);
+  PERL_UNUSED_ARG(rnd);
    croak("Rmpc_mul_ld not implememnted on this build of perl");
 }
 
@@ -191,7 +198,10 @@ int Rmpc_div_sj (mpc_ptr rop, mpc_ptr op, intmax_t i, mpc_rnd_t rnd) {
 }
 
 #else
-
+  PERL_UNUSED_ARG(rop);
+  PERL_UNUSED_ARG(op);
+  PERL_UNUSED_ARG(i);
+  PERL_UNUSED_ARG(rnd);
    croak("Rmpc_div_sj not implememnted on this build of perl");
 }
 
@@ -222,7 +232,10 @@ int Rmpc_sj_div (mpc_ptr rop, intmax_t i, mpc_ptr op, mpc_rnd_t rnd) {
 }
 
 #else
-
+  PERL_UNUSED_ARG(rop);
+  PERL_UNUSED_ARG(op);
+  PERL_UNUSED_ARG(i);
+  PERL_UNUSED_ARG(rnd);
    croak("Rmpc_sj_div not implememnted on this build of perl");
 }
 
@@ -253,7 +266,10 @@ int Rmpc_div_ld (mpc_ptr rop, mpc_ptr op, long double i, mpc_rnd_t rnd) {
 }
 
 #else
-
+   PERL_UNUSED_ARG(rop);
+   PERL_UNUSED_ARG(op);
+   PERL_UNUSED_ARG(i);
+   PERL_UNUSED_ARG(rnd);
    croak("Rmpc_div_ld not implememnted on this build of perl");
 }
 
@@ -284,7 +300,10 @@ int Rmpc_ld_div (mpc_ptr rop, long double i, mpc_ptr op, mpc_rnd_t rnd) {
 }
 
 #else
-
+  PERL_UNUSED_ARG(rop);
+  PERL_UNUSED_ARG(op);
+  PERL_UNUSED_ARG(i);
+  PERL_UNUSED_ARG(rnd);
    croak("Rmpc_ld_div not implememnted on this build of perl");
 }
 
@@ -434,7 +453,8 @@ void Rmpc_get_default_prec2(void) {
      dTHX;
      dXSARGS;
      dMY_CXT;
-     EXTEND(SP, 2);
+     PERL_UNUSED_ARG(items);
+
      ST(0) = sv_2mortal(newSVuv(DEFAULT_PREC_RE));
      ST(1) = sv_2mortal(newSVuv(DEFAULT_PREC_IM));
      XSRETURN(2);
@@ -459,6 +479,8 @@ SV * Rmpc_get_prec(pTHX_ mpc_t * x) {
 void Rmpc_get_prec2(pTHX_ mpc_t * x) {
      dXSARGS;
      mp_prec_t re, im;
+     PERL_UNUSED_ARG(items);
+
      mpc_get_prec2(&re, &im, *x);
      ST(0) = sv_2mortal(newSVuv(re));
      ST(1) = sv_2mortal(newSVuv(im));
@@ -591,6 +613,9 @@ SV * Rmpc_set_ld(pTHX_ mpc_t * p, SV * q, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      return newSViv(mpc_set_ld(*p, SvNV(q), (mpc_rnd_t)SvUV(round)));
 #else
+     PERL_UNUSED_ARG(p);
+     PERL_UNUSED_ARG(q);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ld not implemented for this build of perl");
 #endif
 }
@@ -813,6 +838,9 @@ SV * Rmpc_set_uj(pTHX_ mpc_t * p, SV * q, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      return newSViv(mpc_set_uj(*p, SvUV(q), (mpc_rnd_t)SvUV(round)));
 #else
+     PERL_UNUSED_ARG(p);
+     PERL_UNUSED_ARG(q);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_uj not implemented for this build of perl");
 #endif
 }
@@ -822,6 +850,9 @@ SV * Rmpc_set_sj(pTHX_ mpc_t * p, SV * q, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      return newSViv(mpc_set_sj(*p, SvIV(q), (mpc_rnd_t)SvUV(round)));
 #else
+     PERL_UNUSED_ARG(p);
+     PERL_UNUSED_ARG(q);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_sj not implemented for this build of perl");
 #endif
 }
@@ -871,6 +902,10 @@ SV * Rmpc_set_ld_ld(pTHX_ mpc_t * mpc, SV * ld1, SV * ld2, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      return newSViv(mpc_set_ld_ld(*mpc, SvNV(ld1), SvNV(ld2), (mpc_rnd_t) SvUV(round)));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(ld1);
+     PERL_UNUSED_ARG(ld2);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ld_ld not implemented for this build of perl");
 #endif
 }
@@ -960,6 +995,10 @@ SV * Rmpc_set_ld_ui(pTHX_ mpc_t * mpc, SV * d, SV * ui, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(ld, ui, *mpc, SvNV(d), (unsigned long)SvUV(ui), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(ui);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ld_ui not implemented for this build of perl");
 #endif
 }
@@ -969,6 +1008,10 @@ SV * Rmpc_set_ld_si(pTHX_ mpc_t * mpc, SV * d, SV * si, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(ld, si, *mpc, SvNV(d), (signed long int)SvIV(si), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(si);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ld_si not implemented for this build of perl");
 #endif
 }
@@ -978,6 +1021,10 @@ SV * Rmpc_set_ld_fr(pTHX_ mpc_t * mpc, SV * d, mpfr_t * mpfr, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(ld, fr, *mpc, SvNV(d), *mpfr, (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(mpfr);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ld_fr not implemented for this build of perl");
 #endif
 }
@@ -987,6 +1034,10 @@ SV * Rmpc_set_ui_ld(pTHX_ mpc_t * mpc, SV * ui, SV * d, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(ui, ld, *mpc, (unsigned long)SvUV(ui), SvNV(d), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(ui);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ui_ld not implemented for this build of perl");
 #endif
 }
@@ -996,6 +1047,10 @@ SV * Rmpc_set_si_ld(pTHX_ mpc_t * mpc, SV * si, SV * d, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(si, ld, *mpc, (signed long int)SvIV(si), SvNV(d), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(si);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_si_ld not implemented for this build of perl");
 #endif
 }
@@ -1005,6 +1060,10 @@ SV * Rmpc_set_fr_ld(pTHX_ mpc_t * mpc, mpfr_t * mpfr, SV * d, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(fr, ld, *mpc, *mpfr, SvNV(d), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(mpfr);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_fr_ld not implemented for this build of perl");
 #endif
 }
@@ -1014,6 +1073,10 @@ SV * Rmpc_set_d_uj(pTHX_ mpc_t * mpc, SV * d, SV * ui, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(d, uj, *mpc, (double)SvNV(d), SvUV(ui), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(ui);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_d_uj not implemented for this build of perl");
 #endif
 }
@@ -1023,6 +1086,10 @@ SV * Rmpc_set_d_sj(pTHX_ mpc_t * mpc, SV * d, SV * si, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(d, sj, *mpc, (double)SvNV(d), SvIV(si), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(si);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_d_sj not implemented for this build of perl");
 #endif
 }
@@ -1032,6 +1099,10 @@ SV * Rmpc_set_sj_d(pTHX_ mpc_t * mpc, SV * si, SV * d, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(sj, d, *mpc, SvIV(si), (double)SvNV(d), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(si);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_sj_d not implemented for this build of perl");
 #endif
 }
@@ -1041,6 +1112,10 @@ SV * Rmpc_set_uj_d(pTHX_ mpc_t * mpc, SV * ui, SV * d, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(uj, d, *mpc, SvUV(ui), (double)SvNV(d), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(ui);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_uj_d not implemented for this build of perl");
 #endif
 }
@@ -1050,6 +1125,10 @@ SV * Rmpc_set_uj_fr(pTHX_ mpc_t * mpc, SV * ui, mpfr_t * mpfr, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(uj, fr, *mpc, SvUV(ui), *mpfr, (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpfr);
+     PERL_UNUSED_ARG(ui);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_uj_fr not implemented for this build of perl");
 #endif
 }
@@ -1059,6 +1138,10 @@ SV * Rmpc_set_sj_fr(pTHX_ mpc_t * mpc, SV * si, mpfr_t * mpfr, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(sj, fr, *mpc, SvIV(si), *mpfr, (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpfr);
+     PERL_UNUSED_ARG(si);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_sj_fr not implemented for this build of perl");
 #endif
 }
@@ -1068,6 +1151,10 @@ SV * Rmpc_set_fr_uj(pTHX_ mpc_t * mpc, mpfr_t * mpfr, SV * ui, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(fr, uj, *mpc, *mpfr, SvUV(ui), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpfr);
+     PERL_UNUSED_ARG(ui);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_fr_uj not implemented for this build of perl");
 #endif
 }
@@ -1077,6 +1164,10 @@ SV * Rmpc_set_fr_sj(pTHX_ mpc_t * mpc, mpfr_t * mpfr, SV * si, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(fr, sj, *mpc, *mpfr , SvIV(si), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpfr);
+     PERL_UNUSED_ARG(si);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_fr_sj not implemented for this build of perl");
 #endif
 }
@@ -1086,6 +1177,10 @@ SV * Rmpc_set_uj_sj(pTHX_ mpc_t * mpc, SV * ui, SV * si, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(uj, sj, *mpc, SvUV(ui), SvIV(si), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(si);
+     PERL_UNUSED_ARG(ui);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_uj_si, Rmpc_set_ui_sj and Rmpc_set_uj_sj not implemented for this build of perl");
 #endif
 }
@@ -1095,6 +1190,10 @@ SV * Rmpc_set_sj_uj(pTHX_ mpc_t * mpc, SV * si, SV * ui, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(sj, uj, *mpc, SvIV(si), SvUV(ui), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(si);
+     PERL_UNUSED_ARG(ui);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_sj_ui, Rmpc_set_si_uj and Rmpc_set_sj_uj not implemented for this build of perl");
 #endif
 }
@@ -1106,9 +1205,17 @@ SV * Rmpc_set_ld_uj(pTHX_ mpc_t * mpc, SV * d, SV * ui, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(ld, uj, *mpc, SvNV(d), SvUV(ui), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(ui);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ld_uj not implemented for this build of perl");
 #endif
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(ui);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ld_uj not implemented for this build of perl");
 #endif
 }
@@ -1119,9 +1226,17 @@ SV * Rmpc_set_ld_sj(pTHX_ mpc_t * mpc, SV * d, SV * si, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(ld, sj, *mpc, SvNV(d), SvIV(si), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(si);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ld_sj not implemented for this build of perl");
 #endif
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(si);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ld_sj not implemented for this build of perl");
 #endif
 }
@@ -1132,9 +1247,17 @@ SV * Rmpc_set_uj_ld(pTHX_ mpc_t * mpc, SV * ui, SV * d, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(uj, ld, *mpc, SvUV(ui), SvNV(d), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(ui);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_uj_ld not implemented for this build of perl");
 #endif
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(ui);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_uj_ld not implemented for this build of perl");
 #endif
 }
@@ -1145,9 +1268,17 @@ SV * Rmpc_set_sj_ld(pTHX_ mpc_t * mpc, SV * si, SV * d, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(sj, ld, *mpc, SvIV(si), SvNV(d), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(si);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_sj_ld not implemented for this build of perl");
 #endif
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(d);
+     PERL_UNUSED_ARG(si);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_sj_ld not implemented for this build of perl");
 #endif
 }
@@ -1202,6 +1333,10 @@ SV * Rmpc_set_f_uj(pTHX_ mpc_t * mpc, mpf_t * mpf, SV * uj, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(f, uj, *mpc, *mpf, (unsigned long long)SvUV(uj), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpf);
+     PERL_UNUSED_ARG(uj);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_f_uj not implemented for this build of perl");
 #endif
 }
@@ -1211,6 +1346,10 @@ SV * Rmpc_set_q_uj(pTHX_ mpc_t * mpc, mpq_t * mpq, SV * uj, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(q, uj, *mpc, *mpq, (unsigned long long)SvUV(uj), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpq);
+     PERL_UNUSED_ARG(uj);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_q_uj not implemented for this build of perl");
 #endif
 }
@@ -1220,6 +1359,10 @@ SV * Rmpc_set_z_uj(pTHX_ mpc_t * mpc, mpz_t * mpz, SV * uj, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(z, uj, *mpc, *mpz, (unsigned long long)SvUV(uj), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpz);
+     PERL_UNUSED_ARG(uj);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_z_uj not implemented for this build of perl");
 #endif
 }
@@ -1229,6 +1372,10 @@ SV * Rmpc_set_f_sj(pTHX_ mpc_t * mpc, mpf_t * mpf, SV * sj, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(f, sj, *mpc, *mpf, (signed long long)SvIV(sj), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpf);
+     PERL_UNUSED_ARG(sj);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_f_sj not implemented for this build of perl");
 #endif
 }
@@ -1238,6 +1385,10 @@ SV * Rmpc_set_q_sj(pTHX_ mpc_t * mpc, mpq_t * mpq, SV * sj, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(q, sj, *mpc, *mpq, (signed long long)SvIV(sj), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpq);
+     PERL_UNUSED_ARG(sj);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_q_sj not implemented for this build of perl");
 #endif
 }
@@ -1247,6 +1398,10 @@ SV * Rmpc_set_z_sj(pTHX_ mpc_t * mpc, mpz_t * mpz, SV * sj, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(z, sj, *mpc, *mpz, (signed long long)SvIV(sj), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpz);
+     PERL_UNUSED_ARG(sj);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_z_sj not implemented for this build of perl");
 #endif
 }
@@ -1256,6 +1411,10 @@ SV * Rmpc_set_f_ld(pTHX_ mpc_t * mpc, mpf_t * mpf, SV * ld, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(f, ld, *mpc, *mpf, (long double)SvNV(ld), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpf);
+     PERL_UNUSED_ARG(ld);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_f_ld not implemented for this build of perl");
 #endif
 }
@@ -1265,6 +1424,10 @@ SV * Rmpc_set_q_ld(pTHX_ mpc_t * mpc, mpq_t * mpq, SV * ld, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(q, ld, *mpc, *mpq, (long double)SvNV(ld), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpq);
+     PERL_UNUSED_ARG(ld);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_q_ld not implemented for this build of perl");
 #endif
 }
@@ -1274,6 +1437,10 @@ SV * Rmpc_set_z_ld(pTHX_ mpc_t * mpc, mpz_t * mpz, SV * ld, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(z, ld, *mpc, *mpz, (long double)SvNV(ld), (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpz);
+     PERL_UNUSED_ARG(ld);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_z_ld not implemented for this build of perl");
 #endif
 }
@@ -1333,6 +1500,10 @@ SV * Rmpc_set_uj_f(pTHX_ mpc_t * mpc, SV * uj, mpf_t * mpf, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(uj, f, *mpc, (unsigned long long)SvUV(uj), *mpf, (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpf);
+     PERL_UNUSED_ARG(uj);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_uj_f not implemented for this build of perl");
 #endif
 }
@@ -1342,6 +1513,10 @@ SV * Rmpc_set_uj_q(pTHX_ mpc_t * mpc, SV * uj, mpq_t * mpq, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(uj, q, *mpc, (unsigned long long)SvUV(uj), *mpq, (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpq);
+     PERL_UNUSED_ARG(uj);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_uj_q not implemented for this build of perl");
 #endif
 }
@@ -1351,6 +1526,10 @@ SV * Rmpc_set_uj_z(pTHX_ mpc_t * mpc, SV * uj, mpz_t * mpz, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(uj, z, *mpc, (unsigned long long)SvUV(uj), *mpz, (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpz);
+     PERL_UNUSED_ARG(uj);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_uj_z not implemented for this build of perl");
 #endif
 }
@@ -1360,6 +1539,10 @@ SV * Rmpc_set_sj_f(pTHX_ mpc_t * mpc, SV * sj, mpf_t * mpf, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(sj, f, *mpc, (signed long long)SvIV(sj), *mpf, (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpf);
+     PERL_UNUSED_ARG(sj);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_sj_f not implemented for this build of perl");
 #endif
 }
@@ -1369,6 +1552,10 @@ SV * Rmpc_set_sj_q(pTHX_ mpc_t * mpc, SV * sj, mpq_t * mpq, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(sj, q, *mpc, (signed long long)SvIV(sj), *mpq, (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpq);
+     PERL_UNUSED_ARG(sj);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_sj_q not implemented for this build of perl");
 #endif
 }
@@ -1378,6 +1565,10 @@ SV * Rmpc_set_sj_z(pTHX_ mpc_t * mpc, SV * sj, mpz_t * mpz, SV * round) {
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      SV_MPC_SET_X_Y(sj, z, *mpc, (signed long long)SvIV(sj), *mpz, (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpz);
+     PERL_UNUSED_ARG(sj);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_sj_z not implemented for this build of perl");
 #endif
 }
@@ -1387,6 +1578,10 @@ SV * Rmpc_set_ld_f(pTHX_ mpc_t * mpc, SV * ld, mpf_t * mpf, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(ld, f, *mpc, (long double)SvNV(ld), *mpf, (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpf);
+     PERL_UNUSED_ARG(ld);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ld_f not implemented for this build of perl");
 #endif
 }
@@ -1396,6 +1591,10 @@ SV * Rmpc_set_ld_q(pTHX_ mpc_t * mpc, SV * ld, mpq_t * mpq, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(ld, q, *mpc, (long double)SvNV(ld), *mpq, (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpq);
+     PERL_UNUSED_ARG(ld);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ld_q not implemented for this build of perl");
 #endif
 }
@@ -1405,6 +1604,10 @@ SV * Rmpc_set_ld_z(pTHX_ mpc_t * mpc, SV * ld, mpz_t * mpz, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      SV_MPC_SET_X_Y(ld, z, *mpc, (long double)SvNV(ld), *mpz, (mpc_rnd_t) SvUV(round));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(mpz);
+     PERL_UNUSED_ARG(ld);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ld_z not implemented for this build of perl");
 #endif
 }
@@ -1486,6 +1689,10 @@ SV * Rmpc_set_uj_uj(pTHX_ mpc_t * mpc, SV * uj1, SV * uj2, SV * round) {
      return newSViv(mpc_set_uj_uj(*mpc, (unsigned long long)SvUV(uj1),
                     (unsigned long long)SvUV(uj2), (mpc_rnd_t)SvUV(round)));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(uj1);
+     PERL_UNUSED_ARG(uj2);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_ui_uj, Rmpc_set_uj_ui and Rmpc_set_uj_uj not implemented for this build of perl");
 #endif
 }
@@ -1496,6 +1703,10 @@ SV * Rmpc_set_sj_sj(pTHX_ mpc_t * mpc, SV * sj1, SV * sj2, SV * round) {
      return newSViv(mpc_set_sj_sj(*mpc, (signed long long)SvIV(sj1),
                     (signed long long)SvIV(sj2), (mpc_rnd_t)SvUV(round)));
 #else
+     PERL_UNUSED_ARG(mpc);
+     PERL_UNUSED_ARG(sj1);
+     PERL_UNUSED_ARG(sj2);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_set_si_sj, Rmpc_set_sj_si and Rmpc_set_sj_sj not implemented for this build of perl");
 #endif
 }
@@ -1605,6 +1816,10 @@ SV * Rmpc_pow_ld(pTHX_ mpc_t * a, mpc_t * b, SV * pow, SV * round) {
 #if defined(NV_IS_LONG_DOUBLE) || defined(NV_IS_FLOAT128)
      return newSViv(mpc_pow_ld(*a, *b, SvNV(pow), (mpc_rnd_t)SvUV(round)));
 #else
+     PERL_UNUSED_ARG(a);
+     PERL_UNUSED_ARG(b);
+     PERL_UNUSED_ARG(pow);
+     PERL_UNUSED_ARG(round);
      croak("Rmpc_pow_ld not implemented on this build of perl");
 #endif
 }
@@ -1820,6 +2035,8 @@ SV * Rmpc_atanh(pTHX_ mpc_t * rop, mpc_t * op, SV * round) {
 }
 
 SV * overload_true(pTHX_ mpc_t *a, SV *second, SV * third) {
+     PERL_UNUSED_ARG(second);
+     PERL_UNUSED_ARG(third);
      if(
        ( mpfr_nan_p(MPC_RE(*a)) || !mpfr_cmp_ui(MPC_RE(*a), 0) ) &&
        ( mpfr_nan_p(MPC_IM(*a)) || !mpfr_cmp_ui(MPC_IM(*a), 0) )
@@ -1841,7 +2058,7 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      mpfr_t t;
-     int ret;
+     PERL_UNUSED_ARG(third);
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_mul function");
@@ -1889,7 +2106,7 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_mul");}
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       ret = _win32_infnanstring(SvPV_nolen(b));
+       int ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(t);
          if(ret == 2) {
@@ -1952,7 +2169,7 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      mpfr_t t;
-     int ret;
+     PERL_UNUSED_ARG(third);
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_add function");
@@ -2004,17 +2221,17 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_add");}
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       ret = _win32_infnanstring(SvPV_nolen(b));
-       if(ret) {
+
+       if(_win32_infnanstring(SvPV_nolen(b)) == 2) {
          mpfr_init(t);
-         if(ret == 2) {
-           mpfr_set_nan(t);
-           mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
-         }
-         else {
-           mpfr_set_inf(t, ret);
-           mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
-         }
+         mpfr_set_nan(t);
+         mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
+         mpfr_clear(t);
+       }
+       else if( _win32_infnanstring(SvPV_nolen(b)) ) {
+         mpfr_init(t);
+         mpfr_set_inf(t, ret);
+         mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
          mpfr_clear(t);
        }
        else {
@@ -2067,7 +2284,6 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      mpfr_t t;
-     int ret;
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_sub function");
@@ -2135,17 +2351,17 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_sub");}
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       ret = _win32_infnanstring(SvPV_nolen(b));
-       if(ret) {
+
+       if(_win32_infnanstring(SvPV_nolen(b)) == 2) {
          mpfr_init(t);
-         if(ret == 2) {
-           mpfr_set_nan(t);
-           mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
-         }
-         else {
-           mpfr_set_inf(t, ret);
-           mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
-         }
+         mpfr_set_nan(t);
+         mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
+         mpfr_clear(t);
+       }
+       else if( _win32_infnanstring(SvPV_nolen(b)) ) {
+         mpfr_init(t);
+         mpfr_set_inf(t, ret);
+         mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
          mpfr_clear(t);
        }
        else {
@@ -2200,8 +2416,6 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      mpfr_t t;
-     int ret;
-
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_div function");
@@ -2269,17 +2483,17 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_div");}
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       ret = _win32_infnanstring(SvPV_nolen(b));
-       if(ret) {
+
+       if(_win32_infnanstring(SvPV_nolen(b)) == 2) {
          mpfr_init(t);
-         if(ret == 2) {
-           mpfr_set_nan(t);
-           mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
-         }
-         else {
-           mpfr_set_inf(t, ret);
-           mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
-         }
+         mpfr_set_nan(t);
+         mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
+         mpfr_clear(t);
+       }
+       else if( _win32_infnanstring(SvPV_nolen(b)) ) {
+         mpfr_init(t);
+         mpfr_set_inf(t, ret);
+         mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
          mpfr_clear(t);
        }
        else {
@@ -2323,8 +2537,8 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
        if(strEQ(h, "Math::MPC")) {
          mpc_div(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return obj_ref;
-         }
        }
+     }
 
      croak("Invalid argument supplied to Math::MPC::overload_div function");
 
@@ -2335,7 +2549,7 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
      dMY_CXT;
      mpfr_t t;
      mpc_t temp;
-     int ret;
+     PERL_UNUSED_ARG(third);
 
      SvREFCNT_inc(a);
 
@@ -2385,7 +2599,7 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
        mpc_init3(temp, DEFAULT_PREC);  /* cannot assign to an mpfr_t - may have an imaginary component */
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       ret = _win32_infnanstring(SvPV_nolen(b));
+       int ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(t);
          if(ret == 2) {
@@ -2454,7 +2668,7 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
      dMY_CXT;
      mpfr_t t;
      mpc_t temp;
-     int ret;
+     PERL_UNUSED_ARG(third);
 
      SvREFCNT_inc(a);
 
@@ -2502,7 +2716,7 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
        mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may have an imaginary component */
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       ret = _win32_infnanstring(SvPV_nolen(b));
+       int ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(t);
          if(ret == 2) {
@@ -2573,7 +2787,7 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
      SvREFCNT_inc(a);
      mpfr_t t;
      mpc_t temp;
-     int ret;
+     PERL_UNUSED_ARG(third);
 
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
      if(SV_IS_IOK(b)) {
@@ -2620,7 +2834,7 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
        mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may contain an imaginary part */
 
 #ifdef _WIN32_BIZARRE_INFNAN
-      ret = _win32_infnanstring(SvPV_nolen(b));
+       int ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(t);
          if(ret == 2) {
@@ -2688,7 +2902,7 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
      dMY_CXT;
      mpfr_t t;
      mpc_t temp;
-     int ret;
+     PERL_UNUSED_ARG(third);
 
      SvREFCNT_inc(a);
 
@@ -2735,7 +2949,7 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
        mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may contain an imaginary part */
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       ret = _win32_infnanstring(SvPV_nolen(b));
+       int ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(t);
          if(ret == 2) {
@@ -2803,8 +3017,6 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
      dMY_CXT;
      mpc_t * mpc_t_obj, t;
      SV * obj_ref, * obj;
-     mpfr_t temp;
-     int ret;
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_pow function");
@@ -2868,7 +3080,8 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_pow");}
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       ret = _win32_infnanstring(SvPV_nolen(b));
+       mpfr_t temp;
+       int ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(temp);
          if(ret == 2) {
@@ -2936,8 +3149,7 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
      dMY_CXT;
      mpfr_t t;
      mpc_t temp;
-     int ret;
-
+     PERL_UNUSED_ARG(third);
 
      SvREFCNT_inc(a);
 
@@ -2983,7 +3195,7 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
        mpc_init3(temp, DEFAULT_PREC); /* cannot assign to an mpfr_t - may contain an imaginary part */
 
 #ifdef _WIN32_BIZARRE_INFNAN
-       ret = _win32_infnanstring(SvPV_nolen(b));
+       int ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          mpfr_init(t);
          if(ret == 2) {
@@ -3049,9 +3261,9 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
 
 SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
      dMY_CXT;
-     mpfr_t temp;
      mpc_t t;
      int ret;
+     PERL_UNUSED_ARG(third);
 
      if(mpfr_nan_p(MPC_RE(*a)) || mpfr_nan_p(MPC_IM(*a))) return newSViv(0);
 
@@ -3100,6 +3312,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_equiv");}
 
 #ifdef _WIN32_BIZARRE_INFNAN
+       mpfr_t temp;
        ret = _win32_infnanstring(SvPV_nolen(b));
        if(ret) {
          if(ret == 2) return newSViv(0);
@@ -3173,6 +3386,8 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
 }
 
 SV * overload_not(pTHX_ mpc_t * a, SV * second, SV * third) {
+     PERL_UNUSED_ARG(second);
+     PERL_UNUSED_ARG(third);
      if(mpfr_nan_p(MPC_RE(*a)) || mpfr_nan_p(MPC_IM(*a))) return newSViv(1); /* Thanks Jean-Louis Morel */
      if(mpc_cmp_si_si(*a, 0, 0)) return newSViv(0);
      return newSViv(1);
@@ -3182,6 +3397,8 @@ SV * overload_sqrt(pTHX_ mpc_t * p, SV * second, SV * third) {
      dMY_CXT;
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
+     PERL_UNUSED_ARG(second);
+     PERL_UNUSED_ARG(third);
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_sqrt function");
@@ -3201,6 +3418,9 @@ void overload_copy(pTHX_ mpc_t * p, SV * second, SV * third) {
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      mp_prec_t re, im;
+     PERL_UNUSED_ARG(items);
+     PERL_UNUSED_ARG(second);
+     PERL_UNUSED_ARG(third);
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_copy function");
@@ -3220,6 +3440,8 @@ SV * overload_abs(pTHX_ mpc_t * p, SV * second, SV * third) {
      dMY_CXT;
      mpfr_t * mpfr_t_obj;
      SV * obj_ref, * obj;
+     PERL_UNUSED_ARG(second);
+     PERL_UNUSED_ARG(third);
 
      New(1, mpfr_t_obj, 1, mpfr_t);
      if(mpfr_t_obj == NULL) croak("Failed to allocate memory in overload_abs function");
@@ -3237,6 +3459,8 @@ SV * overload_exp(pTHX_ mpc_t * p, SV * second, SV * third) {
      dMY_CXT;
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
+     PERL_UNUSED_ARG(second);
+     PERL_UNUSED_ARG(third);
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_exp function");
@@ -3254,6 +3478,8 @@ SV * overload_log(pTHX_ mpc_t * p, SV * second, SV * third) {
      dMY_CXT;
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
+     PERL_UNUSED_ARG(second);
+     PERL_UNUSED_ARG(third);
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_exp function");
@@ -3271,6 +3497,8 @@ SV * overload_sin(pTHX_ mpc_t * p, SV * second, SV * third) {
      dMY_CXT;
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
+     PERL_UNUSED_ARG(second);
+     PERL_UNUSED_ARG(third);
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_sin function");
@@ -3288,6 +3516,8 @@ SV * overload_cos(pTHX_ mpc_t * p, SV * second, SV * third) {
      dMY_CXT;
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
+     PERL_UNUSED_ARG(second);
+     PERL_UNUSED_ARG(third);
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_sin function");
@@ -3306,6 +3536,7 @@ void _get_r_string(pTHX_ mpc_t * p, SV * base, SV * n_digits, SV * round) {
      char * out;
      mp_exp_t ptr;
      unsigned long b = SvUV(base);
+     PERL_UNUSED_ARG(items);
 
      CHECK_ROUNDING_VALUE(round);
 
@@ -3326,6 +3557,7 @@ void _get_i_string(pTHX_ mpc_t * p, SV * base, SV * n_digits, SV * round) {
      char * out;
      mp_exp_t ptr;
      unsigned long b = SvUV(base);
+     PERL_UNUSED_ARG(items);
 
      CHECK_ROUNDING_VALUE(round);
 
@@ -3716,6 +3948,7 @@ SV * overload_atan2(pTHX_ mpc_t * p, mpc_t * q, SV * third) {
      dMY_CXT;
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
+     PERL_UNUSED_ARG(third);
 
      New(1, mpc_t_obj, 1, mpc_t);
      if(mpc_t_obj == NULL) croak("Failed to allocate memory in overload_atan2 function");
@@ -3996,10 +4229,10 @@ SV * Rmpc_dot(pTHX_ mpc_t * rop, SV * avref_A, SV * avref_B, SV * len, SV * roun
 #if defined(MPC_VERSION) && MPC_VERSION >= 65793 /* not less than version 1.1.1 */
      mpc_ptr *p_A, *p_B;
      SV ** elem;
-     int ret, i;
-     unsigned long s = (unsigned long)SvUV(len);
+     int ret;
+     unsigned long i, s = (unsigned long)SvUV(len);
 
-     if(s > av_len((AV*)SvRV(avref_A)) + 1 || s > av_len((AV*)SvRV(avref_B)) + 1)
+     if(s > (unsigned long)av_len((AV*)SvRV(avref_A)) + 1 || s > (unsigned long)av_len((AV*)SvRV(avref_B)) + 1)
        croak("2nd last arg to Rmpc_dot is too large");
 
      Newx(p_A, s, mpc_ptr);
@@ -4030,10 +4263,10 @@ SV * Rmpc_sum(pTHX_ mpc_t * rop, SV * avref, SV * len, SV * round) {
 #if defined(MPC_VERSION) && MPC_VERSION >= 65793 /* not less than version 1.1.1 */
      mpc_ptr *p;
      SV ** elem;
-     int ret, i;
-     unsigned long s = (unsigned long)SvUV(len);
+     int ret;
+     unsigned long i, s = (unsigned long)SvUV(len);
 
-     if(s > av_len((AV*)SvRV(avref)) + 1)croak("2nd last arg to Rmpc_sum is greater than the size of the array");
+     if(s > (unsigned long)av_len((AV*)SvRV(avref)) + 1)croak("2nd last arg to Rmpc_sum is greater than the size of the array");
 
      Newx(p, s, mpc_ptr);
      if(p == NULL) croak("Unable to allocate memory in Rmpc_sum");
@@ -4094,6 +4327,7 @@ int Rmpc_eta_fund(pTHX_ mpc_t * rop, mpc_t * op, SV * rnd) {
 /* I think the CLONE function needs to come at the very end ... not sure */
 
 void CLONE(pTHX_ SV * x, ...) {
+   PERL_UNUSED_ARG(x);
    MY_CXT_CLONE;
 }
 

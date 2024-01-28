@@ -1,6 +1,6 @@
 
-#ifndef MATH_MPC_H
-#define MATH_MPC_H 1
+#ifndef MATH_MPC_UNUSED_H
+#define MATH_MPC_UNUSED_H 1
 
 #define PERL_UNUSED_ARG2(a,b) PERL_UNUSED_ARG(a);PERL_UNUSED_ARG(b);
 

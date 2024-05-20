@@ -373,7 +373,7 @@ SV * _mpfr_set_NV(pTHX_ mpfr_t * p, SV * q, unsigned int round) {
      }
 
      buffer_size = ld < 0.0Q ? ld * -1.0Q : ld;
-     buffer_size = ceilq(logq(buffer_size + 1) / 2.30258509299404568401799145468436418Q);
+     buffer_size = ceilq(logq(buffer_size + 1) / 0x1.26bb1bbb5551582dd4adac5705a6p+1Q);
 
      Newxz(buffer, buffer_size + 5, char);
 
@@ -648,7 +648,7 @@ SV * Rmpc_set_NV(pTHX_ mpc_t * p, SV * q, unsigned int round) {
      }
 
      buffer_size = ld < 0.0Q ? ld * -1.0Q : ld;
-     buffer_size = ceilq(logq(buffer_size + 1) / 2.30258509299404568401799145468436418Q);
+     buffer_size = ceilq(logq(buffer_size + 1) / 0x1.26bb1bbb5551582dd4adac5705a6p+1Q);
 
      Newxz(buffer, buffer_size + 5, char);
      if(buffer == NULL) croak("Failed to allocate memory in Rmpc_set_NV");
@@ -738,7 +738,7 @@ SV * Rmpc_set_NV_NV(pTHX_ mpc_t * p, SV * re_q, SV * im_q, SV * round) {
          }
 
          buffer_size = re_ld < 0.0Q ? re_ld * -1.0Q : re_ld;
-         buffer_size = ceilq(logq(buffer_size + 1) / 2.30258509299404568401799145468436418Q);
+         buffer_size = ceilq(logq(buffer_size + 1) / 0x1.26bb1bbb5551582dd4adac5705a6p+1Q);
 
          Newxz(buffer, buffer_size + 5, char);
          if(buffer == NULL) croak("Failed to allocate memory in Rmpc_set_NV_NV");
@@ -777,7 +777,7 @@ SV * Rmpc_set_NV_NV(pTHX_ mpc_t * p, SV * re_q, SV * im_q, SV * round) {
          }
 
          buffer_size = im_ld < 0.0Q ? im_ld * -1.0Q : im_ld;
-         buffer_size = ceilq(logq(buffer_size + 1) / 2.30258509299404568401799145468436418Q);
+         buffer_size = ceilq(logq(buffer_size + 1) / 0x1.26bb1bbb5551582dd4adac5705a6p+1Q);
 
          Newxz(buffer, buffer_size + 5, char);
          if(buffer == NULL) croak("Failed to allocate memory in Rmpc_set_NV_NV");

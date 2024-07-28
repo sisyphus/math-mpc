@@ -15,27 +15,11 @@
 #include "math_mpc_include.h"
 #include "math_mpc_unused.h"
 
-#define MY_CXT_KEY "Math::MPC::_guts" XS_VERSION
+#define DEFAULT_PREC (mp_prec_t)SvIV(get_sv("Math::MPC::DEFAULT_PREC_RE",0)),(mp_prec_t)SvIV(get_sv("Math::MPC::DEFAULT_PREC_IM",0))
+#define DEFAULT_PREC_RE (mp_prec_t)SvIV(get_sv("Math::MPC::DEFAULT_PREC_RE",0))
+#define DEFAULT_PREC_IM (mp_prec_t)SvIV(get_sv("Math::MPC::DEFAULT_PREC_IM",0))
+#define DEFAULT_ROUNDING_MODE (mp_rnd_t)SvIV(get_sv("Math::MPC::DEFAULT_ROUNDING_MODE",0))
 
-typedef struct {
-  mp_prec_t _perl_default_prec_re;
-  mp_prec_t _perl_default_prec_im;
-  mpc_rnd_t _perl_default_rounding_mode;
-} my_cxt_t;
-
-START_MY_CXT
-
-#define DEFAULT_PREC MY_CXT._perl_default_prec_re,MY_CXT._perl_default_prec_im
-#define DEFAULT_PREC_RE MY_CXT._perl_default_prec_re
-#define DEFAULT_PREC_IM MY_CXT._perl_default_prec_im
-#define DEFAULT_ROUNDING_MODE MY_CXT._perl_default_rounding_mode
-
-/* These (CXT) values set at boot ... MPC_RNDNN == 0 */
-/*
-mpc_rnd_t _perl_default_rounding_mode = MPC_RNDNN;
-mp_prec_t _perl_default_prec_re = 53;
-mp_prec_t _perl_default_prec_im = 53;
-*/
 
 int nok_pok = 0; /* flag that is incremented whenever a scalar that is both
                  NOK and POK is passed to new or an overloaded operator */
@@ -399,48 +383,6 @@ SV * _mpfr_set_NV(pTHX_ mpfr_t * p, SV * q, unsigned int round) {
 
      return newSViv(mpfr_set_d (*p, (double)SvNVX(q), (mpc_rnd_t)round));
 #endif
-}
-
-void Rmpc_set_default_rounding_mode(pTHX_ SV * round) {
-     dMY_CXT;
-
-     CHECK_ROUNDING_VALUE(round);
-     DEFAULT_ROUNDING_MODE = (mpc_rnd_t)SvUV(round);
-}
-
-SV * Rmpc_get_default_rounding_mode(pTHX) {
-     dMY_CXT;
-     return newSVuv(DEFAULT_ROUNDING_MODE);
-}
-
-void Rmpc_set_default_prec(pTHX_ SV * prec) {
-     dMY_CXT;
-     DEFAULT_PREC_RE = (mp_prec_t)SvUV(prec);
-     DEFAULT_PREC_IM = (mp_prec_t)SvUV(prec);
-}
-
-void Rmpc_set_default_prec2(pTHX_ SV * prec_re, SV * prec_im) {
-     dMY_CXT;
-     DEFAULT_PREC_RE = (mp_prec_t)SvUV(prec_re);
-     DEFAULT_PREC_IM = (mp_prec_t)SvUV(prec_im);
-}
-
-SV * Rmpc_get_default_prec(pTHX) {
-     dMY_CXT;
-     if(DEFAULT_PREC_RE == DEFAULT_PREC_IM)
-       return newSVuv(DEFAULT_PREC_RE);
-     return newSVuv(0);
-}
-
-void Rmpc_get_default_prec2(void) {
-     dTHX;
-     dXSARGS;
-     dMY_CXT;
-     PERL_UNUSED_ARG(items);
-
-     ST(0) = sv_2mortal(newSVuv(DEFAULT_PREC_RE));
-     ST(1) = sv_2mortal(newSVuv(DEFAULT_PREC_IM));
-     XSRETURN(2);
 }
 
 void Rmpc_set_prec(pTHX_ mpc_t * p, SV * prec) {
@@ -1892,7 +1834,7 @@ SV * overload_true(pTHX_ mpc_t *a, SV *second, SV * third) {
 /********************************/
 
 SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
-     dMY_CXT;
+
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      int ret;
@@ -2005,7 +1947,7 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
 }
 
 SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
-     dMY_CXT;
+
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      mpfr_t t;
@@ -2120,7 +2062,7 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
 }
 
 SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
-     dMY_CXT;
+
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      mpfr_t t;
@@ -2252,7 +2194,7 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
 }
 
 SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
-     dMY_CXT;
+
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      mpfr_t t;
@@ -2386,7 +2328,7 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
 
 
 SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
-     dMY_CXT;
+
      mpfr_t t;
      mpc_t temp;
      int ret;
@@ -2507,7 +2449,7 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
 }
 
 SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
-     dMY_CXT;
+
      mpfr_t t;
      mpc_t temp;
      int ret;
@@ -2626,7 +2568,7 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
 }
 
 SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
-     dMY_CXT;
+
      SvREFCNT_inc(a);
      mpfr_t t;
      mpc_t temp;
@@ -2744,7 +2686,7 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
 }
 
 SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
-     dMY_CXT;
+
      mpfr_t t;
      mpc_t temp;
      int ret;
@@ -2861,7 +2803,7 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
 }
 
 SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
-     dMY_CXT;
+
      mpc_t * mpc_t_obj, t;
      SV * obj_ref, * obj;
      mpfr_t temp;
@@ -2996,7 +2938,7 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
 }
 
 SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
-     dMY_CXT;
+
      mpfr_t t;
      mpc_t temp;
      int ret;
@@ -3112,7 +3054,7 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
 }
 
 SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
-     dMY_CXT;
+
      mpc_t t;
      int ret;
      mpfr_t temp;
@@ -3246,7 +3188,7 @@ SV * overload_not(pTHX_ mpc_t * a, SV * second, SV * third) {
 }
 
 SV * overload_sqrt(pTHX_ mpc_t * p, SV * second, SV * third) {
-     dMY_CXT;
+
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      PERL_UNUSED_ARG2(second, third);
@@ -3265,7 +3207,7 @@ SV * overload_sqrt(pTHX_ mpc_t * p, SV * second, SV * third) {
 
 void overload_copy(pTHX_ mpc_t * p, SV * second, SV * third) {
      dXSARGS;
-     dMY_CXT;
+
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      mp_prec_t re, im;
@@ -3286,7 +3228,7 @@ void overload_copy(pTHX_ mpc_t * p, SV * second, SV * third) {
 }
 
 SV * overload_abs(pTHX_ mpc_t * p, SV * second, SV * third) {
-     dMY_CXT;
+
      mpfr_t * mpfr_t_obj;
      SV * obj_ref, * obj;
      PERL_UNUSED_ARG2(second, third);
@@ -3304,7 +3246,7 @@ SV * overload_abs(pTHX_ mpc_t * p, SV * second, SV * third) {
 }
 
 SV * overload_exp(pTHX_ mpc_t * p, SV * second, SV * third) {
-     dMY_CXT;
+
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      PERL_UNUSED_ARG2(second, third);
@@ -3322,7 +3264,7 @@ SV * overload_exp(pTHX_ mpc_t * p, SV * second, SV * third) {
 }
 
 SV * overload_log(pTHX_ mpc_t * p, SV * second, SV * third) {
-     dMY_CXT;
+
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      PERL_UNUSED_ARG2(second, third);
@@ -3340,7 +3282,7 @@ SV * overload_log(pTHX_ mpc_t * p, SV * second, SV * third) {
 }
 
 SV * overload_sin(pTHX_ mpc_t * p, SV * second, SV * third) {
-     dMY_CXT;
+
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      PERL_UNUSED_ARG2(second, third);
@@ -3358,7 +3300,7 @@ SV * overload_sin(pTHX_ mpc_t * p, SV * second, SV * third) {
 }
 
 SV * overload_cos(pTHX_ mpc_t * p, SV * second, SV * third) {
-     dMY_CXT;
+
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      PERL_UNUSED_ARG2(second, third);
@@ -3455,7 +3397,7 @@ SV * _itsa(pTHX_ SV * a) {
 }
 
 SV * _new_real_im(pTHX_ SV * b, SV * d) {
-     dMY_CXT;
+
      mpc_t * mpc_t_obj;
      mpfr_t temp_re, temp_im;
      int done_re = 0, done_im = 0;
@@ -3789,7 +3731,7 @@ void Rmpc_swap(mpc_t * a, mpc_t * b) {
 
 /* atan2(x, y) = atan(x / y) */
 SV * overload_atan2(pTHX_ mpc_t * p, mpc_t * q, SV * third) {
-     dMY_CXT;
+
      mpc_t * mpc_t_obj;
      SV * obj_ref, * obj;
      PERL_UNUSED_ARG(third);
@@ -4168,13 +4110,6 @@ int Rmpc_eta_fund(pTHX_ mpc_t * rop, mpc_t * op, SV * rnd) {
 #endif
 }
 
-/* I think the CLONE function needs to come at the very end ... not sure */
-
-void CLONE(pTHX_ SV * x, ...) {
-   PERL_UNUSED_ARG(x);
-   MY_CXT_CLONE;
-}
-
 
 
 MODULE = Math::MPC  PACKAGE = Math::MPC
@@ -4268,50 +4203,6 @@ _mpfr_set_NV (p, q, round)
 CODE:
   RETVAL = _mpfr_set_NV (aTHX_ p, q, round);
 OUTPUT:  RETVAL
-
-void
-Rmpc_set_default_rounding_mode (round)
-	SV *	round
-        CODE:
-        Rmpc_set_default_rounding_mode(aTHX_ round);
-        XSRETURN_EMPTY; /* return empty stack */
-
-SV *
-Rmpc_get_default_rounding_mode ()
-CODE:
-  RETVAL = Rmpc_get_default_rounding_mode (aTHX);
-OUTPUT:  RETVAL
-
-
-void
-Rmpc_set_default_prec (prec)
-	SV *	prec
-        CODE:
-        Rmpc_set_default_prec(aTHX_ prec);
-        XSRETURN_EMPTY; /* return empty stack */
-
-void
-Rmpc_set_default_prec2 (prec_re, prec_im)
-	SV *	prec_re
-	SV *	prec_im
-        CODE:
-        Rmpc_set_default_prec2(aTHX_ prec_re, prec_im);
-        XSRETURN_EMPTY; /* return empty stack */
-
-SV *
-Rmpc_get_default_prec ()
-CODE:
-  RETVAL = Rmpc_get_default_prec (aTHX);
-OUTPUT:  RETVAL
-
-
-void
-Rmpc_get_default_prec2 ()
-
-        CODE:
-        PL_markstack_ptr++;
-        Rmpc_get_default_prec2();
-        return; /* assume stack size is correct */
 
 void
 Rmpc_set_prec (p, prec)
@@ -6627,21 +6518,4 @@ Rmpc_eta_fund (rop, op, rnd)
 CODE:
   RETVAL = Rmpc_eta_fund (aTHX_ rop, op, rnd);
 OUTPUT:  RETVAL
-
-void
-CLONE (x, ...)
-	SV *	x
-        CODE:
-        PL_markstack_ptr++;
-        CLONE(aTHX_ x);
-        XSRETURN_EMPTY; /* return empty stack */
-
-BOOT:
-
-  {
-  MY_CXT_INIT;
-  MY_CXT._perl_default_prec_re = 53;
-  MY_CXT._perl_default_prec_im = 53;
-  MY_CXT._perl_default_rounding_mode = 0;
-  }
 

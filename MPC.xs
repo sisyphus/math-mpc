@@ -1684,6 +1684,26 @@ SV * Rmpc_exp(pTHX_ mpc_t * a, mpc_t * b, SV * round) {
      return newSViv(mpc_exp(*a, *b, (mpc_rnd_t)SvUV(round)));
 }
 
+SV * Rmpc_exp10(pTHX_ mpc_t * a, mpc_t * b, SV * round) {
+#if MPC_VERSION >= 66306
+     CHECK_ROUNDING_VALUE(round);
+     return newSViv(mpc_exp10(*a, *b, (mpc_rnd_t)SvUV(round)));
+#else
+     PERL_UNUSED_ARG3(a, b, round);
+     croak("Rmpc_exp10 function requires mpc version 1.3.2. This is only version %s", MPC_VERSION_STRING);
+#endif
+}
+
+SV * Rmpc_exp2(pTHX_ mpc_t * a, mpc_t * b, SV * round) {
+#if MPC_VERSION >= 66306
+     CHECK_ROUNDING_VALUE(round);
+     return newSViv(mpc_exp2(*a, *b, (mpc_rnd_t)SvUV(round)));
+#else
+     PERL_UNUSED_ARG3(a, b, round);
+     croak("Rmpc_exp2 function requires mpc version 1.3.2. This is only version %s", MPC_VERSION_STRING);
+#endif
+}
+
 SV * Rmpc_log(pTHX_ mpc_t * rop, mpc_t * op, SV * round) {
      CHECK_ROUNDING_VALUE(round);
      return newSViv(mpc_log(*rop, *op, (mpc_rnd_t)SvUV(round)));
@@ -3919,29 +3939,42 @@ SV * _wrap_count(pTHX) {
 /* Beginning mpc-1.0, mpc_mul_2si and mpc_div_2si were added */
 
 SV * Rmpc_mul_2si(pTHX_ mpc_t * a, mpc_t * b, SV * c, SV * round) {
-     CHECK_ROUNDING_VALUE(round);
 #if MPC_VERSION >= 65536 /* not less than version 1.0.0 */
+     CHECK_ROUNDING_VALUE(round);
      return newSViv(mpc_mul_2si(*a, *b, SvUV(c), (mpc_rnd_t)SvUV(round)));
 # else
-     croak("mpc_mul_2si not implemented until mpc-1.0. We have version %d", MPC_VERSION);
+     PERL_UNUSED_ARG4(a, b, c, round);
+     croak("mpc_mul_2si not implemented until mpc-1.0. We have version %d", MPC_VERSION_STRING);
 #endif
 }
 
 SV * Rmpc_div_2si(pTHX_ mpc_t * a, mpc_t * b, SV * c, SV * round) {
-     CHECK_ROUNDING_VALUE(round);
 #if MPC_VERSION >= 65536 /* not less than version 1.0.0 */
+     CHECK_ROUNDING_VALUE(round);
      return newSViv(mpc_div_2si(*a, *b, SvUV(c), (mpc_rnd_t)SvUV(round)));
 # else
-     croak("mpc_div_2si not implemented until mpc-1.0. We have version %d", MPC_VERSION);
+     PERL_UNUSED_ARG4(a, b, c, round);
+     croak("mpc_div_2si not implemented until mpc-1.0. We have version %d", MPC_VERSION_STRING);
 #endif
 }
 
 SV * Rmpc_log10(pTHX_ mpc_t * rop, mpc_t *op, SV * round) {
-     CHECK_ROUNDING_VALUE(round);
 #if MPC_VERSION >= 65536 /* not less than version 1.0.0 */
+     CHECK_ROUNDING_VALUE(round);
      return newSViv(mpc_log10(*rop, *op, (mpc_rnd_t)SvUV(round)));
 # else
-     croak("mpc_log10 not implemented until mpc-1.0. We have version %d", MPC_VERSION);
+     PERL_UNUSED_ARG3(rop, op, round);
+     croak("mpc_log10 not implemented until mpc-1.0. We have version %d", MPC_VERSION_STRING);
+#endif
+}
+
+SV * Rmpc_log2(pTHX_ mpc_t * a, mpc_t * b, SV * round) {
+#if MPC_VERSION >= 66306
+     CHECK_ROUNDING_VALUE(round);
+     return newSViv(mpc_log2(*a, *b, (mpc_rnd_t)SvUV(round)));
+#else
+     PERL_UNUSED_ARG3(a, b, round);
+     croak("Rmpc_log2 function requires mpc version 1.3.2. This is only version %s", MPC_VERSION_STRING);
 #endif
 }
 
@@ -4208,7 +4241,7 @@ void
 Rmpc_set_prec (p, prec)
 	mpc_t *	p
 	SV *	prec
-        CODE:
+        PPCODE:
         Rmpc_set_prec(aTHX_ p, prec);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -4216,7 +4249,7 @@ void
 Rmpc_set_re_prec (p, prec)
 	mpc_t *	p
 	SV *	prec
-        CODE:
+        PPCODE:
         Rmpc_set_re_prec(aTHX_ p, prec);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -4224,7 +4257,7 @@ void
 Rmpc_set_im_prec (p, prec)
 	mpc_t *	p
 	SV *	prec
-        CODE:
+        PPCODE:
         Rmpc_set_im_prec(aTHX_ p, prec);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -4238,10 +4271,10 @@ OUTPUT:  RETVAL
 void
 Rmpc_get_prec2 (x)
 	mpc_t *	x
-        CODE:
+        PPCODE:
         PL_markstack_ptr++;
         Rmpc_get_prec2(aTHX_ x);
-        return; /* assume stack size is correct */
+        return;
 
 SV *
 Rmpc_get_im_prec (x)
@@ -4261,7 +4294,7 @@ void
 RMPC_RE (fr, x)
 	mpfr_t *	fr
 	mpc_t *	x
-        CODE:
+        PPCODE:
         RMPC_RE(fr, x);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -4269,7 +4302,7 @@ void
 RMPC_IM (fr, x)
 	mpfr_t *	fr
 	mpc_t *	x
-        CODE:
+        PPCODE:
         RMPC_IM(fr, x);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -4290,28 +4323,28 @@ OUTPUT:  RETVAL
 void
 DESTROY (p)
 	mpc_t *	p
-        CODE:
+        PPCODE:
         DESTROY(aTHX_ p);
         XSRETURN_EMPTY; /* return empty stack */
 
 void
 Rmpc_clear (p)
 	mpc_t *	p
-        CODE:
+        PPCODE:
         Rmpc_clear(aTHX_ p);
         XSRETURN_EMPTY; /* return empty stack */
 
 void
 Rmpc_clear_mpc (p)
 	mpc_t *	p
-        CODE:
+        PPCODE:
         Rmpc_clear_mpc(p);
         XSRETURN_EMPTY; /* return empty stack */
 
 void
 Rmpc_clear_ptr (p)
 	mpc_t *	p
-        CODE:
+        PPCODE:
         Rmpc_clear_ptr(aTHX_ p);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -5703,6 +5736,24 @@ CODE:
 OUTPUT:  RETVAL
 
 SV *
+Rmpc_exp10 (a, b, round)
+	mpc_t *	a
+	mpc_t *	b
+	SV *	round
+CODE:
+  RETVAL = Rmpc_exp10 (aTHX_ a, b, round);
+OUTPUT:  RETVAL
+
+SV *
+Rmpc_exp2 (a, b, round)
+	mpc_t *	a
+	mpc_t *	b
+	SV *	round
+CODE:
+  RETVAL = Rmpc_exp2 (aTHX_ a, b, round);
+OUTPUT:  RETVAL
+
+SV *
 Rmpc_log (rop, op, round)
 	mpc_t *	rop
 	mpc_t *	op
@@ -6008,10 +6059,10 @@ overload_copy (p, second, third)
 	mpc_t *	p
 	SV *	second
 	SV *	third
-        CODE:
+        PPCODE:
         PL_markstack_ptr++;
         overload_copy(aTHX_ p, second, third);
-        return; /* assume stack size is correct */
+        return;
 
 SV *
 overload_abs (p, second, third)
@@ -6064,10 +6115,10 @@ _get_r_string (p, base, n_digits, round)
 	SV *	base
 	SV *	n_digits
 	SV *	round
-        CODE:
+        PPCODE:
         PL_markstack_ptr++;
         _get_r_string(aTHX_ p, base, n_digits, round);
-        return; /* assume stack size is correct */
+        return;
 
 void
 _get_i_string (p, base, n_digits, round)
@@ -6075,10 +6126,10 @@ _get_i_string (p, base, n_digits, round)
 	SV *	base
 	SV *	n_digits
 	SV *	round
-        CODE:
+        PPCODE:
         PL_markstack_ptr++;
         _get_i_string(aTHX_ p, base, n_digits, round);
-        return; /* assume stack size is correct */
+        return;
 
 SV *
 _itsa (a)
@@ -6247,7 +6298,7 @@ OUTPUT:  RETVAL
 void
 Rmpc_set_nan (a)
 	mpc_t *	a
-        CODE:
+        PPCODE:
         Rmpc_set_nan(a);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -6255,7 +6306,7 @@ void
 Rmpc_swap (a, b)
 	mpc_t *	a
 	mpc_t *	b
-        CODE:
+        PPCODE:
         Rmpc_swap(a, b);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -6284,7 +6335,7 @@ Rmpc_get_dc (crop, op, round)
 	SV *	crop
 	mpc_t *	op
 	SV *	round
-        CODE:
+        PPCODE:
         Rmpc_get_dc(aTHX_ crop, op, round);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -6293,7 +6344,7 @@ Rmpc_get_ldc (crop, op, round)
 	SV *	crop
 	mpc_t *	op
 	SV *	round
-        CODE:
+        PPCODE:
         Rmpc_get_ldc(aTHX_ crop, op, round);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -6320,7 +6371,7 @@ Rmpc_get_DC (crop, op, round)
 	SV *	crop
 	mpc_t *	op
 	SV *	round
-        CODE:
+        PPCODE:
         Rmpc_get_DC(aTHX_ crop, op, round);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -6329,7 +6380,7 @@ Rmpc_get_LDC (crop, op, round)
 	SV *	crop
 	mpc_t *	op
 	SV *	round
-        CODE:
+        PPCODE:
         Rmpc_get_LDC(aTHX_ crop, op, round);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -6405,6 +6456,15 @@ CODE:
   RETVAL = Rmpc_log10 (aTHX_ rop, op, round);
 OUTPUT:  RETVAL
 
+SV *
+Rmpc_log2 (a, b, round)
+	mpc_t *	a
+	mpc_t *	b
+	SV *	round
+CODE:
+  RETVAL = Rmpc_log2 (aTHX_ a, b, round);
+OUTPUT:  RETVAL
+
 int
 Rmpc_cmp_abs (op1, op2)
 	mpc_t *	op1
@@ -6435,14 +6495,14 @@ nok_pokflag ()
 void
 clear_nok_pok ()
 
-        CODE:
+        PPCODE:
         clear_nok_pok();
         XSRETURN_EMPTY; /* return empty stack */
 
 void
 set_nok_pok (x)
 	int	x
-        CODE:
+        PPCODE:
         set_nok_pok(x);
         XSRETURN_EMPTY; /* return empty stack */
 

@@ -9,10 +9,10 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
    This module needs the MPC, MPFR and GMP C libraries. (Install GMP
    first, followed by MPFR, followed by MPC.)
 
-   The GMP library is availble from http://gmplib.org
-   The MPFR library is available from http://www.mpfr.org/
+   The GMP library is availble from L<https://gmplib.org>
+   The MPFR library is available from L<https://www.mpfr.org/>
    The MPC library is available from
-    http://www.multiprecision.org/mpc/
+    L<https://www.multiprecision.org/mpc>
 
 =head1 DESCRIPTION
 
@@ -527,16 +527,16 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
    SPECIAL
 
    $si = Rmpc_exp($rop, $op, $rnd);
-    Set $rop to the exponential of $op, rounded according to $rnd
-    with the precision of $rop.
+   $si = Rmpc_exp10($rop, $op, $rnd);
+   $si = Rmpc_exp2($rop, $op, $rnd);
+    Set $rop to (respectively) e, 10 and 2 raised to the power
+    of $op, rounded according to $rnd with the precision of $rop.
 
    $si = Rmpc_log($rop, $op, $rnd);
-    Set $rop to the log of $op, rounded according to $rnd with the
-    precision of $rop.
-
    $si = Rmpc_log10($rop, $op, $rnd);
-    Set $rop to the base 10 log of $op, rounded according to $rnd with
-    the precision of $rop.
+   $si = Rmpc_log2($rop, $op, $rnd);
+    Set $rop to (respectively) the base e, base 10 & base 2 log
+    of $op, rounded according to $rnd with the precision of $rop.
 
    $si = Rmpc_arg ($mpfr, $op, $rnd);
      Set $mpfr to the argument of $op, with a branch cut along the

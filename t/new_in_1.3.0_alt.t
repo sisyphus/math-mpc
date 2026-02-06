@@ -1,7 +1,5 @@
-# Now removed
-
 # In response to https://rt.cpan.org/Public/Bug/Display.html?id=151057
-#  we present an alternative t/new_on_1.3.0.t rewritten to avoid using
+#  we present an alternative t/new_in_1.3.0.t rewritten to avoid using
 # overloaded comparison operators in cmp_ok() tests.
 
 # As in t/new_in_1.3.0.t, we test only the wrapping of mpc_eta and

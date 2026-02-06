@@ -135,7 +135,8 @@ Rmpc_mul Rmpc_mul_ui Rmpc_mul_si Rmpc_mul_fr Rmpc_mul_i Rmpc_sqr Rmpc_mul_2exp
 Rmpc_mul_2si Rmpc_mul_2ui
 Rmpc_div Rmpc_div_ui Rmpc_ui_div Rmpc_div_fr Rmpc_sqrt Rmpc_div_2exp
 Rmpc_div_2si Rmpc_div_2ui
-Rmpc_neg Rmpc_abs Rmpc_conj Rmpc_norm Rmpc_exp Rmpc_log Rmpc_log10
+Rmpc_neg Rmpc_abs Rmpc_conj Rmpc_norm
+Rmpc_exp Rmpc_exp10 Rmpc_exp2 Rmpc_log Rmpc_log10 Rmpc_log2
 Rmpc_cmp Rmpc_cmp_si Rmpc_cmp_si_si Rmpc_cmp_abs
 Rmpc_out_str Rmpc_inp_str c_string r_string i_string
 TRmpc_out_str TRmpc_inp_str

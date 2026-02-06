@@ -2023,14 +2023,14 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_add");}
 
 #ifdef _WIN32_BIZARRE_INFNAN
-
-       if(_win32_infnanstring(SvPV_nolen(b)) == 2) {
+       int ret = _win32_infnanstring(SvPV_nolen(b));
+       if(ret == 2) {
          mpfr_init(t);
          mpfr_set_nan(t);
          mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
          mpfr_clear(t);
        }
-       else if( _win32_infnanstring(SvPV_nolen(b)) ) {
+       else if( ret ) {
          mpfr_init(t);
          mpfr_set_inf(t, ret);
          mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
@@ -2153,14 +2153,14 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_sub");}
 
 #ifdef _WIN32_BIZARRE_INFNAN
-
-       if(_win32_infnanstring(SvPV_nolen(b)) == 2) {
+       int ret = _win32_infnanstring(SvPV_nolen(b));
+       if(ret== 2) {
          mpfr_init(t);
          mpfr_set_nan(t);
          mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
          mpfr_clear(t);
        }
-       else if( _win32_infnanstring(SvPV_nolen(b)) ) {
+       else if( ret ) {
          mpfr_init(t);
          mpfr_set_inf(t, ret);
          mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
@@ -2285,14 +2285,14 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
        NOK_POK_DUALVAR_CHECK , "Math::MPC::overload_div");}
 
 #ifdef _WIN32_BIZARRE_INFNAN
-
-       if(_win32_infnanstring(SvPV_nolen(b)) == 2) {
+       int ret = _win32_infnanstring(SvPV_nolen(b));
+       if(ret == 2) {
          mpfr_init(t);
          mpfr_set_nan(t);
          mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);
          mpfr_clear(t);
        }
-       else if( _win32_infnanstring(SvPV_nolen(b)) ) {
+       else if( ret ) {
          mpfr_init(t);
          mpfr_set_inf(t, ret);
          mpc_set_fr(*mpc_t_obj, t, MPC_RNDNN);

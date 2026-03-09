@@ -260,7 +260,7 @@ if($Math::MPC::VERSION > 1.34) {
   cmp_ok(p($rop), 'eq', p($check), "Rmpc_fr_sub, imaginary component of zero");
 }
 
-if($Math::MPC::VERSION > 1.34) {
+if($Math::MPC::VERSION > 1.34 && $Math::MPFR::VERSION >= '4.47') {
   $rop = $args[2] - $arg1;
   cmp_ok(p($rop), 'eq', p($check), "fr_sub (overloaded), imaginary component of zero");
 }

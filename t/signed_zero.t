@@ -224,16 +224,14 @@ if($Math::MPC::VERSION > 1.34) {
   cmp_ok(p($rop), 'eq', p($check), "Rmpc_fr_div, imaginary component of zero");
 }
 
-# Not yet implemented
-#$rop = $arg1 / $args[2];
-#cmp_ok(p($rop), 'eq', p(1 / $check), "fr_div(overloaded), imaginary component of zero");
+$rop = $arg1 / $args[2];
+cmp_ok(p($rop), 'eq', p(1 / $check), "fr_div(overloaded), imaginary component of zero");
 
 Rmpc_div_fr($rop, $arg1, $args[2], MPC_RNDNN);
 cmp_ok(p($rop), 'eq', p(1 / $check), "Rmpc_div_fr, imaginary component of zero");
 
-# Not yet implemented
-#$rop = $arg1 / $args[2];
-#cmp_ok(p($rop), 'eq', p(1 / $check), "div_fr (overloaded), imaginary component of zero");
+$rop = $arg1 / $args[2];
+cmp_ok(p($rop), 'eq', p(1 / $check), "div_fr (overloaded), imaginary component of zero");
 
 $check = 6 - $arg1;
 
@@ -262,22 +260,20 @@ if($Math::MPC::VERSION > 1.34) {
   cmp_ok(p($rop), 'eq', p($check), "Rmpc_fr_sub, imaginary component of zero");
 }
 
-# Not yet implemented
-#if($Math::MPC::VERSION > 1.34) {
-  #$rop = $args[2] - $arg1;
-  #cmp_ok(p($rop), 'eq', p($check), "fr_sub (overloaded), imaginary component of zero");
-#}
+if($Math::MPC::VERSION > 1.34) {
+  $rop = $args[2] - $arg1;
+  cmp_ok(p($rop), 'eq', p($check), "fr_sub (overloaded), imaginary component of zero");
+}
 
 if($Math::MPC::VERSION > 1.34) {
   Rmpc_sub_fr($rop, $arg1, $args[2], MPC_RNDNN);
   cmp_ok(p($rop), 'eq', p($check * -1), "Rmpc_sub_fr, imaginary component of zero");
 }
 
-# Not yet implemented
-#if($Math::MPC::VERSION > 1.34) {
-  #$rop = $arg1 - $args[2];
-  #cmp_ok(p($rop), 'eq', p($check * -1), "sub_fr (overloaded), imaginary component of zero");
-#}
+if($Math::MPC::VERSION > 1.34) {
+  $rop = $arg1 - $args[2];
+  cmp_ok(p($rop), 'eq', p($check * -1), "sub_fr (overloaded), imaginary component of zero");
+}
 
 done_testing();
 

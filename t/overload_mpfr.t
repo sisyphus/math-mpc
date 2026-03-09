@@ -33,7 +33,7 @@ $rop = $mpc ** Math::MPFR->new(7);
 cmp_ok(ref($rop), 'eq', 'Math::MPC', "overloaded pow returns Math::MPC::object");
 cmp_ok(p($rop), 'eq', '(1.801088541e9 0)', "overloaded pow ok");
 
-if($Math::MPFR::VERSION > '4.47') {
+if($Math::MPFR::VERSION >= '4.47') {
 
   my $rop = Math::MPFR->new(42) / $mpc;
   cmp_ok(ref($rop), 'eq', 'Math::MPC', "overloaded div (inverted) returns Math::MPC object");
@@ -119,7 +119,7 @@ $mpc **= Math::MPFR->new(3);
 cmp_ok(ref($mpc), 'eq', 'Math::MPC', "MPC **= MPFR returns Math::MPC object");
 cmp_ok(p($mpc), 'eq', '(1.331e3 0)', "MPC **= MPFR works correctly");
 
-if($Math::MPFR::VERSION > '4.47') {
+if($Math::MPFR::VERSION >= '4.47') {
 
   my $mpfr = Math::MPFR->new(11);
   $mpfr -= Math::MPC->new(3.5);

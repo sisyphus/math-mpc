@@ -1510,6 +1510,16 @@ SV * Rmpc_add_fr(pTHX_ mpc_t * a, mpc_t * b, mpfr_t * c, SV * round){
      return newSViv(mpc_add_fr(*a, *b, *c, (mpc_rnd_t)SvUV(round)));
 }
 
+SV * Rmpc_sub_fr(pTHX_ mpc_t * a, mpc_t * b, mpfr_t * c, SV * round){
+     CHECK_ROUNDING_VALUE(round);
+     return newSViv(mpc_sub_fr(*a, *b, *c, (mpc_rnd_t)SvUV(round)));
+}
+
+SV * Rmpc_fr_sub(pTHX_ mpc_t * a, mpfr_t * b, mpc_t * c, SV * round){
+     CHECK_ROUNDING_VALUE(round);
+     return newSViv(mpc_fr_sub(*a, *b, *c, (mpc_rnd_t)SvUV(round)));
+}
+
 SV * Rmpc_sub(pTHX_ mpc_t * a, mpc_t * b, mpc_t * c, SV * round) {
      CHECK_ROUNDING_VALUE(round);
      return newSViv(mpc_sub(*a, *b, *c, (mpc_rnd_t)SvUV(round)));
@@ -1578,6 +1588,11 @@ SV * Rmpc_ui_div(pTHX_ mpc_t * a, SV * b, mpc_t * c, SV * round) {
 SV * Rmpc_div_fr(pTHX_ mpc_t * a, mpc_t * b, mpfr_t * c, SV * round){
      CHECK_ROUNDING_VALUE(round);
      return newSViv(mpc_div_fr(*a, *b, *c, (mpc_rnd_t)SvUV(round)));
+}
+
+SV * Rmpc_fr_div(pTHX_ mpc_t * a, mpfr_t * b, mpc_t * c, SV * round){
+     CHECK_ROUNDING_VALUE(round);
+     return newSViv(mpc_fr_div(*a, *b, *c, (mpc_rnd_t)SvUV(round)));
 }
 
 SV * Rmpc_sqrt(pTHX_ mpc_t * a, mpc_t * b, SV * round) {
@@ -1960,8 +1975,13 @@ SV * overload_mul(pTHX_ mpc_t * a, SV * b, SV * third) {
        if(strEQ(h, "Math::MPC")) {
          mpc_mul(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return obj_ref;
-         }
        }
+
+       if(strEQ(h, "Math::MPFR")) {
+         mpc_mul_fr(*mpc_t_obj, *a, *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         return obj_ref;
+       }
+     }
 
      croak("Invalid argument supplied to Math::MPC::overload_mul");
 }
@@ -2075,8 +2095,13 @@ SV * overload_add(pTHX_ mpc_t* a, SV * b, SV * third) {
        if(strEQ(h, "Math::MPC")) {
          mpc_add(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return obj_ref;
-         }
        }
+
+       if(strEQ(h, "Math::MPFR")) {
+         mpc_add_fr(*mpc_t_obj, *a, *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         return obj_ref;
+       }
+     }
 
      croak("Invalid argument supplied to Math::MPC::overload_add");
 }
@@ -2207,8 +2232,17 @@ SV * overload_sub(pTHX_ mpc_t * a, SV * b, SV * third) {
        if(strEQ(h, "Math::MPC")) {
          mpc_sub(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return obj_ref;
-         }
        }
+
+       if(strEQ(h, "Math::MPFR")) {
+         if(SWITCH_ARGS) {
+           mpc_fr_sub(*mpc_t_obj, *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), *a, DEFAULT_ROUNDING_MODE);
+           return obj_ref;
+         }
+         mpc_sub_fr(*mpc_t_obj, *a, *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         return obj_ref;
+       }
+     }
 
      croak("Invalid argument supplied to Math::MPC::overload_sub function");
 }
@@ -2340,6 +2374,15 @@ SV * overload_div(pTHX_ mpc_t * a, SV * b, SV * third) {
          mpc_div(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return obj_ref;
        }
+
+       if(strEQ(h, "Math::MPFR")) {
+         if(SWITCH_ARGS) {
+           mpc_fr_div(*mpc_t_obj, *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), *a, DEFAULT_ROUNDING_MODE);
+           return obj_ref;
+         }
+         mpc_div_fr(*mpc_t_obj, *a, *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         return obj_ref;
+       }
      }
 
      croak("Invalid argument supplied to Math::MPC::overload_div function");
@@ -2457,8 +2500,14 @@ SV * overload_div_eq(pTHX_ SV * a, SV * b, SV * third) {
 
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
+
        if(strEQ(h, "Math::MPC")) {
          mpc_div(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         return a;
+       }
+
+       if(strEQ(h, "Math::MPFR")) {
+         mpc_div_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
        }
      }
@@ -2576,8 +2625,14 @@ SV * overload_sub_eq(pTHX_ SV * a, SV * b, SV * third) {
 
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
+
        if(strEQ(h, "Math::MPC")) {
          mpc_sub(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         return a;
+       }
+
+       if(strEQ(h, "Math::MPFR")) {
+         mpc_sub_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
        }
      }
@@ -2695,8 +2750,14 @@ SV * overload_add_eq(pTHX_ SV * a, SV * b, SV * third) {
 
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
+
        if(strEQ(h, "Math::MPC")) {
          mpc_add(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         return a;
+       }
+
+       if(strEQ(h, "Math::MPFR")) {
+         mpc_add_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
        }
      }
@@ -2812,8 +2873,14 @@ SV * overload_mul_eq(pTHX_ SV * a, SV * b, SV * third) {
 
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
+
        if(strEQ(h, "Math::MPC")) {
          mpc_mul(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         return a;
+       }
+
+       if(strEQ(h, "Math::MPFR")) {
+         mpc_mul_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
        }
      }
@@ -2952,6 +3019,19 @@ SV * overload_pow(pTHX_ mpc_t * a, SV * b, SV * third) {
          mpc_pow(*mpc_t_obj, *a, *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return obj_ref;
        }
+
+       if(strEQ(h, "Math::MPFR")) {
+         if(SWITCH_ARGS) {
+           /* No mpc_fr_pow() function available */
+           mpc_init2( t, mpfr_get_prec( *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))) ) );
+           mpc_set_fr(t, *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), MPC_RNDNN);
+           mpc_pow(*mpc_t_obj, t, *a, DEFAULT_ROUNDING_MODE);
+           mpc_clear(t);
+           return obj_ref;
+         }
+         mpc_pow_fr(*mpc_t_obj, *a, *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         return obj_ref;
+       }
      }
 
      croak("Invalid argument supplied to Math::MPC::overload_pow");
@@ -3063,8 +3143,14 @@ SV * overload_pow_eq(pTHX_ SV * a, SV * b, SV * third) {
 
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
+
        if(strEQ(h, "Math::MPC")) {
          mpc_pow(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
+         return a;
+       }
+
+       if(strEQ(h, "Math::MPFR")) {
+         mpc_pow_fr(*(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpc_t *, SvIVX(SvRV(a)))), *(INT2PTR(mpfr_t *, SvIVX(SvRV(b)))), DEFAULT_ROUNDING_MODE);
          return a;
        }
      }
@@ -5427,6 +5513,26 @@ CODE:
 OUTPUT:  RETVAL
 
 SV *
+Rmpc_sub_fr (a, b, c, round)
+	mpc_t *	a
+	mpc_t *	b
+	mpfr_t *	c
+	SV *	round
+CODE:
+  RETVAL = Rmpc_sub_fr (aTHX_ a, b, c, round);
+OUTPUT:  RETVAL
+
+SV *
+Rmpc_fr_sub (a, b, c, round)
+	mpc_t *	a
+	mpfr_t *	b
+	mpc_t *	c
+	SV *	round
+CODE:
+  RETVAL = Rmpc_fr_sub (aTHX_ a, b, c, round);
+OUTPUT:  RETVAL
+
+SV *
 Rmpc_sub (a, b, c, round)
 	mpc_t *	a
 	mpc_t *	b
@@ -5564,6 +5670,16 @@ Rmpc_div_fr (a, b, c, round)
 	SV *	round
 CODE:
   RETVAL = Rmpc_div_fr (aTHX_ a, b, c, round);
+OUTPUT:  RETVAL
+
+SV *
+Rmpc_fr_div (a, b, c, round)
+	mpc_t *	a
+	mpfr_t *	b
+	mpc_t *	c
+	SV *	round
+CODE:
+  RETVAL = Rmpc_fr_div (aTHX_ a, b, c, round);
 OUTPUT:  RETVAL
 
 SV *

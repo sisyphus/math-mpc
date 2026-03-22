@@ -1,3 +1,5 @@
+1.41
+
 1.40
  - Accommodate arithmetic overloading of Math::MPFR objects.
  - Jump straight to version 1.40 now that mpc-1.4.0 is out.

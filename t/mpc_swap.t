@@ -1,9 +1,26 @@
+# In an attempt to learn a little more about what's going awry with this
+# test script re (eg):
+# https://www.cpantesters.org/cpan/report/79772b92-31fa-11f1-9dde-ebd66d8775ea
+# I'm testing without Test::More (to avoid perl's interpolation of Math::MPC
+# objects, and adding a few more tests.
+# For the last test, if it fails, then we try to print out the values using
+# Rmpfr_fprintf().
+
 use warnings;
 use strict;
 use Math::MPFR qw(:mpfr);
 use Math::MPC qw(:mpc);
 
-use Test::More;
+#use Test::More;
+print "1..10\n";
+
+my $mpfr_re1 = Math::MPFR->new();
+my $mpfr_im1 = Math::MPFR->new();
+my $mpfr_re2 = Math::MPFR->new();
+my $mpfr_im2 = Math::MPFR->new();
+
+my ($nok1, $nok2, $nok3, $nok4, $nok5,
+    $nok6, $nok7, $nok8, $nok9, $nok10) = (0) x 10;
 
 my $mpc_ = Rmpc_init2(64);
 my $mpc__ = Rmpc_init2(64);
@@ -21,32 +38,65 @@ Rmpc_set_d_d($mpc_, 123.5, 123.75, MPC_RNDNN);
 Rmpc_set_d_d($mpc__, 123.5, 123.75, MPC_RNDNN);
 Rmpc_set_d_d($mpc0, 1.5, 1.75, MPC_RNDNN);
 Rmpc_set_d_d($mpc1, 2.5, 2.625, MPC_RNDNN);
-Rmpc_set_d_d($mpc2, 1.31, 1.173, MPC_RNDNN);
-Rmpc_set_d_d($mpc3, 2.59, 2.871, MPC_RNDNN);
+Rmpc_set_d_d($mpc2, 1.253, 1.1253, MPC_RNDNN);
+Rmpc_set_d_d($mpc3, 8.5, 2.875, MPC_RNDNN);
 Rmpc_set_d_d($mpc0_copy, 1.5, 1.75, MPC_RNDNN);
 Rmpc_set_d_d($mpc1_copy, 2.5, 2.625, MPC_RNDNN);
-Rmpc_set_d_d($mpc2_copy, 1.31, 1.173, MPC_RNDNN);
-Rmpc_set_d_d($mpc3_copy, 2.59, 2.871, MPC_RNDNN);
+Rmpc_set_d_d($mpc2_copy, 1.253, 1.1253, MPC_RNDNN);
+Rmpc_set_d_d($mpc3_copy, 8.5, 2.875, MPC_RNDNN);
 
-cmp_ok($mpc_, '==', $mpc__, '$mpc_ == $mpc__');
+if($mpc_ == $mpc__) { print "ok 1\n" }
+else { print "not ok 1\n";
+       $nok1 = 1 }
+
 Rmpc_swap($mpc__, $mpc_);
-cmp_ok($mpc_, '==', $mpc__, '$mpc_ is still the same as $mpc__');
 
-cmp_ok($mpc0, '==', $mpc0_copy, '$mpc0 == $mpc0_copy');
-cmp_ok($mpc1, '==', $mpc1_copy, '$mpc1 == $mpc1_copy');
+if($mpc_ == $mpc__) {print "ok 2\n"}
+else { print "not ok 2\n";
+       $nok2 = 1 }
+
+if($mpc0 == $mpc0_copy) { print "ok 3\n" }
+else { print "not ok 3\n";
+       $nok3 = 1 }
+if($mpc1 == $mpc1_copy) { print "ok 4\n" }
+else { print "not ok 4\n";
+       $nok4 = 1; }
 
 Rmpc_swap($mpc0, $mpc1);
 
-cmp_ok($mpc0, '==', $mpc1_copy, '$mpc0 == $mpc1_copy');
-cmp_ok($mpc1, '==', $mpc0_copy, '$mpc1 == $mpc0_copy');
+if($mpc0 == $mpc1_copy) { print "ok 5\n" }
+else { print "not ok 5\n";
+       $nok5 = 1 }
+if($mpc1 == $mpc0_copy) { print "ok 6\n" }
+else { print "not ok 6\n";
+       $nok6 = 1 }
+
 ########################################################
-cmp_ok($mpc2, '==', $mpc2_copy, '$mpc2 == $mpc2_copy');
-cmp_ok($mpc3, '==', $mpc3_copy, '$mpc3 == $mpc3_copy');
+
+if($mpc2 == $mpc2_copy) { print "ok 7\n" }
+else { print "not ok 7\n";
+       $nok7 = 1 }
+if($mpc3 == $mpc3_copy) { print "ok 8\n" }
+else { print "not ok 8\n";
+       $nok8 = 1 }
 
 Rmpc_swap($mpc2, $mpc3);
 
-cmp_ok($mpc2, '==', $mpc3_copy, '$mpc2 == $mpc3_copy');
-cmp_ok($mpc3, '==', $mpc2_copy, '$mpc3 == $mpc2_copy');
+if($mpc2 == $mpc3_copy) { print "ok 9\n" }
+else { print "not ok 9\n";
+       $nok9 = 1 }
+if($mpc3 == $mpc2_copy) { print "ok 10\n"}
+else { print "not ok 10\n";
+       RMPC_RE($mpfr_re1, $mpc3);
+       RMPC_IM($mpfr_im1, $mpc3);
+       RMPC_RE($mpfr_re2, $mpc2_copy);
+       RMPC_IM($mpfr_im2, $mpc2_copy);
 
-done_testing();
+       Rmpfr_fprintf(*stderr, "Test 10:\n[%Ra ", $mpfr_re1);
+       Rmpfr_fprintf(*stderr, "%Ra]\n !=\n", $mpfr_im1);
+       Rmpfr_fprintf(*stderr, "[%Ra ", $mpfr_re2);
+       Rmpfr_fprintf(*stderr, "%Ra]\n\n", $mpfr_im2);
+       $nok10 = 1 }
+
+#done_testing();
 

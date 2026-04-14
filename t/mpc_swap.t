@@ -2,7 +2,7 @@
 # test script re (eg):
 # https://www.cpantesters.org/cpan/report/79772b92-31fa-11f1-9dde-ebd66d8775ea
 # I'm testing without Test::More (to avoid perl's interpolation of Math::MPC
-# objects, and adding a few more tests.
+# objects), and adding a few more tests.
 # For the last test, if it fails, then we try to print out the values using
 # Rmpfr_fprintf().
 

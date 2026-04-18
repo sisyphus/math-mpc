@@ -227,13 +227,18 @@ typedef __float128 float128;
 #if MPC_VERSION == 66560 /* workaround for mpc_ui_div() and mpc_fr_div() bugginess in mpc-1.4.0 */
 
 #  define DIVISION_BUG_DECL                             \
+      int no_skip = 1;                                  \
       mpfr_prec_t prec_default;
 
 #  define DIVISION_BUG_PRE(op)                          \
+    if(!mpfr_cmp_ui(MPC_IM(op), 0)) {                   \
       prec_default=mpfr_get_default_prec();             \
-      mpfr_set_default_prec(mpfr_get_prec(MPC_IM(op)));
+      mpfr_set_default_prec(mpfr_get_prec(MPC_IM(op))); \
+    }                                                   \
+    else no_skip = 0;
 
-#  define DIVISION_BUG_POST  mpfr_set_default_prec(prec_default);
+#  define DIVISION_BUG_POST                             \
+    if(no_skip) mpfr_set_default_prec(prec_default);
 
 #else
 

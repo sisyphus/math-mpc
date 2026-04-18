@@ -310,17 +310,20 @@ elsif($Config{nvtype} eq 'long double') {
 
 {
   ##### overloaded fr div #####
-  my $op = Rmpc_init2($prec_op);
-  Rmpc_set_ui($op, 5, MPC_RNDNN);
-  my $rop = Math::MPFR->new(1) / $op;
+  if($Math::MPFR::VERSION >= 4.47) { # Overloading in earlier versions of Math::MPFR
+                                     # does not cater for Math::MPC objects.
+    my $op = Rmpc_init2($prec_op);
+    Rmpc_set_ui($op, 5, MPC_RNDNN);
+    my $rop = Math::MPFR->new(1) / $op;
 
-  my $p = Rmpc_get_prec($op);
-  cmp_ok($p, '==', $prec_op, "OP: overloaded fr div: precision is ok");
+    my $p = Rmpc_get_prec($op);
+    cmp_ok($p, '==', $prec_op, "OP: overloaded fr div: precision is ok");
 
-  $p = Rmpc_get_prec($rop);
-  cmp_ok($p, '==', $prec_default, "ROP: overloaded fr div: precision is ok");
+    $p = Rmpc_get_prec($rop);
+    cmp_ok($p, '==', $prec_default, "ROP: overloaded fr div: precision is ok");
 
-  cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "overloaded fr div: MPFR default prec is $mpfr_prec_default");
+    cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "overloaded fr div: MPFR default prec is $mpfr_prec_default");
+  }
 }
 
 {
@@ -369,18 +372,20 @@ elsif($Config{nvtype} eq 'long double') {
 
 {
   ##### Overloaded fr div with Non-Zero imag #####
-  my $op = Rmpc_init2($prec_op);
-  Rmpc_set_ui_ui($op, 5, 1, MPC_RNDNN);
-  $rop = Math::MPFR->new(1) / $op;
+  if($Math::MPFR::VERSION >= 4.47) { # Overloading in earlier versions of Math::MPFR
+                                     # does not cater for Math::MPC objects.
+    my $op = Rmpc_init2($prec_op);
+    Rmpc_set_ui_ui($op, 5, 1, MPC_RNDNN);
+    $rop = Math::MPFR->new(1) / $op;
 
-  my $p = Rmpc_get_prec($op);
-  cmp_ok($p, '==', $prec_op, "OP: fr div overload with non-zero im: precision is ok");
+    my $p = Rmpc_get_prec($op);
+    cmp_ok($p, '==', $prec_op, "OP: fr div overload with non-zero im: precision is ok");
 
-  $p = Rmpc_get_re_prec($rop);
-  cmp_ok($p, '==', $prec_default, "ROP: fr div overload with non-zero im: precision is ok");
+    $p = Rmpc_get_re_prec($rop);
+    cmp_ok($p, '==', $prec_default, "ROP: fr div overload with non-zero im: precision is ok");
 
-
-  cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "fr div overload with non-zero im: MPFR default prec is $mpfr_prec_default");
+    cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "fr div overload with non-zero im: MPFR default prec is $mpfr_prec_default");
+  }
 }
 
 # Closing brackets:

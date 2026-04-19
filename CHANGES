@@ -1,3 +1,5 @@
+1.43
+
 1.42
  - Restructure the interpolation overloading. The only change in behaviour is
    that "@NaN@" and "@Inf@" have been replaced by "NaN" and "Inf".

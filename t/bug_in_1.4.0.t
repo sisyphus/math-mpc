@@ -11,16 +11,16 @@ use Test::More;
 
 #my $prec_op = 234;
 #my $prec_rop = 99;
-#my $prec_default = 160;
+#my $mpc_prec_default = 160;
 #my $mpfr_prec_default = 64;
 
 for my $prec_op(11, 71, 134) {
   for my $prec_rop(5, 65, 129){
-    for my $prec_default(53, 64, 113,160){
-      for my $mpfr_prec_default(64) {
+    for my $mpc_prec_default(53, 64, 113, 160){
+      for my $mpfr_prec_default(3,60, 200) {
 
 
-Rmpc_set_default_prec($prec_default);
+Rmpc_set_default_prec($mpc_prec_default);
 Math::MPFR::Rmpfr_set_default_prec($mpfr_prec_default);
 
 my $ok;
@@ -47,7 +47,7 @@ cmp_ok($p, '==', $prec_rop, "Rmpc_ui_div: rop precision is ok");
 cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "Rmpc_ui_div: MPFR default prec is $mpfr_prec_default");
 
 $p = Rmpc_get_default_prec();
-cmp_ok($p, '==', $prec_default, "MPC default precision is unaltered");
+cmp_ok($p, '==', $mpc_prec_default, "MPC default precision is unaltered");
 
 if($Config{nvsize} == 8) {
   ####################
@@ -61,7 +61,7 @@ if($Config{nvsize} == 8) {
   cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "Rmpc_d_div: MPFR default prec is $mpfr_prec_default");
 
   $p = Rmpc_get_default_prec();
-  cmp_ok($p, '==', $prec_default, "MPC default precision is unaltered");
+  cmp_ok($p, '==', $mpc_prec_default, "MPC default precision is unaltered");
 }
 elsif($Config{nvtype} eq 'long double') {
   #####################
@@ -75,7 +75,7 @@ elsif($Config{nvtype} eq 'long double') {
   cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "Rmpc_ld_div: MPFR default prec is $mpfr_prec_default");
 
   $p = Rmpc_get_default_prec();
-  cmp_ok($p, '==', $prec_default, "MPC default precision is unaltered");
+  cmp_ok($p, '==', $mpc_prec_default, "MPC default precision is unaltered");
 }
 
 #####################
@@ -90,7 +90,7 @@ cmp_ok($p, '==', $prec_rop, "Rmpc_fr_div: rop precision is ok");
 cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "Rmpc_fr_div: MPFR default prec is $mpfr_prec_default");
 
 $p = Rmpc_get_default_prec();
-cmp_ok($p, '==', $prec_default, "MPC default precision is unaltered");
+cmp_ok($p, '==', $mpc_prec_default, "MPC default precision is unaltered");
 
 my $dummy_rop = Rmpc_init2(20);
 eval { Rmpc_sj_div($dummy_rop, 1, $op3, MPC_RNDNN);};
@@ -106,7 +106,7 @@ unless($@) {
   cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "Rmpc_sj_div: MPFR default prec is $mpfr_prec_default");
 
   $p = Rmpc_get_default_prec();
-  cmp_ok($p, '==', $prec_default, "MPC default precision is unaltered");
+  cmp_ok($p, '==', $mpc_prec_default, "MPC default precision is unaltered");
 }
 
 ##################
@@ -121,14 +121,14 @@ cmp_ok($p, '==', $prec_rop, "Rmpc_div: rop precision is ok");
 cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "Rmpc_div: MPFR default prec is $mpfr_prec_default");
 
 $p = Rmpc_get_default_prec();
-cmp_ok($p, '==', $prec_default, "MPC default precision is unaltered");
+cmp_ok($p, '==', $mpc_prec_default, "MPC default precision is unaltered");
 
 ##########################################
 ##########################################
 
 {
   ##### TRIZEN ui_div #####
-  my $PREC = $prec_default;
+  my $PREC = $mpc_prec_default;
   my $ROUND = MPC_RNDNN;
 
   my $y = Math::MPC::Rmpc_init2($PREC);
@@ -152,7 +152,7 @@ cmp_ok($p, '==', $prec_default, "MPC default precision is unaltered");
 
 {
   ##### TRIZEN fr_div #####
-  my $PREC = $prec_default;
+  my $PREC = $mpc_prec_default;
   my $ROUND = MPC_RNDNN;
 
   my $y = Math::MPC::Rmpc_init2($PREC);
@@ -177,7 +177,7 @@ cmp_ok($p, '==', $prec_default, "MPC default precision is unaltered");
 eval { Rmpc_sj_div($op3, 1, $op3, MPC_RNDNN);};
 unless($@) {
   ##### TRIZEN sj_div #####
-  my $PREC = $prec_default;
+  my $PREC = $mpc_prec_default;
   my $ROUND = MPC_RNDNN;
 
   my $y = Math::MPC::Rmpc_init2($PREC);
@@ -201,7 +201,7 @@ unless($@) {
 
 if($Config{nvsize} == 8) {
   ##### TRIZEN d_div #####
-  my $PREC = $prec_default;
+  my $PREC = $mpc_prec_default;
   my $ROUND = MPC_RNDNN;
 
   my $y = Math::MPC::Rmpc_init2($PREC);
@@ -225,7 +225,7 @@ if($Config{nvsize} == 8) {
 
 elsif($Config{nvtype} eq 'long double') {
   ##### TRIZEN ld_div #####
-  my $PREC = $prec_default;
+  my $PREC = $mpc_prec_default;
   my $ROUND = MPC_RNDNN;
 
   my $y = Math::MPC::Rmpc_init2($PREC);
@@ -249,7 +249,7 @@ elsif($Config{nvtype} eq 'long double') {
 
 {
   ##### TRIZEN div #####
-  my $PREC = $prec_default;
+  my $PREC = $mpc_prec_default;
   my $ROUND = MPC_RNDNN;
 
   my $y = Math::MPC::Rmpc_init2($PREC);
@@ -288,7 +288,7 @@ elsif($Config{nvtype} eq 'long double') {
   cmp_ok($p, '==', $prec_op, "OP: overloaded integer div: precision is ok");
 
   my $p = Rmpc_get_prec($rop);
-  cmp_ok($p, '==', $prec_default, "ROP: overloaded integer div: precision is ok");
+  cmp_ok($p, '==', $mpc_prec_default, "ROP: overloaded integer div: precision is ok");
 
   cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "overloaded integer div: MPFR default prec is $mpfr_prec_default");
 }
@@ -303,7 +303,7 @@ elsif($Config{nvtype} eq 'long double') {
   cmp_ok($p, '==', $prec_op, "OP: overloaded nv div: precision is ok");
 
   $p = Rmpc_get_prec($rop);
-  cmp_ok($p, '==', $prec_default, "ROP: overloaded nv div: precision is ok");
+  cmp_ok($p, '==', $mpc_prec_default, "ROP: overloaded nv div: precision is ok");
 
   cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "overloaded nv div: MPFR default prec is $mpfr_prec_default");
 }
@@ -320,7 +320,7 @@ elsif($Config{nvtype} eq 'long double') {
     cmp_ok($p, '==', $prec_op, "OP: overloaded fr div: precision is ok");
 
     $p = Rmpc_get_prec($rop);
-    cmp_ok($p, '==', $prec_default, "ROP: overloaded fr div: precision is ok");
+    cmp_ok($p, '==', $mpc_prec_default, "ROP: overloaded fr div: precision is ok");
 
     cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "overloaded fr div: MPFR default prec is $mpfr_prec_default");
   }
@@ -335,7 +335,7 @@ elsif($Config{nvtype} eq 'long double') {
   cmp_ok($p, '==', $prec_op, "OP: overloaded integer div:  precision is ok");
 
   $p = Rmpc_get_prec($rop);
-  cmp_ok($p, '==', $prec_default, "ROP: overloaded integer div: precision is ok");
+  cmp_ok($p, '==', $mpc_prec_default, "ROP: overloaded integer div: precision is ok");
 
   cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "overloaded integer div: MPFR default prec is $mpfr_prec_default");
 }
@@ -350,7 +350,7 @@ elsif($Config{nvtype} eq 'long double') {
   cmp_ok($p, '==', $prec_op, "OP: overloaded intstr div: precision is ok");
 
   $p = Rmpc_get_re_prec($rop);
-  cmp_ok($p, '==', $prec_default, "ROP: overloaded intstr  div: precision is ok");
+  cmp_ok($p, '==', $mpc_prec_default, "ROP: overloaded intstr  div: precision is ok");
 
   cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "overloaded intstr div: MPFR default prec is $mpfr_prec_default"); # Should be unaltered
 }
@@ -365,7 +365,7 @@ elsif($Config{nvtype} eq 'long double') {
   cmp_ok($p, '==', $prec_op, "OP: overloaded nvstr div: precision is ok");
 
   $p = Rmpc_get_prec($rop);
-  cmp_ok($p, '==', $prec_default, "ROP: overloaded nvstr div: precision is ok");
+  cmp_ok($p, '==', $mpc_prec_default, "ROP: overloaded nvstr div: precision is ok");
 
   cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "overloaded nvstr div: MPFR default prec is $mpfr_prec_default");
 }
@@ -382,7 +382,7 @@ elsif($Config{nvtype} eq 'long double') {
     cmp_ok($p, '==', $prec_op, "OP: fr div overload with non-zero im: precision is ok");
 
     $p = Rmpc_get_re_prec($rop);
-    cmp_ok($p, '==', $prec_default, "ROP: fr div overload with non-zero im: precision is ok");
+    cmp_ok($p, '==', $mpc_prec_default, "ROP: fr div overload with non-zero im: precision is ok");
 
     cmp_ok(Math::MPFR::Rmpfr_get_default_prec(), '==', $mpfr_prec_default, "fr div overload with non-zero im: MPFR default prec is $mpfr_prec_default");
   }

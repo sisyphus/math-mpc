@@ -1,4 +1,5 @@
 1.43
+ - Remove unused functions overload_string_orig() and _get_str from MPC.pm
 
 1.42
  - Restructure the interpolation overloading. The only change in behaviour is

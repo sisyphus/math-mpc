@@ -743,6 +743,11 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
     the overload subroutine converts that string operand to a
     Math::MPC object with *current default precision*, and using
     the *current default rounding mode*.
+    NOTE: This means that (eg) 5/$obj is different to "5"/obj,
+      because the former divides the IV 5 by $obj, whereas the
+      latter divides the complex number (5 + 0i) by $obj - and this
+      can make a difference to the sign of the imaginary component
+      of the quotient.
 
     Be aware also, that the sign of zero may not always be handled
     correctly by the overload subroutines. If it's important to you

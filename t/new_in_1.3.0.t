@@ -11,12 +11,26 @@ use Test::More;
 my $rop = Math::MPC->new();
 my $op1  = Math::MPC->new(-0.3, 1.2);
 my $op2 = Math::MPC->new(6.2, -2.6);
+my($re, $im, $re_, $im_) = ( Math::MPFR->new(), Math::MPFR->new(),
+                             Math::MPFR->new(), Math::MPFR->new() );
 
 my $ok = 0;
 if($op1 == Math::MPC->new(-0.3, 1.2)) { $ok = 1 }
+
+Math::MPC::RMPC_RE($re, $op1);
+Math::MPC::RMPC_IM($im, $op1);
+Math::MPC::RMPC_RE($re_, Math::MPC->new(-0.3, 1.2));
+Math::MPC::RMPC_IM($im_, Math::MPC->new(-0.3, 1.2));
+
+cmp_ok($re, '==', $re_, "Reals concur");
+cmp_ok($im, '==', $im_, "Imaginaries concur");
+
+warn "\n $re $im\n versus\n $re_ $im_\n";
+
 cmp_ok($ok, '==', 1, "SANITY TEST 1 (rewritten)");
 
 #cmp_ok($op1, '==', Math::MPC->new(-0.3, 1.2), "SANITY TEST 1");
+
 
 my $inf_mpfr = Math::MPFR->new(); # NaN
 my $nan = Math::MPFR::Rmpfr_get_NV($inf_mpfr, 0);

@@ -13,6 +13,14 @@ my $op_neg = Math::MPC->new();
 my $fr1 = Math::MPFR->new();
 my $fr2 = Math::MPFR->new();
 
+my $allow_mpfr_overloading = 0;
+$allow_mpfr_overloading = 1 if $Math::MPFR::VERSION >= 4.47;
+
+unless($allow_mpfr_overloading) {
+  warn "\n Skipping tests involving overloading of Math::MPFR objects\n",
+         " They require Math-MPFR-4.47 but we have only version $Math::MPFR::VERSION\n";
+}
+
 my @ops = (11, Math::MPFR->new(-11), Math::MPFR->new(11.5), Math::MPFR->new(-11.125),
             Math::MPC->new(5.5, 0), Math::MPC->new(5.625, -0.0), Math::MPC->new(0, 5.75), Math::MPC->new(-0.0, 5),
             Math::MPC->new(5.125, 2), Math::MPC->new(5.25, -2), Math::MPC->new(2, 5.375), Math::MPC->new(-2.375, 5));
@@ -53,10 +61,12 @@ for my $op1(@ops){
     $rop2 = cos($op2);
     cmp_ok("$rop1", 'eq', "$rop2", "cos($op2) consistent with Rmpc_cos()");
 
-    for my $operation('+', '-', '*', '/', '**') {
+  for my $operation('+', '-', '*', '/', '**') {
+
+      next if(ref($op1) eq 'Math::MPFR' && !$allow_mpfr_overloading);
 
       if($operation eq '+') {
-        $rop1 = $op1 + $op2;
+        $rop1 = $op2 + $op1;
         Rmpc_add_ui($rop2, $op2, $op1, MPC_RNDNN) if !ref($op1);
         Rmpc_add_fr($rop2, $op2, $op1, MPC_RNDNN) if ref($op1) eq 'Math::MPFR';
         Rmpc_add   ($rop2, $op2, $op1, MPC_RNDNN) if ref($op1) eq 'Math::MPC';
@@ -68,7 +78,7 @@ for my $op1(@ops){
         Rmpc_sub   ($rop2, $op1, $op2, MPC_RNDNN) if ref($op1) eq 'Math::MPC';
       }
       elsif($operation eq '*') {
-        $rop1 = $op1 * $op2;
+        $rop1 = $op2 * $op1;
         Rmpc_mul_ui($rop2, $op2, $op1, MPC_RNDNN) if !ref($op1);
         Rmpc_mul_fr($rop2, $op2, $op1, MPC_RNDNN) if ref($op1) eq 'Math::MPFR';
         Rmpc_mul   ($rop2, $op2, $op1, MPC_RNDNN) if ref($op1) eq 'Math::MPC';
@@ -78,7 +88,7 @@ for my $op1(@ops){
         Rmpc_ui_div($rop2, $op1, $op2, MPC_RNDNN) if !ref($op1);
         Rmpc_fr_div($rop2, $op1, $op2, MPC_RNDNN) if ref($op1) eq 'Math::MPFR';
         Rmpc_div   ($rop2, $op1, $op2, MPC_RNDNN) if ref($op1) eq 'Math::MPC';
-      }
+        }
       elsif($operation eq '**') {
         $rop1 = $op2 ** $op1;
         Rmpc_pow_ui($rop2, $op2, $op1, MPC_RNDNN) if !ref($op1);
@@ -110,6 +120,7 @@ for my $op1(@ops){
 ################################################################################
 
 for my $op1(@ops){
+  next if(ref($op1) eq 'Math::MPFR' && !$allow_mpfr_overloading);
   for my $op2(@ops, @negs) {
     next unless ref($op2) eq 'Math::MPC';
 
@@ -131,6 +142,7 @@ for my $op1(@ops){
 ################################################################################
 
 for my $op1(@ops){
+  next if(ref($op1) eq 'Math::MPFR' && !$allow_mpfr_overloading);
   for my $op2(@ops, @negs) {
     next unless ref($op2) eq 'Math::MPC';
 
@@ -152,6 +164,7 @@ for my $op1(@ops){
 ################################################################################
 
 for my $op1(@ops){
+  next if(ref($op1) eq 'Math::MPFR' && !$allow_mpfr_overloading);
   for my $op2(@ops, @negs) {
     next unless ref($op2) eq 'Math::MPC';
 
@@ -173,6 +186,7 @@ for my $op1(@ops){
 ################################################################################
 
 for my $op1(@ops){
+  next if(ref($op1) eq 'Math::MPFR' && !$allow_mpfr_overloading);
   for my $op2(@ops, @negs) {
     next unless ref($op2) eq 'Math::MPC';
 
@@ -194,6 +208,7 @@ for my $op1(@ops){
 ################################################################################
 
 for my $op1(@ops){
+  next if(ref($op1) eq 'Math::MPFR' && !$allow_mpfr_overloading);
   for my $op2(@ops, @negs) {
     next unless ref($op2) eq 'Math::MPC';
 
@@ -215,6 +230,7 @@ for my $op1(@ops){
 ################################################################################
 
 for my $op1(@ops){
+  next if(ref($op1) eq 'Math::MPFR' && !$allow_mpfr_overloading);
   for my $op2(@ops, @negs) {
     next unless ref($op2) eq 'Math::MPC';
 
@@ -236,6 +252,7 @@ for my $op1(@ops){
 ################################################################################
 
 for my $op1(@ops){
+  next if(ref($op1) eq 'Math::MPFR' && !$allow_mpfr_overloading);
   for my $op2(@ops, @negs) {
     next unless ref($op2) eq 'Math::MPC';
 

@@ -1,3 +1,5 @@
+1.44
+
 1.43
  - Add t/overload_arith.t - where we check that overloaded arithmetic operations
    return the same value as their respective mpc library functions.

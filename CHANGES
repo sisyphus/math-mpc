@@ -1,4 +1,6 @@
 1.43
+ - Add t/overload_arith.t - where we check that overloaded arithmetic operations
+   return the same value as their respective mpc library functions.
  - Corrections made in mpc-1.4.0 to mpc_ui_div & mpc_fr_div (re the sign of imaginary
    zero) are now implemented for Math::MPC, irrespective of the version of the
    underlying mpc library.

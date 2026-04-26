@@ -14,13 +14,6 @@
 #include <mpc.h>
 #include <inttypes.h>
 
-#ifndef MPC_RE
-# define MPC_RE(x) ((x)->re)
-#endif
-#ifndef MPC_IM
-# define MPC_IM(x) ((x)->im)
-#endif
-
 /*********************
  If the mpc library is not at version 1.3.0 or higher, then
  we allow this XS file to compile, by specifying the following
@@ -216,8 +209,8 @@ void Rmpcb_retrieve(mpc_t * rop1, mpcr_ptr rop2, mpcb_t * op) {
 #if MPC_VERSION >= 66304
   mp_prec_t re, im;
   mpc_get_prec2(&re, &im, (*op)->c);
-  mpfr_set_prec(MPC_RE(*rop1), re);
-  mpfr_set_prec(MPC_IM(*rop1), im);
+  mpfr_set_prec(mpc_realref(*rop1), re);
+  mpfr_set_prec(mpc_imagref(*rop1), im);
   mpc_set(*rop1, (*op)->c, MPC_RNDNN);
   mpcr_set(rop2, (*op)->r);
 #else
@@ -256,14 +249,14 @@ OUTPUT:  RETVAL
 void
 DESTROY (p)
 	mpcb_t *	p
-        CODE:
+        PPCODE:
         DESTROY(p);
         XSRETURN_EMPTY; /* return empty stack */
 
 void
 Rmpcb_clear (p)
 	mpcb_t *	p
-        CODE:
+        PPCODE:
         Rmpcb_clear(p);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -278,14 +271,14 @@ void
 Rmpcb_set (rop, op)
 	mpcb_t *	rop
 	mpcb_t *	op
-        CODE:
+        PPCODE:
         Rmpcb_set(rop, op);
         XSRETURN_EMPTY; /* return empty stack */
 
 void
 Rmpcb_set_inf (op)
 	mpcb_t *	op
-        CODE:
+        PPCODE:
         Rmpcb_set_inf(op);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -296,7 +289,7 @@ Rmpcb_set_c (rop, op, prec, err_re, err_im)
 	SV *	prec
 	SV *	err_re
 	SV *	err_im
-        CODE:
+        PPCODE:
         Rmpcb_set_c(aTHX_ rop, op, prec, err_re, err_im);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -306,7 +299,7 @@ Rmpcb_set_ui_ui (rop, re, im, prec)
 	SV *	re
 	SV *	im
 	SV *	prec
-        CODE:
+        PPCODE:
         Rmpcb_set_ui_ui(aTHX_ rop, re, im, prec);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -314,7 +307,7 @@ void
 Rmpcb_neg (rop, op)
 	mpcb_t *	rop
 	mpcb_t *	op
-        CODE:
+        PPCODE:
         Rmpcb_neg(rop, op);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -323,7 +316,7 @@ Rmpcb_add (rop, op1, op2)
 	mpcb_t *	rop
 	mpcb_t *	op1
 	mpcb_t *	op2
-        CODE:
+        PPCODE:
         Rmpcb_add(rop, op1, op2);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -332,7 +325,7 @@ Rmpcb_mul (rop, op1, op2)
 	mpcb_t *	rop
 	mpcb_t *	op1
 	mpcb_t *	op2
-        CODE:
+        PPCODE:
         Rmpcb_mul(rop, op1, op2);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -340,7 +333,7 @@ void
 Rmpcb_sqr (rop, op)
 	mpcb_t *	rop
 	mpcb_t *	op
-        CODE:
+        PPCODE:
         Rmpcb_sqr(rop, op);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -349,7 +342,7 @@ Rmpcb_pow_ui (rop, op, ui)
 	mpcb_t *	rop
 	mpcb_t *	op
 	SV *	ui
-        CODE:
+        PPCODE:
         Rmpcb_pow_ui(aTHX_ rop, op, ui);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -357,7 +350,7 @@ void
 Rmpcb_sqrt (rop, op)
 	mpcb_t *	rop
 	mpcb_t *	op
-        CODE:
+        PPCODE:
         Rmpcb_sqrt(rop, op);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -366,7 +359,7 @@ Rmpcb_div (rop, op1, op2)
 	mpcb_t *	rop
 	mpcb_t *	op1
 	mpcb_t *	op2
-        CODE:
+        PPCODE:
         Rmpcb_div(rop, op1, op2);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -375,7 +368,7 @@ Rmpcb_div_2ui (rop, op, ui)
 	mpcb_t *	rop
 	mpcb_t *	op
 	SV *	ui
-        CODE:
+        PPCODE:
         Rmpcb_div_2ui(aTHX_ rop, op, ui);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -403,7 +396,7 @@ Rmpcb_retrieve (rop1, rop2, op)
 	mpc_t *	rop1
 	mpcr_ptr	rop2
 	mpcb_t *	op
-        CODE:
+        PPCODE:
         Rmpcb_retrieve(rop1, rop2, op);
         XSRETURN_EMPTY; /* return empty stack */
 
@@ -411,7 +404,7 @@ void
 Rmpcb_out_str (stream, op)
 	FILE *	stream
 	mpcb_t *	op
-        CODE:
+        PPCODE:
         Rmpcb_out_str(aTHX_ stream, op);
         XSRETURN_EMPTY; /* return empty stack */
 

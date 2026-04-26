@@ -665,8 +665,10 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
     the mantissa will contain the maximum number of digits accurately
     representable.
 
-   RMPC_RE($mpfr, $op);
-   RMPC_IM($mpfr, $op);
+   RMPC_RE($mpfr, $op); # Deprecated - use Rmpc_realref instead.
+   RMPC_IM($mpfr, $op); # Deprecated - use Rmpc_imagref instead.
+   Rmpc_realref($mpfr, $op);
+   Rmpc_imagref($mpfr, $op);
     Set $mpfr to the value of the real (respectively imaginary) component
     of $op. $mpfr will be an exact copy of the real/imaginary component
     of op - ie the precision of $mpfr will be set to the precision of the

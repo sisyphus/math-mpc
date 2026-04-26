@@ -198,9 +198,6 @@ typedef __float128 float128;
          if(SvIV(get_sv("Math::MPC::NOK_POK", 0))) \
            warn("Scalar passed to %s is both NV and PV. Using PV (string) value"
 
-#define MPC_RE(x) ((x)->re)
-#define MPC_IM(x) ((x)->im)
-
 #define VOID_MPC_SET_X_Y(real_t, imag_t, z, real_value, imag_value, rnd)            \
    {                                                                                \
      int _inex_re, _inex_im;                                                        \

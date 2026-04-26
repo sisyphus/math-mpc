@@ -103,6 +103,7 @@ Rmpc_get_DC Rmpc_get_LDC Rmpc_get_F128C
 RMPC_RE RMPC_IM RMPC_INEX_RE RMPC_INEX_IM
 Rmpc_clear Rmpc_clear_ptr Rmpc_clear_mpc
 Rmpc_deref4 Rmpc_get_str
+Rmpc_imagref Rmpc_realref
 Rmpc_init2 Rmpc_init3
 Rmpc_init2_nobless Rmpc_init3_nobless
 Rmpc_strtoc Rmpc_set_str
@@ -116,7 +117,6 @@ Rmpc_set_uj_ui Rmpc_set_uj_si Rmpc_set_uj_d Rmpc_set_uj_uj Rmpc_set_uj_sj Rmpc_s
 Rmpc_set_sj_ui Rmpc_set_sj_si Rmpc_set_sj_d Rmpc_set_sj_uj Rmpc_set_sj_sj Rmpc_set_sj_ld Rmpc_set_sj_fr
 Rmpc_set_ld_ui Rmpc_set_ld_si Rmpc_set_ld_uj Rmpc_set_ld_d Rmpc_set_ld_sj Rmpc_set_ld_ld Rmpc_set_ld_fr
 Rmpc_set_fr_ui Rmpc_set_fr_si Rmpc_set_fr_d Rmpc_set_fr_uj Rmpc_set_fr_sj Rmpc_set_fr_ld Rmpc_set_fr_fr
-
 Rmpc_set_f_ui Rmpc_set_q_ui Rmpc_set_z_ui Rmpc_set_ui_f Rmpc_set_ui_q Rmpc_set_ui_z
 Rmpc_set_f_si Rmpc_set_q_si Rmpc_set_z_si Rmpc_set_si_f Rmpc_set_si_q Rmpc_set_si_z
 Rmpc_set_f_d Rmpc_set_q_d Rmpc_set_z_d Rmpc_set_d_f Rmpc_set_d_q Rmpc_set_d_z
@@ -125,7 +125,6 @@ Rmpc_set_f_sj Rmpc_set_q_sj Rmpc_set_z_sj Rmpc_set_sj_f Rmpc_set_sj_q Rmpc_set_s
 Rmpc_set_f_ld Rmpc_set_q_ld Rmpc_set_z_ld Rmpc_set_ld_f Rmpc_set_ld_q Rmpc_set_ld_z
 Rmpc_set_f_q Rmpc_set_q_f Rmpc_set_f_z Rmpc_set_z_f Rmpc_set_z_q Rmpc_set_q_z
 Rmpc_set_f_fr Rmpc_set_q_fr Rmpc_set_z_fr Rmpc_set_fr_f Rmpc_set_fr_q Rmpc_set_fr_z
-
 Rmpc_set_dc Rmpc_set_ldc Rmpc_set_NV Rmpc_set_NV_NV
 Rmpc_set_DC Rmpc_set_LDC Rmpc_set_F128C
 Rmpc_fma Rmpc_dot Rmpc_sum
@@ -218,6 +217,9 @@ else   {$Math::MPC::no_complex_c_q = 0 }
 
 *Rmpc_set_d_ld  = \&Rmpc_set_ld_ld;
 *Rmpc_set_ld_d  = \&Rmpc_set_ld_ld;
+
+*RMPC_RE = \&Rmpc_realref;
+*RMPC_IM = \&Rmpc_imagref;
 
 # Beginning with mpc-1.0, mpc_mul_2exp and mpc_div_2exp
 # were renamed to mpc_mul_2ui and mpc_div_2ui.

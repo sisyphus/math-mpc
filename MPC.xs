@@ -405,11 +405,11 @@ void Rmpc_set_prec(pTHX_ mpc_t * p, SV * prec) {
 }
 
 void Rmpc_set_re_prec(pTHX_ mpc_t * p, SV * prec) {
-     mpfr_set_prec(MPC_RE(*p), SvUV(prec));
+     mpfr_set_prec(mpc_realref(*p), SvUV(prec));
 }
 
 void Rmpc_set_im_prec(pTHX_ mpc_t * p, SV * prec) {
-     mpfr_set_prec(MPC_IM(*p), SvUV(prec));
+     mpfr_set_prec(mpc_imagref(*p), SvUV(prec));
 }
 
 SV * Rmpc_get_prec(pTHX_ mpc_t * x) {
@@ -428,23 +428,23 @@ void Rmpc_get_prec2(pTHX_ mpc_t * x) {
 }
 
 SV * Rmpc_get_im_prec(pTHX_ mpc_t * x) {
-     return newSVuv(mpfr_get_prec(MPC_IM(*x)));
+     return newSVuv(mpfr_get_prec(mpc_imagref(*x)));
 }
 
 SV * Rmpc_get_re_prec(pTHX_ mpc_t * x) {
-     return newSVuv(mpfr_get_prec(MPC_RE(*x)));
+     return newSVuv(mpfr_get_prec(mpc_realref(*x)));
 }
 
-void RMPC_RE(mpfr_t * fr, mpc_t * x) {
-     mp_prec_t precision = mpfr_get_prec(MPC_RE(*x));
+void Rmpc_realref(mpfr_t * fr, mpc_t * x) {
+     mp_prec_t precision = mpfr_get_prec(mpc_realref(*x));
      mpfr_set_prec(*fr, precision);
-     mpfr_set(*fr, MPC_RE(*x), GMP_RNDN); /* No rounding will be done, anyway */
+     mpfr_set(*fr, mpc_realref(*x), GMP_RNDN); /* No rounding will be done, anyway */
 }
 
-void RMPC_IM(mpfr_t * fr, mpc_t * x) {
-     mp_prec_t precision = mpfr_get_prec(MPC_IM(*x));
+void Rmpc_imagref(mpfr_t * fr, mpc_t * x) {
+     mp_prec_t precision = mpfr_get_prec(mpc_imagref(*x));
      mpfr_set_prec(*fr, precision);
-     mpfr_set(*fr, MPC_IM(*x), GMP_RNDN); /* No rounding will be done, anyway */
+     mpfr_set(*fr, mpc_imagref(*x), GMP_RNDN); /* No rounding will be done, anyway */
 }
 
 SV * RMPC_INEX_RE(pTHX_ SV * x) {
@@ -1887,8 +1887,8 @@ SV * Rmpc_atanh(pTHX_ mpc_t * rop, mpc_t * op, SV * round) {
 SV * overload_true(pTHX_ mpc_t *a, SV *second, SV * third) {
      PERL_UNUSED_ARG2(second, third);
      if(
-       ( mpfr_nan_p(MPC_RE(*a)) || !mpfr_cmp_ui(MPC_RE(*a), 0) ) &&
-       ( mpfr_nan_p(MPC_IM(*a)) || !mpfr_cmp_ui(MPC_IM(*a), 0) )
+       ( mpfr_nan_p(mpc_realref(*a)) || !mpfr_cmp_ui(mpc_realref(*a), 0) ) &&
+       ( mpfr_nan_p(mpc_imagref(*a)) || !mpfr_cmp_ui(mpc_imagref(*a), 0) )
        ) return newSVuv(0);
      return newSVuv(1);
 }
@@ -3221,7 +3221,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
      mpfr_t temp;
      PERL_UNUSED_ARG(third);
 
-     if(mpfr_nan_p(MPC_RE(*a)) || mpfr_nan_p(MPC_IM(*a))) return newSViv(0);
+     if(mpfr_nan_p(mpc_realref(*a)) || mpfr_nan_p(mpc_imagref(*a))) return newSViv(0);
 
 #ifdef MATH_MPC_NEED_LONG_LONG_INT
 
@@ -3290,7 +3290,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
        if(mpc_set_str(t, (char *)SvPV_nolen(b), 0, DEFAULT_ROUNDING_MODE) == -1)
          croak("Invalid string (%s) supplied to Math::MPC::overload_equiv", SvPV_nolen(b));
 #endif
-       if(mpfr_nan_p(MPC_RE(t)) || mpfr_nan_p(MPC_IM(t))) {
+       if(mpfr_nan_p(mpc_realref(t)) || mpfr_nan_p(mpc_imagref(t))) {
          mpc_clear(t);
          return newSViv(0);
        }
@@ -3317,7 +3317,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
        mpc_init2(t, DBL_MANT_DIG);
        mpc_set_d(t, (double)SvNVX(b), MPC_RNDNN);
 #endif
-       if(mpfr_nan_p(MPC_RE(t)) || mpfr_nan_p(MPC_IM(t))) {
+       if(mpfr_nan_p(mpc_realref(t)) || mpfr_nan_p(mpc_imagref(t))) {
          mpc_clear(t);
          return newSViv(0);
        }
@@ -3330,8 +3330,8 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
      if(sv_isobject(b)) {
        const char *h = HvNAME(SvSTASH(SvRV(b)));
        if(strEQ(h, "Math::MPC")) {
-         if(mpfr_nan_p(MPC_RE(*(INT2PTR(mpc_t *, SvIVX(SvRV(b)))))) ||
-            mpfr_nan_p(MPC_IM(*(INT2PTR(mpc_t *, SvIVX(SvRV(b))))))) return newSViv(0);
+         if(mpfr_nan_p(mpc_realref(*(INT2PTR(mpc_t *, SvIVX(SvRV(b)))))) ||
+            mpfr_nan_p(mpc_imagref(*(INT2PTR(mpc_t *, SvIVX(SvRV(b))))))) return newSViv(0);
          ret = mpc_cmp(*a, *(INT2PTR(mpc_t *, SvIVX(SvRV(b)))));
          if(ret == 0) return newSViv(1);
          return newSViv(0);
@@ -3343,7 +3343,7 @@ SV * overload_equiv(pTHX_ mpc_t * a, SV * b, SV * third) {
 
 SV * overload_not(pTHX_ mpc_t * a, SV * second, SV * third) {
      PERL_UNUSED_ARG2(second, third);
-     if(mpfr_nan_p(MPC_RE(*a)) || mpfr_nan_p(MPC_IM(*a))) return newSViv(1); /* Thanks Jean-Louis Morel */
+     if(mpfr_nan_p(mpc_realref(*a)) || mpfr_nan_p(mpc_imagref(*a))) return newSViv(1); /* Thanks Jean-Louis Morel */
      if(mpc_cmp_si_si(*a, 0, 0)) return newSViv(0);
      return newSViv(1);
 }
@@ -3489,7 +3489,7 @@ void _get_r_string(pTHX_ mpc_t * p, SV * base, SV * n_digits, SV * round) {
 
      if(b < 2 || b > 36) croak("Second argument supplied to r_string is not in acceptable range");
 
-     out = mpfr_get_str(NULL, &ptr, b, SvUV(n_digits), MPC_RE(*p), (mpc_rnd_t)SvUV(round) & 3);
+     out = mpfr_get_str(NULL, &ptr, b, SvUV(n_digits), mpc_realref(*p), (mpc_rnd_t)SvUV(round) & 3);
 
      if(out == NULL) croak("An error occurred in _get_r_string");
 
@@ -3510,7 +3510,7 @@ void _get_i_string(pTHX_ mpc_t * p, SV * base, SV * n_digits, SV * round) {
 
      if(b < 2 || b > 36) croak("Second argument supplied to i_string is not in acceptable range");
 
-     out = mpfr_get_str(NULL, &ptr, b, SvUV(n_digits), MPC_IM(*p), (mpc_rnd_t)SvUV(round) & 3);
+     out = mpfr_get_str(NULL, &ptr, b, SvUV(n_digits), mpc_imagref(*p), (mpc_rnd_t)SvUV(round) & 3);
 
      if(out == NULL) croak("An error occurred in _get_i_string");
 
@@ -4265,8 +4265,8 @@ int Rmpc_agm(pTHX_ mpc_t * rop, mpc_t * op1, mpc_t * op2, SV * rnd) {
 
 int in_fund_dom(mpc_t * op) {
   mpfr_t t;
-  if( mpfr_nan_p(MPC_RE(*op)) || mpfr_cmp_d(MPC_RE(*op), -0.5) < 0 || mpfr_cmp_d(MPC_RE(*op), 0.5) > 0 ) return 0;
-  mpfr_init2( t, mpfr_get_prec(MPC_RE(*op)) );
+  if( mpfr_nan_p(mpc_realref(*op)) || mpfr_cmp_d(mpc_realref(*op), -0.5) < 0 || mpfr_cmp_d(mpc_realref(*op), 0.5) > 0 ) return 0;
+  mpfr_init2( t, mpfr_get_prec(mpc_realref(*op)) );
   mpc_abs(t, *op, MPFR_RNDN);
   if(mpfr_cmp_d(t, 1.0) < 1) {
     mpfr_clear(t);
@@ -4432,20 +4432,38 @@ CODE:
 OUTPUT:  RETVAL
 
 void
-RMPC_RE (fr, x)
+Rmpc_realref (fr, x)
 	mpfr_t *	fr
 	mpc_t *	x
+        PREINIT:
+        I32* temp;
         PPCODE:
-        RMPC_RE(fr, x);
-        XSRETURN_EMPTY; /* return empty stack */
+        temp = PL_markstack_ptr++;
+        Rmpc_realref(fr, x);
+        if (PL_markstack_ptr != temp) {
+          /* truly void, because dXSARGS not invoked */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
+        }
+        /* must have used dXSARGS; list context implied */
+        return;
 
 void
-RMPC_IM (fr, x)
+Rmpc_imagref (fr, x)
 	mpfr_t *	fr
 	mpc_t *	x
+        PREINIT:
+        I32* temp;
         PPCODE:
-        RMPC_IM(fr, x);
-        XSRETURN_EMPTY; /* return empty stack */
+        temp = PL_markstack_ptr++;
+        Rmpc_imagref(fr, x);
+        if (PL_markstack_ptr != temp) {
+          /* truly void, because dXSARGS not invoked */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
+        }
+        /* must have used dXSARGS; list context implied */
+        return;
 
 SV *
 RMPC_INEX_RE (x)

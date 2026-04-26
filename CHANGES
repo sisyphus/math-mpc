@@ -1,4 +1,5 @@
 1.44
+ - Deprecate RMPC_RE and RMPC_IM. Replace them with Rmpc_realref and Rmpc_imagref.
 
 1.43
  - Add t/overload_arith.t - where we check that overloaded arithmetic operations

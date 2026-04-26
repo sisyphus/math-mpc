@@ -123,6 +123,13 @@ DIV_CORRECTION_*         : Correction to mpc_fr_div and mpc_iv_div with pre-1.4.
 
 #include <float.h>
 
+#ifndef mpc_realref
+#  define mpc_realref(x) ((x)->re)
+#endif
+#ifndef mpc_imagref
+#  define mpc_imagref(x) ((x)->im)
+#endif
+
 #if defined(MPFR_WANT_FLOAT128) || defined(NV_IS_FLOAT128)
 #include <quadmath.h>
 #if defined(NV_IS_FLOAT128) && defined(MPFR_WANT_FLOAT128) && defined(MPFR_VERSION) && MPFR_VERSION >= MPFR_VERSION_NUM(4,0,0)

@@ -22,6 +22,13 @@
  TODO: Handle less insanely.
 *********************/
 
+#ifndef mpc_realref
+#  define mpc_realref(x) ((x)->re)
+#endif
+#ifndef mpc_imagref
+#  define mpc_imagref(x) ((x)->im)
+#endif
+
 #if MPC_VERSION < 66304
   typedef int mpcr_ptr;
   typedef double mpcb_t;

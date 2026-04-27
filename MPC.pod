@@ -730,6 +730,32 @@ Math::MPC - perl interface to the MPC (multi precision complex) library.
     _Complex' data types (resp.). For Rmpc_get_F128C, the underlying mpfr
     library needs to have been built with --enable-float128 option.
 
+   #############################
+
+   FORMATTED STRING PRESENTATION
+
+   $ui = Rmpc_printf( $fmt, $op);
+    Uses mpfr_printf(). See the mpfr documentation of mpfr_printf() or
+    the Math::MPFR documentation of Rmpf_printf(). As an example, if the
+    precision of both the real and imaginary parts of $op is 53 bits,
+    then the following will output the same as "print $op;":
+      Rmpc_printf( "(%.17Rg %.17Rg)", $op);
+    As with Rmpfr_printf(), Rmpc_printf() is limited to dealing with
+    just one object.
+
+   ($ui1, $ui2) = Rmpc_get_str_ndigits2($base, $op); # Math-MPFR-4.1.0
+                                                     # is required.
+    Uses mpfr_get_str_ndigits(). See the mpfr documentation of that
+    function or the Math::MPFR documentation of Rmpfr_get_str_ndigits().
+    Returns the minimum number of base $base digits required to
+    guarantee that the "round trip" described in the documentation will
+    succeed. $ui1 is the number of digits required for the real part of
+    $op, and $ui2 is the number of digits required for the imaginary part
+    of $op. The values depend on the value of $base, and on the respective
+    precisions of the two parts. If both parts have the same precision
+    then $ui1 == $ui2.
+
+
    ####################
 
    OPERATOR OVERLOADING

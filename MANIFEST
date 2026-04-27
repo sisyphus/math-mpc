@@ -41,6 +41,7 @@ t/mpc_prec.t
 t/MPC_RNDA.t
 t/mpc_round.t
 t/mpc_set.t
+t/mpc_sprintf.t
 t/Rmpc_set_NV.t
 t/mpc_swap.t
 t/mpc_trig.t

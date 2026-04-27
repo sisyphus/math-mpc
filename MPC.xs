@@ -422,9 +422,27 @@ void Rmpc_get_prec2(pTHX_ mpc_t * x) {
      PERL_UNUSED_ARG(items);
 
      mpc_get_prec2(&re, &im, *x);
+     EXTEND(SP, 1);
      ST(0) = sv_2mortal(newSVuv(re));
      ST(1) = sv_2mortal(newSVuv(im));
      XSRETURN(2);
+}
+
+void Rmpc_get_str_ndigits2(pTHX_ int base, mpc_t *op) {
+#if MPFR_VERSION >= 262400
+     dXSARGS;
+     size_t re, im;
+     PERL_UNUSED_ARG(items);
+
+     re = mpfr_get_str_ndigits(base, mpfr_get_prec(mpc_realref(*op)));
+     im = mpfr_get_str_ndigits(base, mpfr_get_prec(mpc_imagref(*op)));
+     ST(0) = sv_2mortal(newSVuv(re));
+     ST(1) = sv_2mortal(newSVuv(im));
+     XSRETURN(2);
+#else
+     PERL_UNUSED_ARG2(base, op);
+     croak("Rmpc_get_str_ndigits2 requires version 4.1.0 of the mpfr library - we have only %s", MPFR_VERSION_STRING);
+#endif
 }
 
 SV * Rmpc_get_im_prec(pTHX_ mpc_t * x) {
@@ -4284,6 +4302,13 @@ int Rmpc_eta_fund(pTHX_ mpc_t * rop, mpc_t * op, SV * rnd) {
 #endif
 }
 
+int Rmpc_printf(pTHX_ SV * fmt, mpc_t * op) {
+    int ret = mpfr_printf( SvPV_nolen(fmt), mpc_realref(*op), mpc_imagref(*op));
+    fflush(stdout);
+    return ret;
+}
+
+
 
 
 MODULE = Math::MPC  PACKAGE = Math::MPC
@@ -4415,6 +4440,23 @@ Rmpc_get_prec2 (x)
         PPCODE:
         PL_markstack_ptr++;
         Rmpc_get_prec2(aTHX_ x);
+        return;
+
+void
+Rmpc_get_str_ndigits2 (base, op)
+	int	base
+	mpc_t *	op
+        PREINIT:
+        I32* temp;
+        PPCODE:
+        temp = PL_markstack_ptr++;
+        Rmpc_get_str_ndigits2(aTHX_ base, op);
+        if (PL_markstack_ptr != temp) {
+          /* truly void, because dXSARGS not invoked */
+          PL_markstack_ptr = temp;
+          XSRETURN_EMPTY; /* return empty stack */
+        }
+        /* must have used dXSARGS; list context implied */
         return;
 
 SV *
@@ -6766,5 +6808,13 @@ Rmpc_eta_fund (rop, op, rnd)
 	SV *	rnd
 CODE:
   RETVAL = Rmpc_eta_fund (aTHX_ rop, op, rnd);
+OUTPUT:  RETVAL
+
+int
+Rmpc_printf (fmt, op)
+	SV *	fmt
+	mpc_t *	op
+CODE:
+  RETVAL = Rmpc_printf (aTHX_ fmt, op);
 OUTPUT:  RETVAL
 

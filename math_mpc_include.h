@@ -208,15 +208,15 @@ typedef __float128 float128;
 #define VOID_MPC_SET_X_Y(real_t, imag_t, z, real_value, imag_value, rnd)            \
    {                                                                                \
      int _inex_re, _inex_im;                                                        \
-     _inex_re = (mpfr_set_ ## real_t) (MPC_RE (z), (real_value), MPC_RND_RE (rnd)); \
-     _inex_im = (mpfr_set_ ## imag_t) (MPC_IM (z), (imag_value), MPC_RND_IM (rnd)); \
+     _inex_re = (mpfr_set_ ## real_t) (mpc_realref(z), (real_value), MPC_RND_RE (rnd)); \
+     _inex_im = (mpfr_set_ ## imag_t) (mpc_imagref(z), (imag_value), MPC_RND_IM (rnd)); \
    }
 
 #define SV_MPC_SET_X_Y(real_t, imag_t, z, real_value, imag_value, rnd)                  \
   {                                                                                     \
     int _inex_re, _inex_im;                                                             \
-    _inex_re = (mpfr_set_ ## real_t) (mpc_realref (z), (real_value), MPC_RND_RE (rnd)); \
-    _inex_im = (mpfr_set_ ## imag_t) (mpc_imagref (z), (imag_value), MPC_RND_IM (rnd)); \
+    _inex_re = (mpfr_set_ ## real_t) (mpc_realref(z), (real_value), MPC_RND_RE (rnd)); \
+    _inex_im = (mpfr_set_ ## imag_t) (mpc_imagref(z), (imag_value), MPC_RND_IM (rnd)); \
     return newSViv(MPC_INEX (_inex_re, _inex_im));                                      \
   }
 
@@ -243,9 +243,9 @@ typedef __float128 float128;
       mpfr_prec_t prec_default;
 
 #  define DIVISION_BUG_PRE(op)                          \
-    if(!mpfr_cmp_ui(MPC_IM(op), 0)) {                   \
+    if(!mpfr_cmp_ui(mpc_imagref(op), 0)) {                   \
       prec_default=mpfr_get_default_prec();             \
-      mpfr_set_default_prec(mpfr_get_prec(MPC_IM(op))); \
+      mpfr_set_default_prec(mpfr_get_prec(mpc_imagref(op))); \
     }                                                   \
     else no_skip = 0;
 
@@ -263,12 +263,12 @@ typedef __float128 float128;
 #if MPC_VERSION < 66560 /* Fix mpc_ui_div() and mpc_fr_div() sign of imaginary zero. (Pre mpc-1.4.0 only) */
 #  define DIV_CORRECTION_DECL(op)                                   \
    int make_correction = 0;                                     \
-   if(!mpfr_cmp_ui(MPC_IM(op),0) && !mpfr_signbit(MPC_IM(op)))  \
+   if(!mpfr_cmp_ui(mpc_imagref(op),0) && !mpfr_signbit(mpc_imagref(op)))  \
       make_correction = 1;
 
 #  define DIV_CORRECTION_POST(rop)                 \
    if(make_correction)                             \
-      mpfr_neg(MPC_IM(rop),MPC_IM(rop), MPFR_RNDN); /* MPC_IM(rop) is zero, but needs to be negated */
+      mpfr_neg(mpc_imagref(rop),mpc_imagref(rop), MPFR_RNDN); /*mpc_imagref(rop) is zero, but needs to be negated */
 #else
 #  define DIV_CORRECTION_DECL(op)
 #  define DIV_CORRECTION_POST(rop)

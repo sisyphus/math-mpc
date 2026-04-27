@@ -1,4 +1,5 @@
 1.44
+ - Add Rmpc_printf() and Rmpc_get_str_ndigits2().
  - Deprecate RMPC_RE and RMPC_IM. Replace them with Rmpc_realref and Rmpc_imagref.
 
 1.43
@@ -12,7 +13,7 @@
 1.42
  - Restructure the interpolation overloading. The only change in behaviour is
    that "@NaN@" and "@Inf@" have been replaced by "NaN" and "Inf".
- - Workaround bug the division bug specific to mpc-1.4.0. See:
+ - Workaround the division bug specific to mpc-1.4.0. See:
    https://sympa.inria.fr/sympa/arc/mpc-discuss/2026-03/msg00019.html
  - Rewrite more tests in an attempt to have this module pass its tests on Slaven's
    freebsd arm64 builds.

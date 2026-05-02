@@ -100,7 +100,7 @@ Rmpc_set_re_prec Rmpc_set_im_prec
 Rmpc_get_prec Rmpc_get_prec2 Rmpc_get_re_prec Rmpc_get_im_prec
 Rmpc_get_dc Rmpc_get_ldc
 Rmpc_get_DC Rmpc_get_LDC Rmpc_get_F128C
-Rmpc_get_str_ndigits2 Rmpc_printf Rmpc_sprintf
+Rmpc_get_str_ndigits2 Rmpc_printf Rmpc_printf_re Rmpc_printf_im
 RMPC_RE RMPC_IM RMPC_INEX_RE RMPC_INEX_IM
 Rmpc_clear Rmpc_clear_ptr Rmpc_clear_mpc
 Rmpc_deref4 Rmpc_get_str

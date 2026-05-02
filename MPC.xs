@@ -4308,6 +4308,18 @@ int Rmpc_printf(pTHX_ SV * fmt, mpc_t * op) {
     return ret;
 }
 
+int Rmpc_printf_re(pTHX_ SV * fmt, mpc_t * op) {
+    int ret = mpfr_printf( SvPV_nolen(fmt), mpc_realref(*op));
+    fflush(stdout);
+    return ret;
+}
+
+int Rmpc_printf_im(pTHX_ SV * fmt, mpc_t * op) {
+    int ret = mpfr_printf( SvPV_nolen(fmt), mpc_imagref(*op));
+    fflush(stdout);
+    return ret;
+}
+
 
 
 
@@ -6816,5 +6828,21 @@ Rmpc_printf (fmt, op)
 	mpc_t *	op
 CODE:
   RETVAL = Rmpc_printf (aTHX_ fmt, op);
+OUTPUT:  RETVAL
+
+int
+Rmpc_printf_re (fmt, op)
+	SV *	fmt
+	mpc_t *	op
+CODE:
+  RETVAL = Rmpc_printf_re (aTHX_ fmt, op);
+OUTPUT:  RETVAL
+
+int
+Rmpc_printf_im (fmt, op)
+	SV *	fmt
+	mpc_t *	op
+CODE:
+  RETVAL = Rmpc_printf_im (aTHX_ fmt, op);
 OUTPUT:  RETVAL
 

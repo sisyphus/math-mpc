@@ -28,5 +28,11 @@ else {
   cmp_ok($im_digs, '==', 36, "imaginary digits ok");
 }
 
+$re_digs = Rmpc_printf_re("%.17Rg\n", $op);
+cmp_ok($re_digs, '==', 20, "size of Rmpc_printf_re output is as expected"); # "\n" included in count
+
+$im_digs = Rmpc_printf_im("%.17Rg\n", $op);
+cmp_ok($im_digs, '==', 7, "size of Rmpc_printf_im output is as expected"); # "\n" included in count
+
 done_testing();
 

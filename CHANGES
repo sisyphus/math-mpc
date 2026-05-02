@@ -1,5 +1,5 @@
 1.44
- - Add Rmpc_printf() and Rmpc_get_str_ndigits2().
+ - Add Rmpc_printf(), Rmpc_printf_re(), Rmpc_printf_im() and Rmpc_get_str_ndigits2().
  - Deprecate RMPC_RE and RMPC_IM. Replace them with Rmpc_realref and Rmpc_imagref.
 
 1.43

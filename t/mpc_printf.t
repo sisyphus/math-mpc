@@ -1,5 +1,6 @@
-# Test Rmpc_sprintf, Rmpc_printf and Rmpc_get_str_ndigits.
-# None of these functions exist in the moc library - we simply
+# Test Rmpc_printf, Rmpc_printf_re, Rmpc_printf_im and
+# Rmpc_get_str_ndigits.
+# None of these functions exist in the mpc library - we simply
 # use the mnpfr library for these implementations.
 
 use strict;

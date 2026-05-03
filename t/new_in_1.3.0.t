@@ -21,7 +21,7 @@ my($re, $im, $re_, $im_) = ( Math::MPFR->new(), Math::MPFR->new(),
 
 my $ok = 0;
 if($op1 == $op1) { $ok = 1 }
-cmp_ok($ok, '==', 1, "SANITY TEST 1");
+cmp_ok($ok, '==', 1, "SANITY TEST 1");             # Passes on Slaven's problematic arm64 builds.
 if(!$ok) {
   Math::MPC::RMPC_RE($re, $op1);
   Math::MPC::RMPC_IM($im, $op1);
@@ -29,8 +29,12 @@ if(!$ok) {
 }
 
 $ok = 0;
-if($op1 == Math::MPC->new(-0.3, 1.2)) { $ok = 1 }
-cmp_ok($ok, '==', 1, "SANITY TEST 2");
+if($op1 == Math::MPC->new(-0.3, 1.2)) { $ok = 1 }  # Fails  on Slaven's problematic arm64 builds.
+cmp_ok($ok, '==', 1, "SANITY TEST 2A");
+
+# So let's see if Rmpc_cmp() works on the problematic builds:
+cmp_ok(Rmpc_cmp($op1, Math::MPC->new(-0.3, 1.2)), '==', 0, "SANITY TEST 2B");
+
 if(!$ok) {
   Math::MPC::RMPC_RE($re, $op1);
   Math::MPC::RMPC_IM($im, $op1);

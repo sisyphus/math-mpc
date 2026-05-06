@@ -173,7 +173,7 @@ $libopts    = '-lquadmath -lmpc -lmpfr -lgmp'
 
 my %options = (
   NAME => 'Math::MPC',
-  AUTHOR => 'Sisyphus (sisyphus at (@) cpan dot (.) org)',
+  AUTHOR => 'Sisyphus (sisyphus359 at (@) gmail dot (.) com)',
   ABSTRACT => 'Perl interface to the MPC (multi precision complex) library',
   PREREQ_PM => {
                 'Math::MPFR'          => '4.14',

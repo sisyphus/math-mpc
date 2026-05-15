@@ -61,6 +61,14 @@ int _win32_infnanstring(char * s) { /* MS Windows only - detect 1.#INF and 1.#IN
 #endif
 }
 
+mpfr_ptr __actual_realref(mpc_t * in) {
+  return mpc_realref(*in);
+}
+
+mpfr_ptr __actual_imagref(mpc_t * in) {
+  return mpc_imagref(*in);
+}
+
 int _check_rounding_value(mpc_rnd_t round) {
    static mpc_rnd_t v[16] = {0,1,2,3, 16,17,18,19, 32,33,34,35, 48,49,50,51};
    int i;
@@ -4320,6 +4328,27 @@ int Rmpc_printf_im(pTHX_ SV * fmt, mpc_t * op) {
     return ret;
 }
 
+int _concept_tests(mpc_t * op) {
+    mpfr_ptr p;
+    int got = 0, expected = 51;
+
+    if( mpfr_cmp(mpc_realref(*op), mpc_imagref(*op)) ) expected = 255; /* re != im */
+
+    p = mpc_realref(*op);
+    if( !mpfr_cmp(p, mpc_realref(*op)) ) got += 1;
+    if( !mpfr_cmp(mpc_realref(*op), p) ) got += 2;
+    if(  mpfr_cmp(p, mpc_imagref(*op)) ) got += 4;
+    if(  mpfr_cmp(mpc_imagref(*op), p) ) got += 8;
+
+    p = mpc_imagref(*op);
+    if( !mpfr_cmp(p, mpc_imagref(*op)) ) got += 16;
+    if( !mpfr_cmp(mpc_imagref(*op), p) ) got += 32;
+    if(  mpfr_cmp(p, mpc_realref(*op)) ) got += 64;
+    if(  mpfr_cmp(mpc_realref(*op), p) ) got += 128;
+
+    return got;
+}
+
 
 
 
@@ -6845,4 +6874,8 @@ Rmpc_printf_im (fmt, op)
 CODE:
   RETVAL = Rmpc_printf_im (aTHX_ fmt, op);
 OUTPUT:  RETVAL
+
+int
+_concept_tests (op)
+	mpc_t *	op
 

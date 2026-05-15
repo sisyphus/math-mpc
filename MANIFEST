@@ -27,6 +27,7 @@ t/bug_in_1.4.0.t
 t/complex_c.t
 t/complex_c-l.t
 t/complex_c-q.t
+t/concept.t
 t/get_str.t
 t/mpc_64.t
 t/mpc_add.t
